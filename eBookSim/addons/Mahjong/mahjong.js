@@ -8,7 +8,8 @@
 //	2011-02-10 Ben Chenoweth - Digit "0" quits (non-Touch); added Quit button (Touch).
 //  	2011-03-01 kartu - Moved into a function, to allow variable name optimizations
 //  	2011-03-20 Beb Chenoweth - Moved all labels out of status bar; moved this changelog from startup script into main script.
-//  	2011-03-22 Mark Nord: <text> based Help
+//  	2011-03-22 Mark Nord - <text> based Help
+//      2011-03-26 Ben Chenoweth - Added congratulations upon completion
 
 var tmp = function () {
 /* Core workaround removed 2011-03-22 Mark Nord 
