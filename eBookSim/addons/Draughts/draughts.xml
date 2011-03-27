@@ -370,17 +370,17 @@
           <label id='messageStatus' skin='klWeis' left='280' right='0' top='-50' height='60' align='left' text="White's turn"/>
 			<sprite id='congratulations'	skin='congrats' left='94' width='411' top='250' height='142' active='false' canFocus='false'/>
 			<sprite id="gridCursor" skin="selectSquare" left="0" width="75" top="445" height="75" u="0" active="false" canFocus="true"/>
-		  <label id='sometext1' skin='touchText' left='1' right='0' top='648' height='60' align='left' text='[Next]'/>
-          <label id='touchButtons1'   skin='touchText'    left='1' right='0' top='660' height='60' align='left' text='[Prev] Auto ON'/>
-		  <label id='touchButtons2'   skin='touchText'    left='400' right='0' top='660' height='60' align='left' text='Size'/>
-		  <label id='touchButtons3'   skin='touchText'    left='525' right='0' top='660' height='60' align='left' text='Undo'/>
-		  <label id='touchButtons4'   skin='touchText'    left='285' right='0' top='660' height='60' align='left' text='Quit'/>
-		  <label id='nonTouch2'   skin='touchText'    left='250' right='0' top='660' height='60' align='left' text='[Menu] for Undo'/>
-		  <label id='nonTouch3'   skin='touchText'    left='280' right='0' top='648' height='60' align='left' text='[Size]'/>
-			<label id='nonTouch'   skin='touchText'    left='460' right='0' top='648' height='60' align='left' text='[Hold 9] New game'/>
-			<label id='nonTouch4'   skin='touchText'    left='460' right='0' top='660' height='60' align='left' text='[Hold 0] Quit'/>
-			<label id='nonTouch5' skin='touchText' left='1' right='0' top='648' height='60' align='left' text='[9]'/>
-          <label id='nonTouch6'   skin='touchText'    left='1' right='0' top='660' height='60' align='left' text='[0] Auto ON'/>
+		  <label id='sometext1' skin='touchText' left='1' right='0' bottom='17' height='10' align='left' text='[Next]'/>
+          <label id='touchButtons1'   skin='touchText'    left='1' right='0' bottom='5' height='10' align='left' text='[Prev] Auto ON'/>
+		  <label id='touchButtons2'   skin='touchText'    left='400' right='0' bottom='5' height='10' align='left' text='Size'/>
+		  <label id='touchButtons3'   skin='touchText'    left='525' right='0' bottom='5' height='10' align='left' text='Undo'/>
+		  <label id='touchButtons4'   skin='touchText'    left='285' right='0' bottom='5' height='10' align='left' text='Quit'/>
+		  <label id='nonTouch2'   skin='touchText'    left='250' right='0' bottom='5' height='10' align='left' text='[Menu] for Undo'/>
+		  <label id='nonTouch3'   skin='touchText'    left='280' right='0' bottom='17' height='10' align='left' text='[Size]'/>
+			<label id='nonTouch'   skin='touchText'    left='460' right='0' bottom='17' height='10' align='left' text='[Hold 9] New game'/>
+			<label id='nonTouch4'   skin='touchText'    left='460' right='0' bottom='5' height='10' align='left' text='[Hold 0] Quit'/>
+			<label id='nonTouch5' skin='touchText' left='1' right='0' bottom='17' height='10' align='left' text='[9]'/>
+          <label id='nonTouch6'   skin='touchText'    left='1' right='0' bottom='5' height='10' align='left' text='[0] Auto ON'/>
         </group>
     </group>
 </document>

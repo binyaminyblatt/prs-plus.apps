@@ -20,7 +20,8 @@
 // 		Moved into a function, to allow variable name optimizations
 //  2011-03-20 Ben Chenoweth - Moved all labels out of status bar.
 //  2011-03-23 Ben Chenoweth - Added icon; implemented 10-depth undo.
-// 2011-03-25 Ben Chenoweth - Skins changed over to use common AppAssests.
+//  2011-03-25 Ben Chenoweth - Skins changed over to use common AppAssests.
+//  2011-03-27 Ben Chenoweth - Fixed labels for PRS-950.
 
 var tmp = function () {
 	var sMovesList;

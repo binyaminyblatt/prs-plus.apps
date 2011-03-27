@@ -10,6 +10,7 @@
 // 2011-03-20 Ben Chenoweth - Located bugs that were causing the AI to hang occasionally; moved all labels out of the status bar.
 // 2011-03-25 Ben Chenoweth - Skins changed over to use common AppAssests
 // 2011-03-26 Mark Nord - Fixed the popup panel
+// 2011-03-27 Ben Chenoweth - Fixed labels for PRS-950
 
 var tmp = function () {
 	
