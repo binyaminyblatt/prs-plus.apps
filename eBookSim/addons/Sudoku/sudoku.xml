@@ -686,7 +686,7 @@
 			</animation>
 		</sprite>
 
-		<label id='touchButtons4'   skin='touchText'    left='285' right='0' bottom='0' height='20' align='left' text='Quit'/>
+		<label id='touchButtons4'   skin='touchText'    left='285' right='0' bottom='5' height='10' align='left' text='Quit'/>
 
 		<!--label id="clock1" skin="gameclock" width="100" right="4" height="30" bottom="-30" align="right" text="       "/-->
 		<label id="clock2" skin="gameclock" width="600"  height="30" bottom="0" align="left" text=""/>
