@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Test App  |  PRS-505 version  |  by Mark Nord
+	 History: 
+	   2010-09-16 Mark Nord - initial release 
+-->
+
+<document xmlns="http://www.kinoma.com/fskin/1" id="DOCUMENT">
+<assets>
+	<import href="../AppAssets/AppAssets.xml"/>
+
+    <behavior id="cardSprite">
+        <script on="mouseUp" params="event">
+			if (this.hitBounds(event.x, event.y))
+			this.bubble("doCardClick",this);
+        </script>
+    </behavior>
+
+<!--texture href="skins/CalcMainSkin.png">
+	<cutout id="calcHeader-l" x="350" y="0" width="70" height="70"/>
+	<cutout id="calcHeader-c" x="421" y="0" width="70" height="70"/>
+	<cutout id="calcHeader-r" x="492" y="0" width="70" height="70"/>
+	<cutout id="calcInfo-l" x="0" y="70" width="1" height="697"/>
+	<cutout id="calcInfo-c" x="0" y="70" width="598" height="697"/>
+	<cutout id="calcInfo-r" x="0" y="70" width="1" height="697"/>
+	<cutout id="calcStatus-l" x="350" y="766" width="70" height="33"/>
+	<cutout id="calcStatus-c" x="421" y="766" width="70" height="33"/>
+	<cutout id="calcStatus-r" x="492" y="766" width="70" height="33"/>
+	<cutout id="gCursor" x="610" y="0" width="90" height="100"/>
+	
+	<cutout id="button-l" x="610" y="102" width="16" height="40" lines="60"/>
+	<cutout id="button-c" x="626" y="102" width="20" height="40" lines="60"/>
+	<cutout id="button-r" x="646" y="102" width="16" height="40" lines="60"/>	
+		
+	<cutout id="radio-l" x="670" y="219" width="25" height="30" columns="60"/>
+	<cutout id="radio-c" x="695" y="219" width="15" height="30" columns="60"/>
+	<cutout id="radio-r" x="710" y="219" width="20" height="30" columns="60"/>
+				
+	<cutout id="panel-lt" x="646" y="386" width="9" height="9"/>
+	<cutout id="panel-ct" x="655" y="386" width="30" height="9"/>
+	<cutout id="panel-rt" x="685" y="386" width="9" height="9"/>
+	<cutout id="panel-lm" x="646" y="395" width="9" height="30"/>
+	<cutout id="panel-cm" x="655" y="395" width="30" height="30"/>
+	<cutout id="panel-rm" x="685" y="395" width="9" height="30"/>
+	<cutout id="panel-lb" x="646" y="425" width="9" height="9"/>
+	<cutout id="panel-cb" x="655" y="425" width="30" height="9"/>
+	<cutout id="panel-rb" x="685" y="425" width="9" height="9"/>
+</texture-->
+
+<texture href="skins/labels.png">	
+	<cutout id="popup-l" x="550" y="282" width="15" height="22" lines="30"/>
+	<cutout id="popup-c" x="565" y="282" width="20" height="22" lines="30"/>
+	<cutout id="popup-r" x="585" y="282" width="15" height="22" lines="30"/>
+
+	<cutout id="menu_lt" x="420" y="282" width="20" height="4"/>
+	<cutout id="menu_ct" x="440" y="282" width="20" height="4"/>
+	<cutout id="menu_rt" x="460" y="282" width="20" height="4"/>
+	<cutout id="menu_lu" x="420" y="286" width="20" height="6"/>
+	<cutout id="menu_cu" x="440" y="286" width="20" height="6"/>
+	<cutout id="menu_ru" x="460" y="286" width="20" height="6"/>
+	<cutout id="menu_ls" x="420" y="292" width="20" height="10"/>
+	<cutout id="menu_cs" x="440" y="292" width="20" height="10"/>
+	<cutout id="menu_rs" x="460" y="292" width="20" height="10"/>
+	<cutout id="menu_li" x="420" y="302" width="20" height="20" columns="60"/>
+	<cutout id="menu_ci" x="440" y="302" width="20" height="20" columns="60"/>
+	<cutout id="menu_ri" x="460" y="302" width="20" height="20" columns="60"/>
+	<cutout id="menu_ld" x="420" y="342" width="20" height="6"/>
+	<cutout id="menu_cd" x="440" y="342" width="20" height="6"/>
+	<cutout id="menu_rd" x="460" y="342" width="20" height="6"/>
+	<cutout id="menu_lb" x="420" y="348" width="20" height="8"/>
+	<cutout id="menu_cb" x="440" y="348" width="20" height="8"/>
+	<cutout id="menu_rb" x="460" y="348" width="20" height="8"/>
+
+	<cutout id="menuBar_l" x="560" y="0" width="10" height="28" lines="30"/>
+	<cutout id="menuBar_c" x="570" y="0" width="20" height="28" lines="30"/>
+	<cutout id="menuBar_r" x="590" y="0" width="6" height="28" lines="30"/>
+	<cutout id="menuBar_a" x="560" y="0" width="26" height="28" lines="30"/>	
+
+	<cutout id="null" x="0" y="0" width="1" height="1" lines="1"/>	
+</texture>
+<texture href="skins/simAssets.png">
+			<cutout id="null" x="0" y="0" width="0" height="0"/>
+	
+			<cutout id="default-button-l" x="0" y="244" width="19" height="40" lines="60"/>
+			<cutout id="default-button-c" x="20" y="244" width="20" height="40" lines="60"/>
+			<cutout id="default-button-r" x="40" y="244" width="19" height="40" lines="60"/>
+
+			<cutout id="dialog-lt" x="180" y="180" width="10" height="10"/>
+			<cutout id="dialog-ct" x="190" y="180" width="40" height="5"/>
+			<cutout id="dialog-rt" x="230" y="180" width="10" height="10"/>
+			<cutout id="dialog-lm" x="180" y="190" width="5" height="40"/>
+			<cutout id="dialog-rm" x="235" y="190" width="5" height="40"/>
+			<cutout id="dialog-lb" x="180" y="230" width="10" height="10"/>
+			<cutout id="dialog-cb" x="190" y="235" width="40" height="5"/>
+			<cutout id="dialog-rb" x="230" y="230" width="10" height="10"/>
+			
+			<cutout id="titleBarLine" x="315" y="7" width="30" height="2"/>
+	</texture>	
+	<texture href="skins/simBackground.jpg">
+			<cutout id="background-f"/>
+			<cutout id="leftShadow-f"/>
+			<cutout id="rightShadow-f"/>
+	</texture>			
+
+    <texture href="../FreeCell/freeCellSkins/freecellCards.png">
+        <cutout id="cards" x="0" y="1" width="73" height="98" columns="80"/>
+    </texture>			
+
+	<style font="Swis721 BT">
+	<style id="digits" size="42" style="bold" color="#000000"/>
+	<style id="memory" size="22" style="bold" color="#000000"/>
+	<style id="clock" size="22" style="bold" color="#FFFFFF"/>
+	<style id="label-l" size="14" style="bold" color="#000000" halign="left"/>
+	<style id="label-n" size="14" style="normal" color="#000000" halign="left"/>
+	</style>
+	<style font="Swis721 BT" size="20">	
+	<style id="button-e" size="21" style="bold" halign="center">
+			<style id="button-d" color="#6D6D6D"/>
+			<style id="button-p"/>
+			<style id="button-s" />
+		</style>		
+	<style id="control-e" style="normal" size="14" left="25" halign="left">
+			<style id="control-d" color="#6D6D6D"/>
+			<style id="control-p"/>
+			<style id="control-s"/>
+		</style>
+			<style id="menu-e" halign="left" left="25" top="0" right="5" bottom="0">
+				<style id="menu-d"/>
+				<style id="menu-p"/>
+				<style id="menu-s"/>
+			</style>
+			<style halign="left" left="25" top="0" right="15" bottom="0">
+				<style id="menu_d" color="#6D6D6D"/>
+				<style id="menu_e" color="#000000"/>
+				<style id="menu_p" color="#000000"/>
+				<style id="menu_s" color="#000000"/>
+			</style>
+			<style halign="right" left="0" top="0" right="15" bottom="0">
+				<style id="key_d" color="#6D6D6D"/>
+				<style id="key_e" color="#000000"/>
+				<style id="key_p" color="#000000"/>
+				<style id="key_s" color="#000000"/>
+			</style>
+			<style style="bold" halign="center" left="10" right="6">
+				<style id="menuBar_d" color="#6D6D6D"/>
+				<style id="menuBar_e" color="#000000"/>
+				<style id="menuBar_p" color="#000000"/>
+				<style id="menuBar_s" color="#000000"/>
+			</style>	
+		</style>
+	<style id="dialog" background="#80000000"/>		
+
+		<skin id="simpleText"
+				cutouts="null,null,null,null,null,null,null,null,null" 
+				styles="label-l,label-l,label-l,label-l"/>
+	
+	<skin id="panel-titleBarLine" 
+				cutouts="null,titleBarLine,null,null,null,null,null,null,null"/>
+	<skin id="background" 
+				cutouts="background-f"/>			
+	<skin id="dialog" 
+				cutouts="dialog-lt,dialog-ct,dialog-rt,dialog-rm,dialog-rb,dialog-cb,dialog-lb,dialog-lm"
+				styles="dialog"/>						
+	<skin id="memory" 
+		styles="memory"/>
+	<skin id="digits" 
+		styles="digits"/>	
+	<skin id="clock" 
+		styles="clock"/>
+	<!--skin id="gridCursor" 
+		cutouts="gCursor"/>	
+	<skin id="radio" 
+			cutouts="radio-l,radio-c,radio-r"
+			styles="control-d,control-e,control-p,control-s"/>
+	<skin id="panel" 
+			cutouts="panel-lt,panel-ct,panel-rt,panel-lm,panel-cm,panel-rm,panel-lb,panel-cb,panel-rb"/>
+	<skin id="button" 
+			cutouts="button-l,button-c,button-r"
+			styles="button-d,button-e,button-p,button-s"/-->	
+	<skin id="default-button" 
+				cutouts="default-button-l,default-button-c,default-button-r"
+				styles="button-d,button-e,button-p,button-s"/>					
+	<!--skin id="calcSkin" 
+		cutouts="calcHeader-l,calcHeader-c,calcHeader-r,calcInfo-l,calcInfo-c,calcInfo-r,calcStatus-l,calcStatus-c,calcStatus-r"/-->
+	<skin id="menu"
+			cutouts="menu_lt,menu_ct,menu_rt,menu_lu,menu_cu,menu_ru,menu_ls,menu_cs,menu_rs,menu_li,menu_ci,menu_ri,menu_ld,menu_cd,menu_rd,menu_lb,menu_cb,menu_rb"
+			styles="menu_d,menu_e,menu_p,menu_s,key_d,key_e,key_p,key_s"/>
+	<skin id="panel" 
+			cutouts="menu_lt,menu_ct,menu_rt,menu_li,menu_ci,menu_ri,menu_lb,menu_cb,menu_rb"/>
+	
+	<!--	cutouts="menuBar_l,menuBar_c,menuBar_r,menuBar_a" -->
+	<skin id="menuBar"
+			cutouts="null,null,null,null"	
+			styles="menuBar_d,menuBar_e,menuBar_p,menuBar_s"/>
+			
+	<skin id="menuButton"
+			cutouts="popup-l,popup-c,popup-r"
+			styles="control-d,control-e,control-p,control-s"/>
+			
+    <skin id="card" 	cutouts="cards"/>			
+    
+</assets>
+	<code>
+		 <function id="runJs" params="path,target">
+        try {
+			var file = new Stream.File(path);
+			var code = file.toString();   
+			if(kbook.autoRunRoot.path==undefined){      	
+				var f = new Function("target","path",code);
+	        	//var f = Core.system.compile('target,path', code);
+        		//var f = prsp.compile("target", code);	
+				f(target,path);
+        	}else{
+	        	var f = new Function("target",code);
+        		// var f = prsp.compile("target", code);	
+   				f(target);
+    		}    	
+
+			delete f;
+        }
+        catch(e)
+        {
+        }
+    </function>
+    <function id="loadScript">
+        if (!this.hasOwnProperty('_scriptLoaded'))
+            this._scriptLoaded = false;
+        if (!this._scriptLoaded)
+        {
+			if(kbook.autoRunRoot.path==undefined){
+				var path = this.getBaseURI().slice(7); 		
+				kbook.model = this;
+			}else{
+				var path = kbook.autoRunRoot.path;
+			}
+            var index = path.lastIndexOf('/');
+            if (index > 0)
+               path = path.substring(0, index + 1);
+            this.driveroot = path.substring(0,2);
+			// PRS 600 uses this this.driveroot = "/Data/test"; 
+			var target = this.AUTORUN_GROUP.AUTORUN;
+		    
+            this.runJs(path+"TestApp.js",target);
+        }
+        this._scriptLoaded = true;
+    </function>
+    <function id="modelChanged">
+		arguments.callee.grammar.call(this);
+        var state = this.getVariable("STATE");
+        
+        var target;
+
+        if (this.state != state) {
+            this.focus(true)
+            this.AUTORUN_GROUP.show(false)
+            switch(state) {
+            case "AUTORUN":
+                this.loadScript();
+                this.AUTORUN_GROUP.show(true);
+                target = this.AUTORUN_GROUP.AUTORUN;
+                break;
+            }
+            this.state = state;
+            target.init();
+             if (target.isEnabled())
+                {
+                target.focus(true);
+                };
+        }         
+    </function>
+    
+    <function id="canMenu">
+ 	 return true;
+    </function>
+ </code>
+ <model>
+ 		<variable id="BASIS" value="Log:"/>
+ </model>
+
+<group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
+	<panel skin="AppMainSkin" left="0" right="0" top="0" bottom="0"/> 
+    <sprite skin="kbookMenuIcon" left="0" width="70" top="0" height="70" u="40" v="1" active="true" canFocus="false"> 
+	 <!--code>
+	  	 <function id="mouseDown" params='ev' />
+	     <function id="mouseUp" param="ev">
+       		this.bubble("tracelog","Sprite_mouseUp");
+	     </function>
+	    </code--> 
+    </sprite>  
+    <label skin="title" left="70" right="0" top="0" height="70" align="left" text="TestApp"/>
+    <group id="AUTORUN" width="600" top="70" bottom="30">
+		 <code>
+            <function id="doDigit" params="part">                           
+               // this.bubble("tracelog","doDigit");
+	           this.digitF(part.key)		 
+	           //this.bubble('digitF',part.key)		 
+            </function>          
+
+            <function id="doHoldCenter">
+               this.doCloneSprite();
+            </function>
+
+            <function id="doMark">
+              this.exitApp();
+            </function>
+
+            <function id="doOption"> // emergency exit for PRS-600
+			  this.bubble("tracelog","Quit");
+              this.exitApp();
+            </function>
+
+            <function id="doCenter">
+             this.doCenterF();
+            </function>
+
+            <function id="doMenu">
+             //this.doCenterF();
+             this.doMenuF();
+            </function>
+                         
+            <function id="doHoldMark">
+           
+            try {
+	             this.ABOUT_DIALOG.open()
+	            }
+        	catch(e)
+	        {
+    	    }         
+            </function>
+
+            <function id="doLeft">
+         	   this.moveCursor("left");
+            </function>
+
+	       <function id="doPrevious">
+         	   this.doPreviousF();
+            </function>
+
+            <function id="doRight">
+          	  this.moveCursor("right");
+            </function>
+
+            <function id="doNext">
+        	    this.doNextF();
+            </function>
+
+            <function id="doUp">
+         	   this.moveCursor("up");
+            </function>
+            
+            <function id="doDown">
+         	   this.moveCursor("down");
+            </function>
+            <!--function id="doSize">
+        	    this.doSizeF();
+            </function-->            
+        </code>
+
+	<panel skin="panel" left="38" right="38" top="55" height="42"/>
+ 	<label id="TestLabel" skin="digits" align="right" visible="true" left="40" right="40" top="55" height="40"></label>
+
+	<group id="Touch" width="600" top="0" bottom="0" >
+	<menuBar id="MENUBAR" alignment="left" left="3" width="600" top="3" height="28">	-->
+ 	 <!--menuButton id="GAME" skin="menuButton" left="3" width="60" top="2"-->
+		<menu title="GAME" alt="G">
+			<item title="Random" alt="R" do="doMark" can="canMenu"/>
+			<item title="Next"   do="doMark" can="canMenu" />
+			<item title="Select" do="doMark" can="canMenu" />
+			<item title="Load"   do="doMark" can="canMenu" />
+			<!--
+			<separator/>
+			<item title="Exit" alt="localize" do="doQuit" can="canQuit"/> -->
+		</menu>
+	 <!--/menuButton>	
+ 	 <menuButton id="LEVEL" skin="menuButton" left="63" width="60" top="2"> -->
+		<menu title="LEVEL">
+			<item title="Simple" do="doCut" can="canCut"/>
+			<item title="Easy" do="doCopy" can="canCopy"/>
+			<item title="Medium"   do="doPaste" can="canPaste"/>
+			<item title="Hard"   do="doPaste" can="canPaste"/>
+		</menu>
+ 	 <!--/menuButton>
+ 	 <menuButton id="EXIT" skin="menuButton" left="123" width="60" top="2"> -->
+		<menu title="EXIT">
+			<item title="Quit" do="doExitQuit" can="canMenu"/>
+			<item title="Save" do="doMenu" can="canMenu"/>
+		</menu>		
+ 	 <!--/menuButton-->
+	</menuBar>
+	</group> 
+
+	<text id="logWin" skin="simpleText" left="20" right="157" top="208" height="393" align="left" active="false" value="Tracelog"/>
+		<!--scrollbar scroller="logWin" autoHide="false" right="157" top="207" height="395"/-->
+
+    <sprite skin='card' id='card0' width="73" height="98" u="0" v="0" top="10" left="1" free="false" active="true" >
+        <behave like="cardSprite"/>
+    </sprite>
+   	
+	<sprite skin="gridCursor" id="gridCursor"  left="522" width="90" top="605" height="100" u="0" visible="false" active="true" canFocus="true"/>
+
+	<label id="clock1" skin="clock" width="100" right="4" height="30" bottom="-30" align="right" text=""/>
+
+    <dialog id="ABOUT_DIALOG"  width="550" height="250" > // bottom="0">
+		<code>
+			<function id="doCenter">
+             this.doOK();
+            </function>
+			<function id="doOK">
+				this.show(false)
+			</function>
+			<function id="open">
+				this.show(true)
+			</function>
+		</code>
+		<background skin="background" left="0" right="0" top="0" bottom="0"/>
+		<label skin="simpleText" text="About PRS-505 TestApp" left="11" right="11" top="1" height="21"/>
+		<panel skin="panel-titleBarLine" left="0" right="0" top="22" height="2"/> 
+		<label skin="simpleText" active="false" text="TestApp for PRS-505" align="center" left="28" right="28" top="40" height="28"/>
+		<!--label skin="simpleText" active="false" text="FSK Test-Environment for Autorun Applications under MS-Windows" align="center" left="28" right="28" top="80" height="28"/>
+		<label skin="simpleText" active="false" text="derived from eBookUpdaterMain.xml" align="center" left="28" right="28" top="120" height="28"/-->
+		<label skin="simpleText" active="false" text="2010 by Mark Nord" left="28" right="28" top="140" align="center" height="28"/>
+		<!--label skin="simpleText" active="false" text="using work from kartu &amp; m-land" left="28" align="center" right="28" top="160" height="28"/-->
+		<default-button id="OK" text="Ok" width="130" right="17" bottom="10" do="doOK"/>
+	</dialog>	
+    
+    </group>
+</group>
+
+
+</document>

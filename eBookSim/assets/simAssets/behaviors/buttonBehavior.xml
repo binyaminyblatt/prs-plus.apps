@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.kinoma.com/fskin/1">
+	<assets>
+		
+		<behavior id="button">
+			<property id="text" value="OK"/>
+
+			<script on="enabled" params="enableIt">
+				this.v = (enableIt) ? 1 : 0
+				this.invalidate()
+			</script>
+			<script on="mouseEnter" params="event">
+				this.v = 2;
+				this.invalidate();
+			</script>
+			<script on="mouseLeave" params="event">
+				if (this.v == 2)
+					this.v = 1;
+				this.invalidate();
+			</script>
+			<script on="mouseDown" params="event">
+				this.v = 3;
+				this.cont = event.contextual;
+				this.invalidate();
+			</script>
+			<script on="mouseMoved" params="event">
+				var v = (this.hitBounds(event.x, event.y)) ? 3 : 1;
+				if (this.v != v) {
+					this.v = v;
+					this.invalidate();
+				}
+			</script>
+			<script on="mouseUp" params="event">
+				this.v = 1;
+				this.invalidate();
+				if (this.hitBounds(event.x, event.y))
+					this.trigger('select');					
+			</script>
+			<script on="select">
+				this.bubble('Click');
+			</script>
+			<script on="draw" params="window, index, u, v, x, y, width, height">
+				this.drawText(this.text.value, v, x, y, width, this.getDefaultHeight())
+			</script>
+		</behavior>
+
+
+		<behavior id="checkbox">
+			<script on="select">
+				this.u = this.u ? 0 : 1;
+			</script>
+			<behave like="button"/>
+		</behavior>
+
+		<behavior id="radio">
+			<script on="select">
+				this.u = this.u ? 0 : 1;
+			</script>
+			<behave like="button"/>
+		</behavior>
+
+	</assets>
+</document>

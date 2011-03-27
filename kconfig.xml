@@ -1,0 +1,19 @@
+<fsk xmlns="http://www.kinoma.com/Fsk/1">
+	<rootvm>
+		<environment>
+			<variable name="myPath" value="file://F:/Downloads/sony/FSK Test/"/>
+		</environment>
+		<mime>
+			<media type="image">
+				<subtype name="jpeg" extension="jpg,jpeg"/>
+				<subtype name="png" extension="png"/>
+			</media>
+			<media type="text">
+				<subtype name="plain" extension="txt"/>
+			</media>
+		</mime>
+		<extension href="FskImage"/>
+		<extension href="Fskin"/>
+	</rootvm>
+	<include href="eBookSim/eBookSim.xml"/>
+</fsk>

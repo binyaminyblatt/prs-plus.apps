@@ -1,0 +1,53 @@
+Sony-PRS-Sim Help
+Prerequisite:
+Windows OS capable to run the original Sony-Firmware-Updater 1.1.00.18040
+a vertical screen-resolution equal or better then 1024 lines for exact look and feel 
+
+Run "FSK Starter.exe" to start the Simulator
+
+Interaction with the simulator:
+via Mouse:
+Left Click PRS-505 button for simple keypress
+Right Chick PRS-505 button for doHold key
+
+PC-Keyboard:
+Keys 0-9          : simple keypress
+Arrow-Keys & Enter: Joystick-Buttons
+PgUp              : doPrevious
+PgDown            : doNext
+
+ALT + Key         : doHold
+
+
+Exit the Simulator via System-Menu or X-Button (top-right)
+
+Switch between PRS-505 and PRS-x50 skin via System-Menu.
+_Core.config.compat.hasNumericButtons is set accordingly
+
+Use KILL-FSK.BAT to cancel the programm if it does not start up after editing *.XML or *.JS code.
+
+The AUTORUN-Applications are set via setView() in  "FSK Test\eBookSim\scripts\eBookSimMain.xml"
+
+
+The AUTORUN.XML files from the PRS-505 had to be modified at three (3) points:
+1) append the <document> Tag with id="DOCUMENT" so that it read like:
+   <document xmlns="http://www.kinoma.com/fskin/1" id="DOCUMENT"> 
+2) change the function "loadScript" to use the correct path in both environments
+    <function id="loadScript">
+     ..
+ //  var path = kbook.autoRunRoot.path; 
+     if(kbook.autoRunRoot.path==undefined){
+        path = this.getBaseURI().slice(7);
+        kbook.model = this;
+     }else{
+        path = kbook.autoRunRoot.path;
+     }
+     ..
+3) replace all occurrences of <kbookLable> with a simple <lable>-Tag
+
+        
+Kartu's PRS+ Core-Functions (code version 2.0.4) are loaded "compiled" and could be called globaly via mapping Core = _Core done in _PRSPlus.js
+E.g. _Core.debug.dumpToSting() or _Core.Io.getFileContent()
+
+prsp.setSoValue and prsp.compile can be used,
+also _Core.system.getSoValue is accessible. 
