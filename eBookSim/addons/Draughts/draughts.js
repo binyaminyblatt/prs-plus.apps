@@ -1050,7 +1050,7 @@ var tmp = function () {
 		}
 		
 		// find move
-		this.computer();
+		black_moves=this.computer();
 		
 		// change back kings in board
 		for (i=0; i<8; i++) {
@@ -1059,15 +1059,21 @@ var tmp = function () {
 				if (board[i][j]==-1.1) board[i][j]=-2;
 			}
 		}
-			
-		black_turn=false;
-		piece_toggled=false;
-		double_jump=false;
-		this.updateUndo();
-		this.writePieces();
-		this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
-		this.jumpText.show(false);
-		this.messageStatus.setValue("White's turn");		
+		
+		if (!game_is_over) {
+			black_turn=false;
+			piece_toggled=false;
+			double_jump=false;
+			this.updateUndo();
+			this.writePieces();
+			this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
+			this.jumpText.show(false);
+			this.messageStatus.setValue("White's turn");
+		} else {
+			// White wins	
+			this.writePieces();
+			this.messageStatus.setValue("White wins!");
+		}
 		return;
 	}
 	
@@ -1179,21 +1185,45 @@ var tmp = function () {
 	}
 
 	target.computer = function () {
-		//this.bubble("tracelog","starting AI");
-		// step one - prevent any jumps
+		this.bubble("tracelog","starting AI");
+		
+		// step one - prevent any jumps by jumping the threatening piece
 		for(var j=0;j<8;j++) {
 			for(var i=0;i<8;i++) {
 				if (this.integ(board[i][j]) == 1) {
-					//this.bubble("tracelog","Potential jumper at i="+i+", j="+j);
-					if ((this.legal_move(this.coord(i,j),this.coord(i+2,j-2))) && (this.prevent(this.coord(i+2,j-2),this.coord(i+1,j-1)))) {
+					if ((i>0) && (i<6) && (j>1) && (this.legal_move(this.coord(i,j),this.coord(i+2,j-2)))) {
+						this.bubble("tracelog","Jumper at i="+i+", j="+j);
+						if ((this.integ(board[i-1][j-1]) == -1) && (this.jump(i-1,j-1))) return true;
+						if ((this.integ(board[i+1][j-1]) == -1) && (this.jump(i+1,j-1))) return true;
+						if ((board[i-1][j+1] == -1.1) && (this.jump(i-1,j+1))) return true;
+						if ((board[i+1][j+1] == -1.1) && (this.jump(i+1,j+1))) return true;
+					}
+					if ((i>1) && (i<7) && (j>1) && (this.legal_move(this.coord(i,j),this.coord(i-2,j-2)))) {
+						this.bubble("tracelog","Jumper at i="+i+", j="+j);
+						if ((this.integ(board[i-1][j-1]) == -1) && (this.jump(i-1,j-1))) return true;
+						if ((this.integ(board[i+1][j-1]) == -1) && (this.jump(i+1,j-1))) return true;
+						if ((board[i-1][j+1] == -1.1) && (this.jump(i-1,j+1))) return true;
+						if ((board[i+1][j+1] == -1.1) && (this.jump(i+1,j+1))) return true;
+					}
+				}
+			}
+		}
+		this.bubble("tracelog","step one passed: no jumps to prevent by jumping");
+
+		// step two - prevent any jumps by moving
+		for(var j=0;j<8;j++) {
+			for(var i=0;i<8;i++) {
+				if (this.integ(board[i][j]) == 1) {
+					this.bubble("tracelog","Potential jumper at i="+i+", j="+j);
+					if ((j>1) && (this.legal_move(this.coord(i,j),this.coord(i+2,j-2))) && (this.prevent(this.coord(i+2,j-2),this.coord(i+1,j-1)))) {
 						return true;
 					}
-					if ((this.legal_move(this.coord(i,j),this.coord(i-2,j-2))) && (this.prevent(this.coord(i-2,j-2),this.coord(i-1,j-1)))) {
+					if ((i>1) && (j>1) && (this.legal_move(this.coord(i,j),this.coord(i-2,j-2))) && (this.prevent(this.coord(i-2,j-2),this.coord(i-1,j-1)))) {
 						return true;
 					}
 				}
 				if (board[i][j] == 1.1) {
-					if ((this.legal_move(this.coord(i,j),this.coord(i-2,j+2))) && (this.prevent(this.coord(i-2,j+2),this.coord(i-1,j+1)))) {
+					if ((i>1) && (this.legal_move(this.coord(i,j),this.coord(i-2,j+2))) && (this.prevent(this.coord(i-2,j+2),this.coord(i-1,j+1)))) {
 						return true;
 					}
 					if ((this.legal_move(this.coord(i,j),this.coord(i+2,j+2))) && (this.prevent(this.coord(i+2,j+2),this.coord(i+1,j+1)))) {
@@ -1202,18 +1232,18 @@ var tmp = function () {
 				}
 			}
 		}
-		//this.bubble("tracelog","step one passed: no jumps to prevent");
+		this.bubble("tracelog","step two passed: no jumps to prevent");
 		
-		// step two - if step one not taken, look for jumps
+		// step three - look for jumps
 		for(var j=7;j>=0;j--) {
 			for(var i=0;i<8;i++) {
 				if (this.jump(i,j))
 					return true;
 			}
 		}
-		//this.bubble("tracelog","step two passed: no jumps to make");
+		this.bubble("tracelog","step three passed: no jumps to make");
 
-		// step three - if step two not taken, look for single space move to king
+		// step four - look for single space move to obtain a king
 		for(var i=0;i<8;i++) {
 			if (board[i][6]==-1) {
 				// black piece in row above king row
@@ -1226,9 +1256,9 @@ var tmp = function () {
 				}
 			}
 		}	
-		//this.bubble("tracelog","step three passed: no pieces can move to be crowned");
+		this.bubble("tracelog","step four passed: no pieces can move to be crowned");
 
-		// step four - if step three not taken, look for safe single space move for a king (but use random to prevent kings dominating the moves)
+		// step five - look for safe single space move for a king (but use random to prevent kings dominating the moves)
 		for(var j=0;j<8;j++) {
 			for(var i=0;i<8;i++) {
 				if (board[i][j]==-1.1) {
@@ -1240,24 +1270,37 @@ var tmp = function () {
 				}
 			}
 		}
-		//this.bubble("tracelog","step four passed: no safe single spaces for a king to make");
+		this.bubble("tracelog","step five passed: no safe single spaces for a king to make");
 		
 		safe_from = null;
-		// step five - if step three not taken, look for safe single space moves
+		// step six - look for safe single space moves (possibly in attack mode)
 		for(var j=0;j<8;j++) {
 			for(var i=0;i<8;i++) {
-				if (this.single(i,j)) {
+				if (this.single(i,j,false)) {
 					//this.bubble("tracelog","MOVE FOUND!");
 					return true;
 				}
 			}
 		}
-		//this.bubble("tracelog","step five passed: no safe single spaces to move into");
+		this.bubble("tracelog","step six passed: attack failed");
+
+		safe_from = null;
+		// step seven - look for safe single space moves (override attackmode)
+		for(var j=0;j<8;j++) {
+			for(var i=0;i<8;i++) {
+				if (this.single(i,j,true)) {
+					//this.bubble("tracelog","MOVE FOUND!");
+					return true;
+				}
+			}
+		}
+		this.bubble("tracelog","step seven passed: no safe single spaces to move into");
 		
-		// if no safe moves, just take whatever you can get
+		// step seven - if no safe moves, just take whatever you can get
 		if (safe_from != null) {
 			this.move_comp(safe_from,safe_to);
 		} else {
+			this.bubble("tracelog","NO MOVES!");
 			game_is_over = true;
 		}
 		safe_from = safe_to = null;
@@ -1292,40 +1335,101 @@ var tmp = function () {
 		return false;
 	}
 	
-	target.single = function (i,j) {
-		if (board[i][j] == -1.1) {
-			if ((j>0) && (this.legal_move(this.coord(i,j),this.coord(i+1,j-1)))) {
-				safe_from = this.coord(i,j);
-				safe_to = this.coord(i+1,j-1);
-				if (this.wise(this.coord(i,j),this.coord(i+1,j-1))) {
-					this.move_comp(this.coord(i,j),this.coord(i+1,j-1));
-					return true;
-				}
-			}
-			if ((i>0) && (j>0) && (this.legal_move(this.coord(i,j),this.coord(i-1,j-1)))) {
-				safe_from = this.coord(i,j);
-				safe_to = this.coord(i-1,j-1);
-				if (this.wise(this.coord(i,j),this.coord(i-1,j-1))) {
-					this.move_comp(this.coord(i,j),this.coord(i-1,j-1));
-					return true;
+	target.single = function (i,j,override) {
+		var whitepieces,blackpieces,whitex,whitey,attack;
+		whitepieces=0;
+		blackpieces=0;
+		attack=false;
+		
+		// Check for number of opponent pieces (and remember position of last piece found)
+		for(var k=0;k<8;k++) {
+			for(var l=0;l<8;l++) {
+				if (this.integ(board[k][l]) == 1) {
+					whitepieces++;
+					whitex=k;
+					whitey=l;
+				} else if (this.integ(board[k][l]) == -1) {
+					blackpieces++;
 				}
 			}
 		}
-		if (this.integ(board[i][j]) == -1) {
-			if (this.legal_move(this.coord(i,j),this.coord(i+1,j+1))) {
-				safe_from = this.coord(i,j);
-				safe_to = this.coord(i+1,j+1);
-				if (this.wise(this.coord(i,j),this.coord(i+1,j+1))) {
-					this.move_comp(this.coord(i,j),this.coord(i+1,j+1));
-					return true;
+		if (blackpieces > whitepieces+1) attack=true;
+		if (whitepieces==1) attack=true;
+		
+		if ((!attack) || (override)) {
+			this.bubble("tracelog","Don't attack just yet...");
+			if (board[i][j] == -1.1) {
+				if ((j>0) && (this.legal_move(this.coord(i,j),this.coord(i+1,j-1)))) {
+					safe_from = this.coord(i,j);
+					safe_to = this.coord(i+1,j-1);
+					if (this.wise(this.coord(i,j),this.coord(i+1,j-1))) {
+						this.move_comp(this.coord(i,j),this.coord(i+1,j-1));
+						return true;
+					}
+				}
+				if ((i>0) && (j>0) && (this.legal_move(this.coord(i,j),this.coord(i-1,j-1)))) {
+					safe_from = this.coord(i,j);
+					safe_to = this.coord(i-1,j-1);
+					if (this.wise(this.coord(i,j),this.coord(i-1,j-1))) {
+						this.move_comp(this.coord(i,j),this.coord(i-1,j-1));
+						return true;
+					}
 				}
 			}
-			if ((i>0) && (this.legal_move(this.coord(i,j),this.coord(i-1,j+1)))) {
-				safe_from = this.coord(i,j);
-				safe_to = this.coord(i-1,j+1);
-				if (this.wise(this.coord(i,j),this.coord(i-1,j+1))) {
-					this.move_comp(this.coord(i,j),this.coord(i-1,j+1));
-					return true;
+			if (this.integ(board[i][j]) == -1) {
+				if (this.legal_move(this.coord(i,j),this.coord(i+1,j+1))) {
+					safe_from = this.coord(i,j);
+					safe_to = this.coord(i+1,j+1);
+					if (this.wise(this.coord(i,j),this.coord(i+1,j+1))) {
+						this.move_comp(this.coord(i,j),this.coord(i+1,j+1));
+						return true;
+					}
+				}
+				if ((i>0) && (this.legal_move(this.coord(i,j),this.coord(i-1,j+1)))) {
+					safe_from = this.coord(i,j);
+					safe_to = this.coord(i-1,j+1);
+					if (this.wise(this.coord(i,j),this.coord(i-1,j+1))) {
+						this.move_comp(this.coord(i,j),this.coord(i-1,j+1));
+						return true;
+					}
+				}
+			}
+		} else {
+			this.bubble("tracelog","Attack!");
+			if (board[i][j] == -1.1) {
+				if ((j>0) && (i<whitex) && (j>whitey) && (this.legal_move(this.coord(i,j),this.coord(i+1,j-1)))) {
+					safe_from = this.coord(i,j);
+					safe_to = this.coord(i+1,j-1);
+					if (this.wise(this.coord(i,j),this.coord(i+1,j-1))) {
+						this.move_comp(this.coord(i,j),this.coord(i+1,j-1));
+						return true;
+					}
+				}
+				if ((i>0) && (j>0) && (i>whitex) && (j>whitey) && (this.legal_move(this.coord(i,j),this.coord(i-1,j-1)))) {
+					safe_from = this.coord(i,j);
+					safe_to = this.coord(i-1,j-1);
+					if (this.wise(this.coord(i,j),this.coord(i-1,j-1))) {
+						this.move_comp(this.coord(i,j),this.coord(i-1,j-1));
+						return true;
+					}
+				}
+			}
+			if (this.integ(board[i][j]) == -1) {
+				if ((i<whitex) && (j<whitey) && (this.legal_move(this.coord(i,j),this.coord(i+1,j+1)))) {
+					safe_from = this.coord(i,j);
+					safe_to = this.coord(i+1,j+1);
+					if (this.wise(this.coord(i,j),this.coord(i+1,j+1))) {
+						this.move_comp(this.coord(i,j),this.coord(i+1,j+1));
+						return true;
+					}
+				}
+				if ((i>0) && (i>whitex) && (j<whitey) && (this.legal_move(this.coord(i,j),this.coord(i-1,j+1)))) {
+					safe_from = this.coord(i,j);
+					safe_to = this.coord(i-1,j+1);
+					if (this.wise(this.coord(i,j),this.coord(i-1,j+1))) {
+						this.move_comp(this.coord(i,j),this.coord(i-1,j+1));
+						return true;
+					}
 				}
 			}
 		}
@@ -1383,10 +1487,13 @@ var tmp = function () {
 		if ((se==0) && (nw==1.1)) return false;
 		if ((nw==0) && (this.integ(se)==1)) return false;
 		if ((ne==0) && (this.integ(sw)==1)) return false;
-		//if ((sw==0) && (this.integ(ne)==1)) return false;
-		//if ((se==0) && (this.integ(nw)==1)) return false;
-		//if ((nw==0) && (se==1.1)) return false;
-		//if ((ne==0) && (sw==1.1)) return false;
+
+		// make sure move does not open up a jump
+		i = from.x;
+		j = from.y;
+		if ((i>1) && (board[i-1][j+1] == -1) && (board[i-2][j+2] == 1)) return false;
+		if ((board[i+1][j+1] == -1) && (board[i+2][j+2] == 1)) return false;
+		
 		//this.bubble("tracelog","returning true!");
 		return true;
 	}
