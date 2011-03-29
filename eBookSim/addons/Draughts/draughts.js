@@ -11,6 +11,8 @@
 // 2011-03-25 Ben Chenoweth - Skins changed over to use common AppAssests
 // 2011-03-26 Mark Nord - Fixed the popup panel
 // 2011-03-27 Ben Chenoweth - Fixed labels for PRS-950
+// 2011-03-28 Ben Chenoweth - AI improved
+// 2011-03-29 Ben Chenoweth - Further improvements to AI
 
 var tmp = function () {
 	
@@ -273,11 +275,12 @@ var tmp = function () {
 					this.writePieces();
 					this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
 					this.jumpText.show(false);
-					this.messageStatus.setValue("Black's turn");
-					this.writePieces();
-					if (auto_mode) {
-						FskUI.Window.update.call(kbook.model.container.getWindow());
-						this.autoMove();
+					if (!game_is_over) {
+						this.messageStatus.setValue("Black's turn");
+						if (auto_mode) {
+							FskUI.Window.update.call(kbook.model.container.getWindow());
+							this.autoMove();
+						}
 					}
 				}
 			
@@ -301,10 +304,12 @@ var tmp = function () {
 						this.writePieces();
 						this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
 						this.jumpText.show(false);
-						this.messageStatus.setValue("Black's turn");
-						if (auto_mode) {
-							FskUI.Window.update.call(kbook.model.container.getWindow());
-							this.autoMove();
+						if (!game_is_over) {
+							this.messageStatus.setValue("Black's turn");
+							if (auto_mode) {
+								FskUI.Window.update.call(kbook.model.container.getWindow());
+								this.autoMove();
+							}
 						}						
 					}
 					if (y==curr_y-2) {
@@ -357,11 +362,13 @@ var tmp = function () {
 								this.writePieces();
 								this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
 								this.jumpText.show(false);
-								this.messageStatus.setValue("Black's turn");
-								if (auto_mode) {
-									FskUI.Window.update.call(kbook.model.container.getWindow());
-									this.autoMove();
-								}								
+								if (!game_is_over) {
+									this.messageStatus.setValue("Black's turn");
+									if (auto_mode) {
+										FskUI.Window.update.call(kbook.model.container.getWindow());
+										this.autoMove();
+									}
+								}							
 							}
 						}
 					}
@@ -381,11 +388,13 @@ var tmp = function () {
 						this.writePieces();
 						this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
 						this.jumpText.show(false);
-						this.messageStatus.setValue("Black's turn");
-						if (auto_mode) {
-							FskUI.Window.update.call(kbook.model.container.getWindow());
-							this.autoMove();
-						}						
+						if (!game_is_over) {
+							this.messageStatus.setValue("Black's turn");
+							if (auto_mode) {
+								FskUI.Window.update.call(kbook.model.container.getWindow());
+								this.autoMove();
+							}
+						}					
 					}
 					if ((y==curr_y+1) && ((x==curr_x-1) || (x==curr_x+1)) && (board[x][y]==0) && (!double_jump)) {
 						// single move into free square (not possible during double jump)
@@ -400,10 +409,12 @@ var tmp = function () {
 						this.writePieces();
 						this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
 						this.jumpText.show(false);
-						this.messageStatus.setValue("Black's turn");
-						if (auto_mode) {
-							FskUI.Window.update.call(kbook.model.container.getWindow());
-							this.autoMove();
+						if (!game_is_over) {
+							this.messageStatus.setValue("Black's turn");
+							if (auto_mode) {
+								FskUI.Window.update.call(kbook.model.container.getWindow());
+								this.autoMove();
+							}
 						}						
 					}					
 					if (y==curr_y-2) {
@@ -462,11 +473,13 @@ var tmp = function () {
 								this.writePieces();
 								this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
 								this.jumpText.show(false);
-								this.messageStatus.setValue("Black's turn");
-								if (auto_mode) {
-									FskUI.Window.update.call(kbook.model.container.getWindow());
-									this.autoMove();
-								}								
+								if (!game_is_over) {
+									this.messageStatus.setValue("Black's turn");
+									if (auto_mode) {
+										FskUI.Window.update.call(kbook.model.container.getWindow());
+										this.autoMove();
+									}
+								}							
 							}
 						}
 					}
@@ -526,11 +539,13 @@ var tmp = function () {
 								this.writePieces();
 								this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
 								this.jumpText.show(false);
-								this.messageStatus.setValue("Black's turn");
-								if (auto_mode) {
-									FskUI.Window.update.call(kbook.model.container.getWindow());
-									this.autoMove();
-								}								
+								if (!game_is_over) {
+									this.messageStatus.setValue("Black's turn");
+									if (auto_mode) {
+										FskUI.Window.update.call(kbook.model.container.getWindow());
+										this.autoMove();
+									}
+								}							
 							}
 						}
 					}						
@@ -1185,21 +1200,21 @@ var tmp = function () {
 	}
 
 	target.computer = function () {
-		this.bubble("tracelog","starting AI");
+		//this.bubble("tracelog","starting AI");
 		
 		// step one - prevent any jumps by jumping the threatening piece
 		for(var j=0;j<8;j++) {
 			for(var i=0;i<8;i++) {
 				if (this.integ(board[i][j]) == 1) {
 					if ((i>0) && (i<6) && (j>1) && (this.legal_move(this.coord(i,j),this.coord(i+2,j-2)))) {
-						this.bubble("tracelog","Jumper at i="+i+", j="+j);
+						//this.bubble("tracelog","Jumper at i="+i+", j="+j);
 						if ((this.integ(board[i-1][j-1]) == -1) && (this.jump(i-1,j-1))) return true;
 						if ((this.integ(board[i+1][j-1]) == -1) && (this.jump(i+1,j-1))) return true;
 						if ((board[i-1][j+1] == -1.1) && (this.jump(i-1,j+1))) return true;
 						if ((board[i+1][j+1] == -1.1) && (this.jump(i+1,j+1))) return true;
 					}
 					if ((i>1) && (i<7) && (j>1) && (this.legal_move(this.coord(i,j),this.coord(i-2,j-2)))) {
-						this.bubble("tracelog","Jumper at i="+i+", j="+j);
+						//this.bubble("tracelog","Jumper at i="+i+", j="+j);
 						if ((this.integ(board[i-1][j-1]) == -1) && (this.jump(i-1,j-1))) return true;
 						if ((this.integ(board[i+1][j-1]) == -1) && (this.jump(i+1,j-1))) return true;
 						if ((board[i-1][j+1] == -1.1) && (this.jump(i-1,j+1))) return true;
@@ -1208,13 +1223,13 @@ var tmp = function () {
 				}
 			}
 		}
-		this.bubble("tracelog","step one passed: no jumps to prevent by jumping");
+		//this.bubble("tracelog","step one passed: no jumps to prevent by jumping");
 
 		// step two - prevent any jumps by moving
 		for(var j=0;j<8;j++) {
 			for(var i=0;i<8;i++) {
 				if (this.integ(board[i][j]) == 1) {
-					this.bubble("tracelog","Potential jumper at i="+i+", j="+j);
+					//this.bubble("tracelog","Potential jumper at i="+i+", j="+j);
 					if ((j>1) && (this.legal_move(this.coord(i,j),this.coord(i+2,j-2))) && (this.prevent(this.coord(i+2,j-2),this.coord(i+1,j-1)))) {
 						return true;
 					}
@@ -1232,7 +1247,7 @@ var tmp = function () {
 				}
 			}
 		}
-		this.bubble("tracelog","step two passed: no jumps to prevent");
+		//this.bubble("tracelog","step two passed: no jumps to prevent");
 		
 		// step three - look for jumps
 		for(var j=7;j>=0;j--) {
@@ -1241,13 +1256,21 @@ var tmp = function () {
 					return true;
 			}
 		}
-		this.bubble("tracelog","step three passed: no jumps to make");
+		//this.bubble("tracelog","step three passed: no jumps to make");
 
 		// step four - look for single space move to obtain a king
 		for(var i=0;i<8;i++) {
 			if (board[i][6]==-1) {
 				// black piece in row above king row
-				if (board[i-1][7]==0) {
+				if ((board[i-1][7]==0) && (board[i+1][7]==0)) {
+					if (Math.floor(Math.random()*2)==1) {
+						this.move_comp(this.coord(i,6),this.coord(i-1,7));
+						return true;
+					} else {
+						this.move_comp(this.coord(i,6),this.coord(i+1,7));
+						return true;
+					}
+				} else if (board[i-1][7]==0) {
 					this.move_comp(this.coord(i,6),this.coord(i-1,7));
 					return true;
 				} else if (board[i+1][7]==0) {
@@ -1256,13 +1279,13 @@ var tmp = function () {
 				}
 			}
 		}	
-		this.bubble("tracelog","step four passed: no pieces can move to be crowned");
+		//this.bubble("tracelog","step four passed: no pieces can move to be crowned");
 
 		// step five - look for safe single space move for a king (but use random to prevent kings dominating the moves)
 		for(var j=0;j<8;j++) {
 			for(var i=0;i<8;i++) {
 				if (board[i][j]==-1.1) {
-					if (Math.random()*4<1) {
+					if (Math.floor(Math.random()*4)==1) {
 						if (this.single(i,j)) {
 							return true;
 						}
@@ -1270,37 +1293,80 @@ var tmp = function () {
 				}
 			}
 		}
-		this.bubble("tracelog","step five passed: no safe single spaces for a king to make");
-		
-		safe_from = null;
-		// step six - look for safe single space moves (possibly in attack mode)
-		for(var j=0;j<8;j++) {
-			for(var i=0;i<8;i++) {
-				if (this.single(i,j,false)) {
-					//this.bubble("tracelog","MOVE FOUND!");
+		//this.bubble("tracelog","step five passed: no safe single spaces for a king to make");
+
+		// step six - look for man in row 5 that can safely move to row 6
+		for(var i=0;i<8;i++) {
+			if (board[i][5]==-1) {
+				// black piece in 2 rows above king row
+				if ((i>1) && (board[i-1][6]==0) && (board[i-2][7]==0) && (board[i][7]==0)) {
+					this.move_comp(this.coord(i,5),this.coord(i-1,6));
+					return true;
+				} else if ((board[i+1][6]==0) && (board[i+2][7]==0) && (board[i][7]==0)) {
+					this.move_comp(this.coord(i,5),this.coord(i+1,6));
 					return true;
 				}
 			}
+		}	
+		//this.bubble("tracelog","step six passed: no pieces can move closer to be crowned");
+		
+		safe_from = null;
+		// step seven - look for safe single space moves (possibly in attack mode)
+		// Use random to choose between looking for pieces from left to right or right to left
+		if (Math.floor(Math.random()*2)==1) {
+			//this.bubble("tracelog","left to right");
+			for(var j=0;j<8;j++) {
+				for(var i=0;i<8;i++) {
+					if (this.single(i,j,false)) {
+						//this.bubble("tracelog","MOVE FOUND!");
+						return true;
+					}
+				}
+			}
+		} else {
+			//this.bubble("tracelog","right to left");
+			for(var j=0;j<8;j++) {
+				for(var i=7;i>=0;i--) {
+					if (this.single(i,j,false)) {
+						//this.bubble("tracelog","MOVE FOUND!");
+						return true;
+					}
+				}
+			}
 		}
-		this.bubble("tracelog","step six passed: attack failed");
+		//this.bubble("tracelog","step seven passed: attack failed");
 
 		safe_from = null;
-		// step seven - look for safe single space moves (override attackmode)
-		for(var j=0;j<8;j++) {
-			for(var i=0;i<8;i++) {
-				if (this.single(i,j,true)) {
-					//this.bubble("tracelog","MOVE FOUND!");
-					return true;
+		// step eight - look for safe single space moves (override attackmode)
+		// Use random to choose between looking for pieces from left to right or right to left
+		if (Math.floor(Math.random()*2)==1) {
+			//this.bubble("tracelog","left to right");
+			for(var j=0;j<8;j++) {
+				for(var i=0;i<8;i++) {
+					if (this.single(i,j,true)) {
+						//this.bubble("tracelog","MOVE FOUND!");
+						return true;
+					}
+				}
+			}
+		} else {
+			//this.bubble("tracelog","right to left");
+			for(var j=0;j<8;j++) {
+				for(var i=7;i>=0;i--) {
+					if (this.single(i,j,true)) {
+						//this.bubble("tracelog","MOVE FOUND!");
+						return true;
+					}
 				}
 			}
 		}
-		this.bubble("tracelog","step seven passed: no safe single spaces to move into");
+		//this.bubble("tracelog","step eight passed: no safe single spaces to move into");
 		
-		// step seven - if no safe moves, just take whatever you can get
+		// step nine - if no safe moves, just take whatever you can get
 		if (safe_from != null) {
 			this.move_comp(safe_from,safe_to);
 		} else {
-			this.bubble("tracelog","NO MOVES!");
+			//this.bubble("tracelog","NO MOVES!");
 			game_is_over = true;
 		}
 		safe_from = safe_to = null;
@@ -1322,14 +1388,26 @@ var tmp = function () {
 		}
 		if (this.integ(board[i][j]) == -1) {
 			if ((i>1) && (this.legal_move(this.coord(i,j),this.coord(i-2,j+2)))) {
-				this.move_comp(this.coord(i,j),this.coord(i-2,j+2));
-				this.jump(i-2,j+2);
-				return true;
+				if ((j==5) && (board[i][j]==-1)) {
+					this.move_comp(this.coord(i,j),this.coord(i-2,j+2));
+					//this.jump(i-2,j+2); a man can't continue jumping after becoming a king
+					return true;
+				} else {
+					this.move_comp(this.coord(i,j),this.coord(i-2,j+2));
+					this.jump(i-2,j+2);
+					return true;
+				}
 			}
 			if (this.legal_move(this.coord(i,j),this.coord(i+2,j+2))) {
-				this.move_comp(this.coord(i,j),this.coord(i+2,j+2));
-				this.jump(i+2,j+2);
-				return true;
+				if ((j==5) && (board[i][j]==-1)) {
+					this.move_comp(this.coord(i,j),this.coord(i+2,j+2));
+					// this.jump(i+2,j+2); a man can't continue jumping after becoming a king
+					return true;
+				} else {
+					this.move_comp(this.coord(i,j),this.coord(i+2,j+2));
+					this.jump(i+2,j+2);
+					return true;
+				}
 			}
 		}
 		return false;
@@ -1357,7 +1435,7 @@ var tmp = function () {
 		if (whitepieces==1) attack=true;
 		
 		if ((!attack) || (override)) {
-			this.bubble("tracelog","Don't attack just yet...");
+			//this.bubble("tracelog","Don't attack just yet...");
 			if (board[i][j] == -1.1) {
 				if ((j>0) && (this.legal_move(this.coord(i,j),this.coord(i+1,j-1)))) {
 					safe_from = this.coord(i,j);
@@ -1395,7 +1473,7 @@ var tmp = function () {
 				}
 			}
 		} else {
-			this.bubble("tracelog","Attack!");
+			//this.bubble("tracelog","Attack!");
 			if (board[i][j] == -1.1) {
 				if ((j>0) && (i<whitex) && (j>whitey) && (this.legal_move(this.coord(i,j),this.coord(i+1,j-1)))) {
 					safe_from = this.coord(i,j);
