@@ -16,6 +16,7 @@
  2011-03-20 Mark Nord: <text> based Help
  2011-03-24 Mark Nord: skins changed over to use common AppAssests
  2011-03-25 Ben Chenoweth: made a few small adjustments to AppAssests skins; added copyright label
+ 2011-03-29 Ben Chenoweth: small fix for non-Touch: better handles unselecting card
 */
 
 
@@ -497,6 +498,7 @@ target.card_click = function (n) {
     {
 		// unselect the currently selected card when it is clicked again
         this.unselect();
+		selectedCard.selected=false;
         return;
     }
 
