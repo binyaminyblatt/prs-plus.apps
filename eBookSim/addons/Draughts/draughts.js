@@ -13,6 +13,7 @@
 // 2011-03-27 Ben Chenoweth - Fixed labels for PRS-950
 // 2011-03-28 Ben Chenoweth - AI improved
 // 2011-03-29 Ben Chenoweth - Further improvements to AI
+// 2011-03-30 Ben Chenoweth - Added new first step to AI: look for multi-step jump
 
 var tmp = function () {
 	
@@ -44,6 +45,25 @@ var tmp = function () {
 	var jump_priority = 10;	// the higher the jump_priority, the more often the computer will take the jump over the safe move
 	var board = [[],[],[],[],[],[],[],[]];
 	var startLayout = [[0,-1,0,0,0,1,0,1],[-1,0,-1,0,0,0,1,0],[0,-1,0,0,0,1,0,1],[-1,0,-1,0,0,0,1,0],[0,-1,0,0,0,1,0,1],[-1,0,-1,0,0,0,1,0],[0,-1,0,0,0,1,0,1],[-1,0,-1,0,0,0,1,0]];
+
+	var bestlength;
+	var bestboard = [[],[],[],[],[],[],[],[]];
+	var bestlastendx;
+	var bestlastendy;
+	var foundmultijump;
+	var templength;
+	var tempboard = [[],[],[],[],[],[],[],[],[],[]];
+	
+	target.cloneObject = function (obj) {
+	  var newObj = (obj instanceof Array) ? [] : {};
+	  for (var i in obj) {
+		if (obj[i] && typeof obj[i] == "object" ) 
+		  newObj[i] = this.cloneObject(obj[i]);
+		else
+		  newObj[i] = obj[i];
+	  }
+	  return newObj;
+	}
 	
 	target.init = function () {
 		var i;
@@ -1166,6 +1186,44 @@ var tmp = function () {
 		//this.bubble("tracelog","move is legal!");
 		return true;
 	}
+
+	target.templegal_move = function (from,to) {
+		if ((to.x < 0) || (to.y < 0) || (to.x > 7) || (to.y > 7)) return false;
+		piece = tempboard[from.x][from.y];
+		distance = this.coord(to.x-from.x,to.y-from.y);
+		//this.bubble("tracelog","templegalmove: piece="+piece+", distance.x="+distance.x+", distance.y="+distance.y);
+		if ((distance.x == 0) || (distance.y == 0)) {
+			//this.bubble("tracelog","error: zero distance!");
+			return false;
+		}
+		if (this.abs(distance.x) != this.abs(distance.y)) {
+			//this.bubble("tracelog","error: not a diagonal!");
+			return false;
+		}
+		if (this.abs(distance.x) > 2) {
+			//this.bubble("tracelog","error: moving too far!");
+			return false;
+		}
+		if ((this.abs(distance.x) == 1) && double_jump) {
+			//this.bubble("tracelog","error: not far enough on a double jump!");
+			return false;
+		}
+		if ((tempboard[to.x][to.y] != 0) || (piece == 0)) {
+			//this.bubble("tracelog","error: no piece or square occupied!");
+			return false;
+		}
+		if ((this.abs(distance.x) == 2)
+			&& (this.integ(piece) != -this.integ(tempboard[from.x+this.sign(distance.x)][from.y+this.sign(distance.y)]))) {
+			//this.bubble("tracelog","error: something involving 2 spaces!");
+			return false;
+		}
+		if ((this.integ(piece) == piece) && (this.sign(piece) == this.sign(distance.y))) {
+			//this.bubble("tracelog","error: man piece - problem with signs!");
+			return false;
+		}
+		//this.bubble("tracelog","move is legal!");
+		return true;
+	}
 	
 	target.king_me = function (x,y) {
 		if (board[x][y] == 1) {
@@ -1199,10 +1257,74 @@ var tmp = function () {
 		return true;
 	}
 
-	target.computer = function () {
-		//this.bubble("tracelog","starting AI");
+	target.tempmove_comp = function (from,to) {
+		// move piece on tempboard
+		var dummy_num = tempboard[from.x][from.y];
+		tempboard[from.x][from.y] = tempboard[to.x][to.y];
+		tempboard[to.x][to.y] = dummy_num;
+
+		if (this.abs(from.x-to.x) == 2) {
+			//this.bubble("tracelog","need to remove jumped piece from tempboard");
+			tempboard[from.x+this.sign(to.x-from.x)][from.y+this.sign(to.y-from.y)]=0;
+		}
 		
-		// step one - prevent any jumps by jumping the threatening piece
+		// update temp variables
+		templength++;
+		templastendx=to.x;
+		templastendy=to.y;		
+		return true;
+	}	
+	
+	target.computer = function () {
+		var piecesx=[];
+		var piecesy=[];
+		var numpieces=0;
+		//this.bubble("tracelog","starting AI");
+
+		// step one - make a multi-jump if one exists (and find the longest such multi-jump available)
+		bestlength=0;
+		bestlastendx=-1;
+		bestlastendy=-1;
+		foundmultijump=false;
+		
+		// locate all black pieces
+		for(var j=7;j>=0;j--) {
+			for(var i=0;i<8;i++) {
+				if (this.integ(board[i][j]) == -1) {
+					//this.bubble("tracelog","Black piece found at x="+i+", y="+j);
+					piecesx[numpieces]=i;
+					piecesy[numpieces]=j;
+					numpieces++;
+				}
+			}
+		}
+		
+		// go through all black pieces looking for multi-step jump
+		for(var num=0;num<numpieces;num++) {
+			//this.bubble("tracelog","Piece="+num);
+			this.tryfindmultijump(piecesx[num],piecesy[num]);
+		}
+		
+		if (foundmultijump) {
+			//this.bubble("tracelog","Found multi-step jump!");
+			//update board
+			for(var j=0;j<8;j++) {
+				for(var i=0;i<8;i++) {
+					board[i][j]=bestboard[i][j];
+				}
+			}
+			
+			// update end position of jumping piece
+			lastEnd_x=bestlastendx;
+			lastEnd_y=bestlastendy;
+			
+			// king jumping piece if required
+			if ((board[bestlastendx][bestlastendy] == -1) && (bestlastendy == 7)) this.king_me(bestlastendx,bestlastendy);
+			return true;
+		}
+		//this.bubble("tracelog","step one passed: no multi-step jumps found");
+		
+		// step two - prevent any jumps by jumping the threatening piece
 		for(var j=0;j<8;j++) {
 			for(var i=0;i<8;i++) {
 				if (this.integ(board[i][j]) == 1) {
@@ -1223,9 +1345,9 @@ var tmp = function () {
 				}
 			}
 		}
-		//this.bubble("tracelog","step one passed: no jumps to prevent by jumping");
+		//this.bubble("tracelog","step two passed: no jumps to prevent by jumping");
 
-		// step two - prevent any jumps by moving
+		// step three - prevent any jumps by moving
 		for(var j=0;j<8;j++) {
 			for(var i=0;i<8;i++) {
 				if (this.integ(board[i][j]) == 1) {
@@ -1247,18 +1369,18 @@ var tmp = function () {
 				}
 			}
 		}
-		//this.bubble("tracelog","step two passed: no jumps to prevent");
+		//this.bubble("tracelog","step three passed: no jumps to prevent");
 		
-		// step three - look for jumps
+		// step four - look for jumps
 		for(var j=7;j>=0;j--) {
 			for(var i=0;i<8;i++) {
 				if (this.jump(i,j))
 					return true;
 			}
 		}
-		//this.bubble("tracelog","step three passed: no jumps to make");
+		//this.bubble("tracelog","step four passed: no jumps to make");
 
-		// step four - look for single space move to obtain a king
+		// step five - look for single space move to obtain a king
 		for(var i=0;i<8;i++) {
 			if (board[i][6]==-1) {
 				// black piece in row above king row
@@ -1279,9 +1401,9 @@ var tmp = function () {
 				}
 			}
 		}	
-		//this.bubble("tracelog","step four passed: no pieces can move to be crowned");
+		//this.bubble("tracelog","step five passed: no pieces can move to be crowned");
 
-		// step five - look for safe single space move for a king (but use random to prevent kings dominating the moves)
+		// step six - look for safe single space move for a king (but use random to prevent kings dominating the moves)
 		for(var j=0;j<8;j++) {
 			for(var i=0;i<8;i++) {
 				if (board[i][j]==-1.1) {
@@ -1293,9 +1415,9 @@ var tmp = function () {
 				}
 			}
 		}
-		//this.bubble("tracelog","step five passed: no safe single spaces for a king to make");
+		//this.bubble("tracelog","step six passed: no safe single spaces for a king to make");
 
-		// step six - look for man in row 5 that can safely move to row 6
+		// step seven - look for man in row 5 that can safely move to row 6
 		for(var i=0;i<8;i++) {
 			if (board[i][5]==-1) {
 				// black piece in 2 rows above king row
@@ -1308,10 +1430,10 @@ var tmp = function () {
 				}
 			}
 		}	
-		//this.bubble("tracelog","step six passed: no pieces can move closer to be crowned");
+		//this.bubble("tracelog","step seven passed: no pieces can move closer to be crowned");
 		
 		safe_from = null;
-		// step seven - look for safe single space moves (possibly in attack mode)
+		// step eight - look for safe single space moves (possibly in attack mode)
 		// Use random to choose between looking for pieces from left to right or right to left
 		if (Math.floor(Math.random()*2)==1) {
 			//this.bubble("tracelog","left to right");
@@ -1334,10 +1456,10 @@ var tmp = function () {
 				}
 			}
 		}
-		//this.bubble("tracelog","step seven passed: attack failed");
+		//this.bubble("tracelog","step eight passed: attack failed");
 
 		safe_from = null;
-		// step eight - look for safe single space moves (override attackmode)
+		// step nine - look for safe single space moves (override attackmode)
 		// Use random to choose between looking for pieces from left to right or right to left
 		if (Math.floor(Math.random()*2)==1) {
 			//this.bubble("tracelog","left to right");
@@ -1360,9 +1482,9 @@ var tmp = function () {
 				}
 			}
 		}
-		//this.bubble("tracelog","step eight passed: no safe single spaces to move into");
+		//this.bubble("tracelog","step nine passed: no safe single spaces to move into");
 		
-		// step nine - if no safe moves, just take whatever you can get
+		// step ten - if no safe moves, just take whatever you can get
 		if (safe_from != null) {
 			this.move_comp(safe_from,safe_to);
 		} else {
@@ -1370,6 +1492,78 @@ var tmp = function () {
 			game_is_over = true;
 		}
 		safe_from = safe_to = null;
+		return false;
+	}
+	
+	target.tryfindmultijump = function (i,j) {
+		// reset temp variables
+		for(var k=0;k<10;k++) {
+			for(var l=0;l<8;l++) {
+				tempboard[k][l]=board[k][l];
+			}
+		}
+		templength=0;
+		
+		// look for jump
+		//this.bubble("tracelog","Look for multijump starting from piece at x="+i+", y="+j);
+		this.multijump(i,j);
+		
+		// if number of steps is greater than what was found previously
+		if (templength>bestlength) {
+			//this.bubble("tracelog","Found longer jump sequence, length="+templength);
+			// update best variables
+			bestlength=templength;
+			bestlastendx=templastendx;
+			bestlastendy=templastendy;
+			for(var j=0;j<8;j++) {
+				for(var i=0;i<8;i++) {
+					bestboard[i][j]=tempboard[i][j];
+				}
+			}
+		}
+		
+		// if best length has more than 1 jump then it is a multi-step jump
+		if (bestlength>1) foundmultijump=true;
+		return;
+	}
+
+	target.multijump = function (i,j) {
+		if (tempboard[i][j] == -1.1) {
+			if ((j>1) && (this.templegal_move(this.coord(i,j),this.coord(i+2,j-2)))) {
+				this.tempmove_comp(this.coord(i,j),this.coord(i+2,j-2));
+				this.multijump(i+2,j-2);
+				return true;
+			}
+			if ((i>1) && (j>1) && (this.templegal_move(this.coord(i,j),this.coord(i-2,j-2)))) {
+				this.tempmove_comp(this.coord(i,j),this.coord(i-2,j-2));
+				this.multijump(i-2,j-2);
+				return true;
+			}
+		}
+		if (this.integ(tempboard[i][j]) == -1) {
+			if ((i>1) && (this.templegal_move(this.coord(i,j),this.coord(i-2,j+2)))) {
+				if ((j==5) && (tempboard[i][j]==-1)) {
+					this.tempmove_comp(this.coord(i,j),this.coord(i-2,j+2));	
+					//this.jump(i-2,j+2); a man can't continue jumping after becoming a king			
+					return true;
+				} else {
+					this.tempmove_comp(this.coord(i,j),this.coord(i-2,j+2));			
+					this.multijump(i-2,j+2);
+					return true;
+				}
+			}
+			if (this.templegal_move(this.coord(i,j),this.coord(i+2,j+2))) {
+				if ((j==5) && (tempboard[i][j]==-1)) {
+					this.tempmove_comp(this.coord(i,j),this.coord(i+2,j+2));
+					// this.jump(i+2,j+2); a man can't continue jumping after becoming a king
+					return true;
+				} else {
+					this.tempmove_comp(this.coord(i,j),this.coord(i+2,j+2));					
+					this.multijump(i+2,j+2);
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 	
