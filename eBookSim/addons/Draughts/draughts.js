@@ -14,6 +14,7 @@
 // 2011-03-28 Ben Chenoweth - AI improved
 // 2011-03-29 Ben Chenoweth - Further improvements to AI
 // 2011-03-30 Ben Chenoweth - Added new first step to AI: look for multi-step jump
+// 2011-03-31 Ben Chenoweth - Change board format for kings (to make regular and ai representations the same)
 
 var tmp = function () {
 	
@@ -53,17 +54,6 @@ var tmp = function () {
 	var foundmultijump;
 	var templength;
 	var tempboard = [[],[],[],[],[],[],[],[],[],[]];
-	
-	target.cloneObject = function (obj) {
-	  var newObj = (obj instanceof Array) ? [] : {};
-	  for (var i in obj) {
-		if (obj[i] && typeof obj[i] == "object" ) 
-		  newObj[i] = this.cloneObject(obj[i]);
-		else
-		  newObj[i] = obj[i];
-	  }
-	  return newObj;
-	}
 	
 	target.init = function () {
 		var i;
@@ -173,7 +163,7 @@ var tmp = function () {
 							if ((y>1) && (board[x+1][y-1]<0) && (board[x+2][y-2]==0)) white_moves=true;
 						}
 					}
-					if (sqrContent==2) {
+					if (sqrContent==1.1) {
 						this['piece' + pieceId].u = 1;
 						num_white++;
 						
@@ -201,7 +191,7 @@ var tmp = function () {
 							if ((y<6) && (board[x+1][y+1]>0) && (board[x+2][y+2]==0)) black_moves=true;
 						}
 					}
-					if (sqrContent==-2) {
+					if (sqrContent==-1.1) {
 						this['piece' + pieceId].u = 3;
 						num_black++;
 						
@@ -311,7 +301,7 @@ var tmp = function () {
 						// single move into free square (not possible during double jump)
 						board[curr_x][curr_y]=0;
 						if (y==0) {
-							board[x][y]=2;
+							board[x][y]=1.1;
 						} else {
 							board[x][y]=1;
 						}
@@ -338,7 +328,7 @@ var tmp = function () {
 							board[curr_x][curr_y]=0;
 							board[curr_x-1][curr_y-1]=0;
 							if (y==0) {
-								board[x][y]=2;
+								board[x][y]=1.1;
 							} else {
 								board[x][y]=1;
 							}
@@ -349,7 +339,7 @@ var tmp = function () {
 							board[curr_x][curr_y]=0;
 							board[curr_x+1][curr_y-1]=0;
 							if (y==0) {
-								board[x][y]=2;
+								board[x][y]=1.1;
 							} else {
 								board[x][y]=1;
 							}
@@ -393,12 +383,12 @@ var tmp = function () {
 						}
 					}
 				}
-				if (board[curr_x][curr_y]==2) {
+				if (board[curr_x][curr_y]==1.1) {
 					// trying to move a king
 					if ((y==curr_y-1) && ((x==curr_x-1) || (x==curr_x+1)) && (board[x][y]==0) && (!double_jump)) {
 						// single move into free square (not possible during double jump)
 						board[curr_x][curr_y]=0;
-						board[x][y]=2;
+						board[x][y]=1.1;
 						this.squareFocus(curr_x, curr_y, false);
 						lastEnd_x=x;
 						lastEnd_y=y;
@@ -419,7 +409,7 @@ var tmp = function () {
 					if ((y==curr_y+1) && ((x==curr_x-1) || (x==curr_x+1)) && (board[x][y]==0) && (!double_jump)) {
 						// single move into free square (not possible during double jump)
 						board[curr_x][curr_y]=0;
-						board[x][y]=2;
+						board[x][y]=1.1;
 						this.squareFocus(curr_x, curr_y, false);
 						lastEnd_x=x;
 						lastEnd_y=y;
@@ -442,14 +432,14 @@ var tmp = function () {
 							// jumping a piece
 							board[curr_x][curr_y]=0;
 							board[curr_x-1][curr_y-1]=0;
-							board[x][y]=2;
+							board[x][y]=1.1;
 							this.squareFocus(curr_x, curr_y, false);
 							check_for_double_jump=true;
 						} else if ((x==curr_x+2) && (board[curr_x+1][curr_y-1]<0) && (board[x][y]==0)) {
 							// jumping a piece
 							board[curr_x][curr_y]=0;
 							board[curr_x+1][curr_y-1]=0;
-							board[x][y]=2;
+							board[x][y]=1.1;
 							this.squareFocus(curr_x, curr_y, false);
 							check_for_double_jump=true;
 						}
@@ -508,14 +498,14 @@ var tmp = function () {
 							// jumping a piece
 							board[curr_x][curr_y]=0;
 							board[curr_x-1][curr_y+1]=0;
-							board[x][y]=2;
+							board[x][y]=1.1;
 							this.squareFocus(curr_x, curr_y, false);
 							check_for_double_jump=true;
 						} else if ((x==curr_x+2) && (board[curr_x+1][curr_y+1]<0) && (board[x][y]==0)) {
 							// jumping a piece
 							board[curr_x][curr_y]=0;
 							board[curr_x+1][curr_y+1]=0;
-							board[x][y]=2;
+							board[x][y]=1.1;
 							this.squareFocus(curr_x, curr_y, false);
 							check_for_double_jump=true;
 						}
@@ -603,7 +593,7 @@ var tmp = function () {
 						// single move into free square (not possible during double jump)
 						board[curr_x][curr_y]=0;
 						if (y==7) {
-							board[x][y]=-2;
+							board[x][y]=-1.1;
 						} else {
 							board[x][y]=-1;
 						}
@@ -624,7 +614,7 @@ var tmp = function () {
 							board[curr_x][curr_y]=0;
 							board[curr_x-1][curr_y+1]=0;
 							if (y==7) {
-								board[x][y]=-2;
+								board[x][y]=-1.1;
 							} else {
 								board[x][y]=-1;
 							}
@@ -635,7 +625,7 @@ var tmp = function () {
 							board[curr_x][curr_y]=0;
 							board[curr_x+1][curr_y+1]=0;
 							if (y==7) {
-								board[x][y]=-2;
+								board[x][y]=-1.1;
 							} else {
 								board[x][y]=-1;
 							}
@@ -674,12 +664,12 @@ var tmp = function () {
 						}
 					}
 				}
-				if (board[curr_x][curr_y]==-2) {
+				if (board[curr_x][curr_y]==-1.1) {
 					// trying to move a king
 					if ((y==curr_y-1) && ((x==curr_x-1) || (x==curr_x+1)) && (board[x][y]==0) && (!double_jump)) {
 						// single move into free square (not possible during double jump)
 						board[curr_x][curr_y]=0;
-						board[x][y]=-2;
+						board[x][y]=-1.1;
 						this.squareFocus(curr_x, curr_y, false);
 						lastEnd_x=x;
 						lastEnd_y=y;
@@ -693,7 +683,7 @@ var tmp = function () {
 					if ((y==curr_y+1) && ((x==curr_x-1) || (x==curr_x+1)) && (board[x][y]==0) && (!double_jump)) {
 						// single move into free square (not possible during double jump)
 						board[curr_x][curr_y]=0;
-						board[x][y]=-2;
+						board[x][y]=-1.1;
 						this.squareFocus(curr_x, curr_y, false);
 						lastEnd_x=x;
 						lastEnd_y=y;
@@ -710,14 +700,14 @@ var tmp = function () {
 							// jumping a piece
 							board[curr_x][curr_y]=0;
 							board[curr_x-1][curr_y-1]=0;
-							board[x][y]=-2;
+							board[x][y]=-1.1;
 							this.squareFocus(curr_x, curr_y, false);
 							check_for_double_jump=true;
 						} else if ((x==curr_x+2) && (board[curr_x+1][curr_y-1]>0) && (board[x][y]==0)) {
 							// jumping a piece
 							board[curr_x][curr_y]=0;
 							board[curr_x+1][curr_y-1]=0;
-							board[x][y]=-2;
+							board[x][y]=-1.1;
 							this.squareFocus(curr_x, curr_y, false);
 							check_for_double_jump=true;
 						}
@@ -770,14 +760,14 @@ var tmp = function () {
 							// jumping a piece
 							board[curr_x][curr_y]=0;
 							board[curr_x-1][curr_y+1]=0;
-							board[x][y]=-2;
+							board[x][y]=-1.1;
 							this.squareFocus(curr_x, curr_y, false);
 							check_for_double_jump=true;
 						} else if ((x==curr_x+2) && (board[curr_x+1][curr_y+1]>0) && (board[x][y]==0)) {
 							// jumping a piece
 							board[curr_x][curr_y]=0;
 							board[curr_x+1][curr_y+1]=0;
-							board[x][y]=-2;
+							board[x][y]=-1.1;
 							this.squareFocus(curr_x, curr_y, false);
 							check_for_double_jump=true;
 						}
@@ -1076,24 +1066,7 @@ var tmp = function () {
 	target.autoMove = function () {
 		var i,j;
 		// AI move (black)
-		// replace all kings in board with alternative values
-		for (i=0; i<8; i++) {
-			for (j=0; j<8; j++) {
-				if (board[i][j]==2) board[i][j]=1.1;
-				if (board[i][j]==-2) board[i][j]=-1.1;
-			}
-		}
-		
-		// find move
 		black_moves=this.computer();
-		
-		// change back kings in board
-		for (i=0; i<8; i++) {
-			for (j=0; j<8; j++) {
-				if (board[i][j]==1.1) board[i][j]=2;
-				if (board[i][j]==-1.1) board[i][j]=-2;
-			}
-		}
 		
 		if (!game_is_over) {
 			black_turn=false;
@@ -1483,7 +1456,7 @@ var tmp = function () {
 			}
 		}
 		//this.bubble("tracelog","step nine passed: no safe single spaces to move into");
-		
+
 		// step ten - if no safe moves, just take whatever you can get
 		if (safe_from != null) {
 			this.move_comp(safe_from,safe_to);
@@ -1625,7 +1598,7 @@ var tmp = function () {
 				}
 			}
 		}
-		if (blackpieces > whitepieces+1) attack=true;
+		if (blackpieces > whitepieces) attack=true;
 		if (whitepieces==1) attack=true;
 		
 		if ((!attack) || (override)) {
@@ -1769,7 +1742,6 @@ var tmp = function () {
 		//this.bubble("tracelog","returning true!");
 		return true;
 	}
-	
 };
 tmp();
 tmp = undefined;
