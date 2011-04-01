@@ -4,6 +4,7 @@
 // HISTORY:
 // 2011-04-01 Ben Chenoweth - 2 player only
 // 2011-04-01 Ben Chenoweth - 1 player mode begun (AI reasonable)
+// 2011-04-01 Ben Chenoweth - Less predictable AI by shuffling lines array
 
 var tmp = function () {
 	var Exiting;
@@ -37,6 +38,17 @@ var tmp = function () {
 	var numlines;
 	var isTouch;
 	var uD;
+
+	var cloneObject = function (obj){
+	  var newObj = (obj instanceof Array) ? [] : {};
+	  for (var i in obj) {
+		if (obj[i] && typeof obj[i] == "object" ) 
+		  newObj[i] = cloneObject(obj[i]);
+		else
+		  newObj[i] = obj[i];
+	  }
+	  return newObj;
+	}
 	
 	/* Mark Nord - Core workaround 
 	var newEvent = prsp.compile("param", "return new Event(param)");
@@ -223,7 +235,8 @@ var tmp = function () {
 		return;
 	}
 	
-	target.startPlay = function () {	
+	target.startPlay = function () {
+		var templine;
 		pos1X = 0;
 		pos1Y = 0;
 		pos1Z = 0;
@@ -249,7 +262,16 @@ var tmp = function () {
 				}
 			}
 		}
-		//this.setButtons();
+		
+		// Shuffle lines using Knuth Sort (this makes the AI less predictable)
+		for (j=numlines-1; j>=0; j--)
+		{
+			k=Math.floor(Math.random()*j);
+			templine=cloneObject(lines[j]);
+			lines[j]=lines[k];
+			lines[k]=templine;
+		}		
+		
 		this.drawgrid1Cursor(pos1X, pos1Y,pos1Z);
 		this.drawgrid2Cursor(pos2X, pos2Y,pos2Z);
 		if (players == 2) {

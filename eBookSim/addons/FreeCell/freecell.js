@@ -17,6 +17,7 @@
  2011-03-24 Mark Nord: skins changed over to use common AppAssests
  2011-03-25 Ben Chenoweth: made a few small adjustments to AppAssests skins; added copyright label
  2011-03-29 Ben Chenoweth: small fix for non-Touch: better handles unselecting card
+ 2011-04-01 Ben Chenoweth: Reinstated better shuffling routine that got lost in transition to repository
 */
 
 
@@ -1006,39 +1007,23 @@ target.get_row = function (n) {
 }
 
 target.shuffle_deck = function () {
-    var temp_deck;
-    var t,c;
-
-    temp_deck=new Array(52);
-
-    //this.unselect();
-    lowest_free=1;
-
-    for (t=0; t<52; t++)
-    {
-        temp_deck[t]=t;
-    }
+	var j,k,tempcard;
 
     for (t=0; t<52; t++)
     {
         this['card'+1*t].free=false;
+		deck[t]=t;
     }
-
-    for (t=0; t<52; t++)
-    {
-        c=Math.floor(Math.random()*52);
-        if (c<0) c=-c;
-
-        while(temp_deck[c]==-1)
-        {
-            c++;
-            if (c>=52) c=0;
-        }
-
-        deck[t]=c;
-        temp_deck[c]=-1;
-    }
-  // deck_count=0;
+	
+	// Knuth Shuffle (see http://tekpool.wordpress.com/2006/10/06/shuffling-shuffle-a-deck-of-cards-knuth-shuffle/)
+	for (j=51; j>=0; j--)
+	{
+		k=Math.floor(Math.random()*j);
+		tempcard=deck[j];
+		deck[j]=deck[k];
+		deck[k]=tempcard;
+	}
+	
 	return;
 }
 
