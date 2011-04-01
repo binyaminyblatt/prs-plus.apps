@@ -305,7 +305,16 @@
 								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
 								this.EINK.VIEW.setURI("../addons/Freecell/freecell.xml");				
 								break;
-								}				
+								}	
+				 case "XOCubed" : {
+ 							    kbook.autoRunRoot._icon = 46; 
+								kbook.autoRunRoot._title = "XO-Cubed";				
+								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
+								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
+				 				kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
+								this.EINK.VIEW.setURI("../addons/XOCubed/xocubed.xml");				
+								break;
+								}	
 				 case "Menu" : {
 								this.bubble("tracelog","Menu ");
 								this.EINK.VIEW.setURI("SimMenu.xml");	
