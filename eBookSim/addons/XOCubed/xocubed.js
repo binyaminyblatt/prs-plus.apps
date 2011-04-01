@@ -5,6 +5,7 @@
 // 2011-04-01 Ben Chenoweth - 2 player only
 // 2011-04-01 Ben Chenoweth - 1 player mode begun (AI reasonable)
 // 2011-04-01 Ben Chenoweth - Less predictable AI by shuffling lines array
+// 2011-04-01 Ben Chenoweth - Fixed a coordinate error in the lines array
 
 var tmp = function () {
 	var Exiting;
@@ -121,7 +122,7 @@ var tmp = function () {
 		lines[6]=[this.coord(2,0,0),this.coord(2,1,0),this.coord(2,2,0),this.coord(2,3,0)];
 		lines[7]=[this.coord(3,0,0),this.coord(3,1,0),this.coord(3,2,0),this.coord(3,3,0)];
 		lines[8]=[this.coord(0,0,0),this.coord(1,1,0),this.coord(2,2,0),this.coord(3,3,0)];
-		lines[9]=[this.coord(3,0,0),this.coord(2,1,0),this.coord(2,2,0),this.coord(0,3,0)];
+		lines[9]=[this.coord(3,0,0),this.coord(2,1,0),this.coord(1,2,0),this.coord(0,3,0)];
 		lines[10]=[this.coord(0,0,1),this.coord(1,0,1),this.coord(2,0,1),this.coord(3,0,1)];
 		lines[11]=[this.coord(0,1,1),this.coord(1,1,1),this.coord(2,1,1),this.coord(3,1,1)];
 		lines[12]=[this.coord(0,2,1),this.coord(1,2,1),this.coord(2,2,1),this.coord(3,2,1)];
