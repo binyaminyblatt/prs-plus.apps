@@ -317,7 +317,7 @@
 								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
 								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
 				 				kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
-								this.EINK.VIEW.setURI("../addons/XOCubed/xocubed.xml");				
+								this.MAIN.EINK.VIEW.setURI("../addons/XOCubed/xocubed.xml");				
 								break;
 								}	
 				 case "Menu" : {
