@@ -2,12 +2,13 @@
 // Original code (c) Ben Chenoweth
 // Initial version: April 2011
 // HISTORY:
-// 2011-04-02 Ben Chenoweth - 2 player only
+// 2011-04-01 Ben Chenoweth - 2 player only
+// 2011-04-01 Ben Chenoweth - 1 player mode begun (AI reasonable)
 
 var tmp = function () {
 	var Exiting;
 	var gameover;
-	var players=2;
+	var players=1;
 	var player1turn;
 	var firstX = 110;
 	var curDX = 98;
@@ -32,6 +33,7 @@ var tmp = function () {
 	var xMovesY = [];
 	var xMovesZ = [];
 	var lines = [];
+	var centre;
 	var numlines;
 	var isTouch;
 	var uD;
@@ -98,83 +100,84 @@ var tmp = function () {
 		}
 
 		// set up lines array
-		lines[0]=[this.coord(0,0,0),this.coord(1,0,0),this.coord(2,0,0),this.coord(3,0,0)]
-		lines[1]=[this.coord(0,1,0),this.coord(1,1,0),this.coord(2,1,0),this.coord(3,1,0)]
-		lines[2]=[this.coord(0,2,0),this.coord(1,2,0),this.coord(2,2,0),this.coord(3,2,0)]
-		lines[3]=[this.coord(0,3,0),this.coord(1,3,0),this.coord(2,3,0),this.coord(3,3,0)]
-		lines[4]=[this.coord(0,0,0),this.coord(0,1,0),this.coord(0,2,0),this.coord(0,3,0)]
-		lines[5]=[this.coord(1,0,0),this.coord(1,1,0),this.coord(1,2,0),this.coord(1,3,0)]
-		lines[6]=[this.coord(2,0,0),this.coord(2,1,0),this.coord(2,2,0),this.coord(2,3,0)]
-		lines[7]=[this.coord(3,0,0),this.coord(3,1,0),this.coord(3,2,0),this.coord(3,3,0)]
-		lines[8]=[this.coord(0,0,0),this.coord(1,1,0),this.coord(2,2,0),this.coord(3,3,0)]
-		lines[9]=[this.coord(3,0,0),this.coord(2,1,0),this.coord(2,2,0),this.coord(0,3,0)]
-		lines[10]=[this.coord(0,0,1),this.coord(1,0,1),this.coord(2,0,1),this.coord(3,0,1)]
-		lines[11]=[this.coord(0,1,1),this.coord(1,1,1),this.coord(2,1,1),this.coord(3,1,1)]
-		lines[12]=[this.coord(0,2,1),this.coord(1,2,1),this.coord(2,2,1),this.coord(3,2,1)]
-		lines[13]=[this.coord(0,3,1),this.coord(1,3,1),this.coord(2,3,1),this.coord(3,3,1)]
-		lines[14]=[this.coord(0,0,1),this.coord(0,1,1),this.coord(0,2,1),this.coord(0,3,1)]
-		lines[15]=[this.coord(1,0,1),this.coord(1,1,1),this.coord(1,2,1),this.coord(1,3,1)]
-		lines[16]=[this.coord(2,0,1),this.coord(2,1,1),this.coord(2,2,1),this.coord(2,3,1)]
-		lines[17]=[this.coord(3,0,1),this.coord(3,1,1),this.coord(3,2,1),this.coord(3,3,1)]
-		lines[18]=[this.coord(0,0,1),this.coord(1,1,1),this.coord(2,2,1),this.coord(3,3,1)]
-		lines[19]=[this.coord(3,0,1),this.coord(2,1,1),this.coord(2,2,1),this.coord(0,3,1)]		
-		lines[20]=[this.coord(0,0,2),this.coord(1,0,2),this.coord(2,0,2),this.coord(3,0,2)]
-		lines[21]=[this.coord(0,1,2),this.coord(1,1,2),this.coord(2,1,2),this.coord(3,1,2)]
-		lines[22]=[this.coord(0,2,2),this.coord(1,2,2),this.coord(2,2,2),this.coord(3,2,2)]
-		lines[23]=[this.coord(0,3,2),this.coord(1,3,2),this.coord(2,3,2),this.coord(3,3,2)]
-		lines[24]=[this.coord(0,0,2),this.coord(0,1,2),this.coord(0,2,2),this.coord(0,3,2)]
-		lines[25]=[this.coord(1,0,2),this.coord(1,1,2),this.coord(1,2,2),this.coord(1,3,2)]
-		lines[26]=[this.coord(2,0,2),this.coord(2,1,2),this.coord(2,2,2),this.coord(2,3,2)]
-		lines[27]=[this.coord(3,0,2),this.coord(3,1,2),this.coord(3,2,2),this.coord(3,3,2)]
-		lines[28]=[this.coord(0,0,2),this.coord(1,1,2),this.coord(2,2,2),this.coord(3,3,2)]
-		lines[29]=[this.coord(3,0,2),this.coord(2,1,2),this.coord(2,2,2),this.coord(0,3,2)]
-		lines[30]=[this.coord(0,0,3),this.coord(1,0,3),this.coord(2,0,3),this.coord(3,0,3)]
-		lines[31]=[this.coord(0,1,3),this.coord(1,1,3),this.coord(2,1,3),this.coord(3,1,3)]
-		lines[32]=[this.coord(0,2,3),this.coord(1,2,3),this.coord(2,2,3),this.coord(3,2,3)]
-		lines[33]=[this.coord(0,3,3),this.coord(1,3,3),this.coord(2,3,3),this.coord(3,3,3)]
-		lines[34]=[this.coord(0,0,3),this.coord(0,1,3),this.coord(0,2,3),this.coord(0,3,3)]
-		lines[35]=[this.coord(1,0,3),this.coord(1,1,3),this.coord(1,2,3),this.coord(1,3,3)]
-		lines[36]=[this.coord(2,0,3),this.coord(2,1,3),this.coord(2,2,3),this.coord(2,3,3)]
-		lines[37]=[this.coord(3,0,3),this.coord(3,1,3),this.coord(3,2,3),this.coord(3,3,3)]
-		lines[38]=[this.coord(0,0,3),this.coord(1,1,3),this.coord(2,2,3),this.coord(3,3,3)]
-		lines[39]=[this.coord(3,0,3),this.coord(2,1,3),this.coord(2,2,3),this.coord(0,3,3)]
-		lines[40]=[this.coord(0,0,0),this.coord(0,0,1),this.coord(0,0,2),this.coord(0,0,3)]
-		lines[41]=[this.coord(1,0,0),this.coord(1,0,1),this.coord(1,0,2),this.coord(1,0,3)]
-		lines[42]=[this.coord(2,0,0),this.coord(2,0,1),this.coord(2,0,2),this.coord(2,0,3)]
-		lines[43]=[this.coord(3,0,0),this.coord(3,0,1),this.coord(3,0,2),this.coord(3,0,3)]
-		lines[44]=[this.coord(0,0,0),this.coord(1,0,1),this.coord(2,0,2),this.coord(3,0,3)]
-		lines[45]=[this.coord(3,0,0),this.coord(2,0,1),this.coord(1,0,2),this.coord(0,0,3)]
-		lines[46]=[this.coord(0,1,0),this.coord(0,1,1),this.coord(0,1,2),this.coord(0,1,3)]
-		lines[47]=[this.coord(1,1,0),this.coord(1,1,1),this.coord(1,1,2),this.coord(1,1,3)]
-		lines[48]=[this.coord(2,1,0),this.coord(2,1,1),this.coord(2,1,2),this.coord(2,1,3)]
-		lines[49]=[this.coord(3,1,0),this.coord(3,1,1),this.coord(3,1,2),this.coord(3,1,3)]
-		lines[50]=[this.coord(0,1,0),this.coord(1,1,1),this.coord(2,1,2),this.coord(3,1,3)]
-		lines[51]=[this.coord(3,1,0),this.coord(2,1,1),this.coord(1,1,2),this.coord(0,1,3)]
-		lines[52]=[this.coord(0,2,0),this.coord(0,2,1),this.coord(0,2,2),this.coord(0,2,3)]
-		lines[53]=[this.coord(1,2,0),this.coord(1,2,1),this.coord(1,2,2),this.coord(1,2,3)]
-		lines[54]=[this.coord(2,2,0),this.coord(2,2,1),this.coord(2,2,2),this.coord(2,2,3)]
-		lines[55]=[this.coord(3,2,0),this.coord(3,2,1),this.coord(3,2,2),this.coord(3,2,3)]
-		lines[56]=[this.coord(0,2,0),this.coord(1,2,1),this.coord(2,2,2),this.coord(3,2,3)]
-		lines[57]=[this.coord(3,2,0),this.coord(2,2,1),this.coord(1,2,2),this.coord(0,2,3)]
-		lines[58]=[this.coord(0,3,0),this.coord(0,3,1),this.coord(0,3,2),this.coord(0,3,3)]
-		lines[59]=[this.coord(1,3,0),this.coord(1,3,1),this.coord(1,3,2),this.coord(1,3,3)]
-		lines[60]=[this.coord(2,3,0),this.coord(2,3,1),this.coord(2,3,2),this.coord(2,3,3)]
-		lines[61]=[this.coord(3,3,0),this.coord(3,3,1),this.coord(3,3,2),this.coord(3,3,3)]
-		lines[62]=[this.coord(0,3,0),this.coord(1,3,1),this.coord(2,3,2),this.coord(3,3,3)]
-		lines[63]=[this.coord(3,3,0),this.coord(2,3,1),this.coord(1,3,2),this.coord(0,3,3)]
-		lines[64]=[this.coord(0,0,0),this.coord(0,1,1),this.coord(0,2,2),this.coord(0,3,3)]
-		lines[65]=[this.coord(0,3,0),this.coord(0,2,1),this.coord(0,1,2),this.coord(0,0,3)]
-		lines[66]=[this.coord(1,0,0),this.coord(1,1,1),this.coord(1,2,2),this.coord(1,3,3)]
-		lines[67]=[this.coord(1,3,0),this.coord(1,2,1),this.coord(1,1,2),this.coord(1,0,3)]
-		lines[68]=[this.coord(2,0,0),this.coord(2,1,1),this.coord(2,2,2),this.coord(2,3,3)]
-		lines[69]=[this.coord(2,3,0),this.coord(2,2,1),this.coord(2,1,2),this.coord(2,0,3)]
-		lines[70]=[this.coord(3,0,0),this.coord(3,1,1),this.coord(3,2,2),this.coord(3,3,3)]
-		lines[71]=[this.coord(3,3,0),this.coord(3,2,1),this.coord(3,1,2),this.coord(3,0,3)]
-		lines[72]=[this.coord(0,0,0),this.coord(1,1,1),this.coord(2,2,2),this.coord(3,3,3)]
-		lines[73]=[this.coord(3,0,0),this.coord(2,1,1),this.coord(1,2,2),this.coord(0,3,3)]
-		lines[74]=[this.coord(3,3,0),this.coord(2,2,1),this.coord(1,1,2),this.coord(0,0,3)]
-		lines[75]=[this.coord(0,3,0),this.coord(1,2,1),this.coord(2,1,2),this.coord(3,0,3)]
+		lines[0]=[this.coord(0,0,0),this.coord(1,0,0),this.coord(2,0,0),this.coord(3,0,0)];
+		lines[1]=[this.coord(0,1,0),this.coord(1,1,0),this.coord(2,1,0),this.coord(3,1,0)];
+		lines[2]=[this.coord(0,2,0),this.coord(1,2,0),this.coord(2,2,0),this.coord(3,2,0)];
+		lines[3]=[this.coord(0,3,0),this.coord(1,3,0),this.coord(2,3,0),this.coord(3,3,0)];
+		lines[4]=[this.coord(0,0,0),this.coord(0,1,0),this.coord(0,2,0),this.coord(0,3,0)];
+		lines[5]=[this.coord(1,0,0),this.coord(1,1,0),this.coord(1,2,0),this.coord(1,3,0)];
+		lines[6]=[this.coord(2,0,0),this.coord(2,1,0),this.coord(2,2,0),this.coord(2,3,0)];
+		lines[7]=[this.coord(3,0,0),this.coord(3,1,0),this.coord(3,2,0),this.coord(3,3,0)];
+		lines[8]=[this.coord(0,0,0),this.coord(1,1,0),this.coord(2,2,0),this.coord(3,3,0)];
+		lines[9]=[this.coord(3,0,0),this.coord(2,1,0),this.coord(2,2,0),this.coord(0,3,0)];
+		lines[10]=[this.coord(0,0,1),this.coord(1,0,1),this.coord(2,0,1),this.coord(3,0,1)];
+		lines[11]=[this.coord(0,1,1),this.coord(1,1,1),this.coord(2,1,1),this.coord(3,1,1)];
+		lines[12]=[this.coord(0,2,1),this.coord(1,2,1),this.coord(2,2,1),this.coord(3,2,1)];
+		lines[13]=[this.coord(0,3,1),this.coord(1,3,1),this.coord(2,3,1),this.coord(3,3,1)];
+		lines[14]=[this.coord(0,0,1),this.coord(0,1,1),this.coord(0,2,1),this.coord(0,3,1)];
+		lines[15]=[this.coord(1,0,1),this.coord(1,1,1),this.coord(1,2,1),this.coord(1,3,1)];
+		lines[16]=[this.coord(2,0,1),this.coord(2,1,1),this.coord(2,2,1),this.coord(2,3,1)];
+		lines[17]=[this.coord(3,0,1),this.coord(3,1,1),this.coord(3,2,1),this.coord(3,3,1)];
+		lines[18]=[this.coord(0,0,1),this.coord(1,1,1),this.coord(2,2,1),this.coord(3,3,1)];
+		lines[19]=[this.coord(3,0,1),this.coord(2,1,1),this.coord(2,2,1),this.coord(0,3,1)];	
+		lines[20]=[this.coord(0,0,2),this.coord(1,0,2),this.coord(2,0,2),this.coord(3,0,2)];
+		lines[21]=[this.coord(0,1,2),this.coord(1,1,2),this.coord(2,1,2),this.coord(3,1,2)];
+		lines[22]=[this.coord(0,2,2),this.coord(1,2,2),this.coord(2,2,2),this.coord(3,2,2)];
+		lines[23]=[this.coord(0,3,2),this.coord(1,3,2),this.coord(2,3,2),this.coord(3,3,2)];
+		lines[24]=[this.coord(0,0,2),this.coord(0,1,2),this.coord(0,2,2),this.coord(0,3,2)];
+		lines[25]=[this.coord(1,0,2),this.coord(1,1,2),this.coord(1,2,2),this.coord(1,3,2)];
+		lines[26]=[this.coord(2,0,2),this.coord(2,1,2),this.coord(2,2,2),this.coord(2,3,2)];
+		lines[27]=[this.coord(3,0,2),this.coord(3,1,2),this.coord(3,2,2),this.coord(3,3,2)];
+		lines[28]=[this.coord(0,0,2),this.coord(1,1,2),this.coord(2,2,2),this.coord(3,3,2)];
+		lines[29]=[this.coord(3,0,2),this.coord(2,1,2),this.coord(2,2,2),this.coord(0,3,2)];
+		lines[30]=[this.coord(0,0,3),this.coord(1,0,3),this.coord(2,0,3),this.coord(3,0,3)];
+		lines[31]=[this.coord(0,1,3),this.coord(1,1,3),this.coord(2,1,3),this.coord(3,1,3)];
+		lines[32]=[this.coord(0,2,3),this.coord(1,2,3),this.coord(2,2,3),this.coord(3,2,3)];
+		lines[33]=[this.coord(0,3,3),this.coord(1,3,3),this.coord(2,3,3),this.coord(3,3,3)];
+		lines[34]=[this.coord(0,0,3),this.coord(0,1,3),this.coord(0,2,3),this.coord(0,3,3)];
+		lines[35]=[this.coord(1,0,3),this.coord(1,1,3),this.coord(1,2,3),this.coord(1,3,3)];
+		lines[36]=[this.coord(2,0,3),this.coord(2,1,3),this.coord(2,2,3),this.coord(2,3,3)];
+		lines[37]=[this.coord(3,0,3),this.coord(3,1,3),this.coord(3,2,3),this.coord(3,3,3)];
+		lines[38]=[this.coord(0,0,3),this.coord(1,1,3),this.coord(2,2,3),this.coord(3,3,3)];
+		lines[39]=[this.coord(3,0,3),this.coord(2,1,3),this.coord(2,2,3),this.coord(0,3,3)];
+		lines[40]=[this.coord(0,0,0),this.coord(0,0,1),this.coord(0,0,2),this.coord(0,0,3)];
+		lines[41]=[this.coord(1,0,0),this.coord(1,0,1),this.coord(1,0,2),this.coord(1,0,3)];
+		lines[42]=[this.coord(2,0,0),this.coord(2,0,1),this.coord(2,0,2),this.coord(2,0,3)];
+		lines[43]=[this.coord(3,0,0),this.coord(3,0,1),this.coord(3,0,2),this.coord(3,0,3)];
+		lines[44]=[this.coord(0,0,0),this.coord(1,0,1),this.coord(2,0,2),this.coord(3,0,3)];
+		lines[45]=[this.coord(3,0,0),this.coord(2,0,1),this.coord(1,0,2),this.coord(0,0,3)];
+		lines[46]=[this.coord(0,1,0),this.coord(0,1,1),this.coord(0,1,2),this.coord(0,1,3)];
+		lines[47]=[this.coord(1,1,0),this.coord(1,1,1),this.coord(1,1,2),this.coord(1,1,3)];
+		lines[48]=[this.coord(2,1,0),this.coord(2,1,1),this.coord(2,1,2),this.coord(2,1,3)];
+		lines[49]=[this.coord(3,1,0),this.coord(3,1,1),this.coord(3,1,2),this.coord(3,1,3)];
+		lines[50]=[this.coord(0,1,0),this.coord(1,1,1),this.coord(2,1,2),this.coord(3,1,3)];
+		lines[51]=[this.coord(3,1,0),this.coord(2,1,1),this.coord(1,1,2),this.coord(0,1,3)];
+		lines[52]=[this.coord(0,2,0),this.coord(0,2,1),this.coord(0,2,2),this.coord(0,2,3)];
+		lines[53]=[this.coord(1,2,0),this.coord(1,2,1),this.coord(1,2,2),this.coord(1,2,3)];
+		lines[54]=[this.coord(2,2,0),this.coord(2,2,1),this.coord(2,2,2),this.coord(2,2,3)];
+		lines[55]=[this.coord(3,2,0),this.coord(3,2,1),this.coord(3,2,2),this.coord(3,2,3)];
+		lines[56]=[this.coord(0,2,0),this.coord(1,2,1),this.coord(2,2,2),this.coord(3,2,3)];
+		lines[57]=[this.coord(3,2,0),this.coord(2,2,1),this.coord(1,2,2),this.coord(0,2,3)];
+		lines[58]=[this.coord(0,3,0),this.coord(0,3,1),this.coord(0,3,2),this.coord(0,3,3)];
+		lines[59]=[this.coord(1,3,0),this.coord(1,3,1),this.coord(1,3,2),this.coord(1,3,3)];
+		lines[60]=[this.coord(2,3,0),this.coord(2,3,1),this.coord(2,3,2),this.coord(2,3,3)];
+		lines[61]=[this.coord(3,3,0),this.coord(3,3,1),this.coord(3,3,2),this.coord(3,3,3)];
+		lines[62]=[this.coord(0,3,0),this.coord(1,3,1),this.coord(2,3,2),this.coord(3,3,3)];
+		lines[63]=[this.coord(3,3,0),this.coord(2,3,1),this.coord(1,3,2),this.coord(0,3,3)];
+		lines[64]=[this.coord(0,0,0),this.coord(0,1,1),this.coord(0,2,2),this.coord(0,3,3)];
+		lines[65]=[this.coord(0,3,0),this.coord(0,2,1),this.coord(0,1,2),this.coord(0,0,3)];
+		lines[66]=[this.coord(1,0,0),this.coord(1,1,1),this.coord(1,2,2),this.coord(1,3,3)];
+		lines[67]=[this.coord(1,3,0),this.coord(1,2,1),this.coord(1,1,2),this.coord(1,0,3)];
+		lines[68]=[this.coord(2,0,0),this.coord(2,1,1),this.coord(2,2,2),this.coord(2,3,3)];
+		lines[69]=[this.coord(2,3,0),this.coord(2,2,1),this.coord(2,1,2),this.coord(2,0,3)];
+		lines[70]=[this.coord(3,0,0),this.coord(3,1,1),this.coord(3,2,2),this.coord(3,3,3)];
+		lines[71]=[this.coord(3,3,0),this.coord(3,2,1),this.coord(3,1,2),this.coord(3,0,3)];
+		lines[72]=[this.coord(0,0,0),this.coord(1,1,1),this.coord(2,2,2),this.coord(3,3,3)];
+		lines[73]=[this.coord(3,0,0),this.coord(2,1,1),this.coord(1,2,2),this.coord(0,3,3)];
+		lines[74]=[this.coord(3,3,0),this.coord(2,2,1),this.coord(1,1,2),this.coord(0,0,3)];
+		lines[75]=[this.coord(0,3,0),this.coord(1,2,1),this.coord(2,1,2),this.coord(3,0,3)];
 		numlines=76;
+		centre=[this.coord(1,1,1),this.coord(2,1,1),this.coord(1,2,1),this.coord(2,2,1),this.coord(1,1,2),this.coord(2,1,2),this.coord(1,2,2),this.coord(2,2,2)];
 		
 		this.startPlay();
 		return;
@@ -270,10 +273,173 @@ var tmp = function () {
 	}
 	
 	target.placeO = function () {
+		var coordinate;
+		var num;
+		var foundmove=false;
+		
+		// Step one - look for three O's in the same line and complete for the win
+		for (x=0;x<numlines;x++) {
+			linesum=0;
+			count=0;
+			for (y=0;y<4;y++) {
+				coordinate=lines[x][y];
+				linesum=linesum+board[coordinate.x][coordinate.y][coordinate.z];
+				if (board[coordinate.x][coordinate.y][coordinate.z]!=0) count++;
+			}
+			if ((linesum==-3) && (count==3)) {
+				foundmove=true;
+				// find empty place
+				for (y=0;y<4;y++) {
+					coordinate=lines[x][y];
+					if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
+				}
+				this.bubble("tracelog","Step one succeeded - found a winning move");
+			}
+			if (foundmove) break;
+		}
+		if (!foundmove) this.bubble("tracelog","Step one failed - no move to win");
+		
+		// Step two - look for three X's in the same line and block
+		if (!foundmove) {
+			for (x=0;x<numlines;x++) {
+				linesum=0;
+				count=0;
+				for (y=0;y<4;y++) {
+					coordinate=lines[x][y];
+					linesum=linesum+board[coordinate.x][coordinate.y][coordinate.z];
+					if (board[coordinate.x][coordinate.y][coordinate.z]!=0) count++;
+				}
+				if ((linesum==3) && (count==3)) {
+					foundmove=true;
+					// find empty place
+					for (y=0;y<4;y++) {
+						coordinate=lines[x][y];
+						if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
+					}
+					this.bubble("tracelog","Step two succeeded - blocked a win.  linesum="+linesum+", count="+count);
+				}
+				if (foundmove) break;
+			}
+		}
+		if (!foundmove) this.bubble("tracelog","Step two failed - no move to block a win");
+		
+		// Step three - look for two O's in the same line with no X's
+		if (!foundmove) {
+			for (x=0;x<numlines;x++) {
+				linesum=0;
+				count=0;
+				for (y=0;y<4;y++) {
+					coordinate=lines[x][y];
+					linesum=linesum+board[coordinate.x][coordinate.y][coordinate.z];
+					if (board[coordinate.x][coordinate.y][coordinate.z]!=0) count++;
+				}
+				if ((linesum==-2) && (count==2)) {
+					foundmove=true;
+					// find empty place
+					for (y=0;y<4;y++) {
+						coordinate=lines[x][y];
+						if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
+					}
+					this.bubble("tracelog","Step three succeeded - found a line with two O's and no X's");
+				}
+				if (foundmove) break;
+			}
+		}
+		if (!foundmove) this.bubble("tracelog","Step three failed - no line with two O's and no X's");
+		
+		// Step four - look for one O in the same line with no X's
+		if (!foundmove) {
+			for (x=0;x<numlines;x++) {
+				linesum=0;
+				count=0;
+				for (y=0;y<4;y++) {
+					coordinate=lines[x][y];
+					linesum=linesum+board[coordinate.x][coordinate.y][coordinate.z];
+					if (board[coordinate.x][coordinate.y][coordinate.z]!=0) count++;
+				}
+				if ((linesum==-1) && (count==1)) {
+					foundmove=true;
+					// find empty place
+					for (y=0;y<4;y++) {
+						coordinate=lines[x][y];
+						if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
+					}
+					this.bubble("tracelog","Step four succeeded - found a line with one O and no X's");
+				}
+				if (foundmove) break;
+			}
+		}
+		if (!foundmove) this.bubble("tracelog","Step four failed - no line with one O's and no X's");
+
+		// Step five - look to move in the central area (to control the game better!)
+		if (!foundmove) {
+			for (x=0;x<8;x++) {
+				count=0;
+				coordinate=centre[x];
+				if (board[coordinate.x][coordinate.y][coordinate.z]==0) count++;
+			}
+			if (count>0) {
+				while (!foundmove) {
+					x=Math.floor(Math.random()*8);
+					coordinate=centre[x];
+					if (board[coordinate.x][coordinate.y][coordinate.z]==0) {
+						foundmove=true;
+						this.bubble("tracelog","Step five succeeded - found move in central area");
+					}
+				}
+			}
+		}
+		if (!foundmove) this.bubble("tracelog","Step five failed - central area taken");
+
+		
+		// Step six - look for no O's in the same line with no X's
+		if (!foundmove) {
+			for (x=0;x<numlines;x++) {
+				linesum=0;
+				count=0;
+				for (y=0;y<4;y++) {
+					coordinate=lines[x][y];
+					linesum=linesum+board[coordinate.x][coordinate.y][coordinate.z];
+					if (board[coordinate.x][coordinate.y][coordinate.z]!=0) count++;
+				}
+				if ((linesum==0) && (count==0)) {
+					foundmove=true;
+					// choose 2nd or 3rd position
+					y=Math.floor(Math.random()*2)+1;
+					coordinate=lines[x][y];
+					this.bubble("tracelog","Step six succeeded - found a line with no O's and no X's");
+				}
+				if (foundmove) break;
+			}
+		}
+		if (!foundmove) this.bubble("tracelog","Step six failed - no line with no O's and no X's");
+		
+		// Last step - do random move
+		while (!foundmove) {
+			x=Math.floor(Math.random()*4);
+			y=Math.floor(Math.random()*4);
+			z=Math.floor(Math.random()*4);
+			this.bubble("tracelog","x="+x+", y="+y+", z="+z+", board[x][y][z]="+board[x][y][z]);
+			if (board[x][y][z]==0) {
+				foundmove=true;
+				coordinate=this.coord(x,y,z);
+				this.bubble("tracelog","Last step succeeded - random move found");
+			}
+		}
+		
+		// convert coordinate to sprite id
+		num = coordinate.z * 16 + coordinate.y * 4 + coordinate.x;
+		if (num<10) {
+			id = "3Buttons00" + num;
+		} else {
+			id = "3Buttons0" + num;
+		}
+		board[coordinate.x][coordinate.y][coordinate.z]=-1;
 		return id;
 	}
 	
 	target.checkWin = function (player) {
+		var coordinate;
 		var win=false;
 		for (x=0;x<numlines;x++) {
 			count=0;
