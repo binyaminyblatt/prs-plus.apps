@@ -5,7 +5,8 @@
 // 2011-04-01 Ben Chenoweth - 2 player only
 // 2011-04-01 Ben Chenoweth - 1 player mode begun (AI reasonable)
 // 2011-04-01 Ben Chenoweth - Less predictable AI by shuffling lines array
-// 2011-04-01 Ben Chenoweth - Fixed a coordinate error in the lines array
+// 2011-04-01 Ben Chenoweth - Fixed some coordinate errors in the lines array
+// 2011-04-03 Ben Chenoweth - AI improvement: Double whammies are now found and blocked
 
 var tmp = function () {
 	var Exiting;
@@ -345,8 +346,150 @@ var tmp = function () {
 			}
 		}
 		if (!foundmove) this.bubble("tracelog","Step two failed - no move to block a win");
+
+		// Step three - look for intersection point of two lines each with two O's and no X's (to complete a double-whammy)
+		if (!foundmove) {
+			for (x=0;x<numlines;x++) {
+				linesum=0;
+				count=0;
+				for (y=0;y<4;y++) {
+					coordinate=lines[x][y];
+					linesum=linesum+board[coordinate.x][coordinate.y][coordinate.z];
+					if (board[coordinate.x][coordinate.y][coordinate.z]!=0) count++;
+				}
+				if ((linesum==-2) && (count==2)) {
+					// found a line with two O's and no X's
+					// find first empty place
+					for (y=0;y<4;y++) {
+						coordinate=lines[x][y];
+						if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
+					}
+					// search through all other lines looking for one with two O's and no X's and the same blank spot
+					for (a=0;a<numlines;a++) {
+						if (a==x) continue;
+						templinesum=0;
+						tempcount=0;
+						lineintersect=false;
+						for (b=0;b<4;b++) {
+							tempcoordinate=lines[a][b];
+							templinesum=templinesum+board[tempcoordinate.x][tempcoordinate.y][tempcoordinate.z];
+							if (board[tempcoordinate.x][tempcoordinate.y][tempcoordinate.z]!=0) tempcount++;
+							if ((tempcoordinate.x==coordinate.x) && (tempcoordinate.y==coordinate.y) && (tempcoordinate.z==coordinate.z)) lineintersect=true;
+						}
+						if ((templinesum==-2) && (tempcount==2) && (lineintersect)) {
+							this.bubble("tracelog","Step three succeeded - can complete a double whammy");
+							foundmove=true;
+						}
+						if (foundmove) break;
+					}
+					if (!foundmove) {
+						//try other empty space
+						skipfirstone=false;
+						for (y=0;y<4;y++) {
+							coordinate=lines[x][y];
+							if ((board[coordinate.x][coordinate.y][coordinate.z]==0) && (!skipfirstone)) {
+								skipfirstone=true; // skip first space
+								continue;
+							}
+							if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
+						}
+						// search through all other lines looking for one with two O's and no X's and the same blank spot
+						for (a=0;a<numlines;a++) {
+							if (a==x) continue;
+							templinesum=0;
+							tempcount=0;
+							lineintersect=false;
+							for (b=0;b<4;b++) {
+								tempcoordinate=lines[a][b];
+								templinesum=templinesum+board[tempcoordinate.x][tempcoordinate.y][tempcoordinate.z];
+								if (board[tempcoordinate.x][tempcoordinate.y][tempcoordinate.z]!=0) tempcount++;
+								if ((tempcoordinate.x==coordinate.x) && (tempcoordinate.y==coordinate.y) && (tempcoordinate.z==coordinate.z)) lineintersect=true;
+							}
+							if ((templinesum==-2) && (tempcount==2) && (lineintersect)) {
+								foundmove=true;
+								this.bubble("tracelog","Step three succeeded - can complete a double whammy");
+							}
+							if (foundmove) break;
+						}
+					}
+				}
+				if (foundmove) break;
+			}
+		}
+		if (!foundmove) this.bubble("tracelog","Step three failed - cannot complete a double whammy");
+
+		// Step four - look for intersection point of two lines each with two X's and no O's (to block a double-whammy)
+		if (!foundmove) {
+			for (x=0;x<numlines;x++) {
+				linesum=0;
+				count=0;
+				for (y=0;y<4;y++) {
+					coordinate=lines[x][y];
+					linesum=linesum+board[coordinate.x][coordinate.y][coordinate.z];
+					if (board[coordinate.x][coordinate.y][coordinate.z]!=0) count++;
+				}
+				if ((linesum==2) && (count==2)) {
+					// found a line with two X's and no O's
+					// find first empty place
+					for (y=0;y<4;y++) {
+						coordinate=lines[x][y];
+						if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
+					}
+					// search through all other lines looking for one with two X's and no O's and the same blank spot
+					for (a=0;a<numlines;a++) {
+						if (a==x) continue;
+						templinesum=0;
+						tempcount=0;
+						lineintersect=false;
+						for (b=0;b<4;b++) {
+							tempcoordinate=lines[a][b];
+							templinesum=templinesum+board[tempcoordinate.x][tempcoordinate.y][tempcoordinate.z];
+							if (board[tempcoordinate.x][tempcoordinate.y][tempcoordinate.z]!=0) tempcount++;
+							if ((tempcoordinate.x==coordinate.x) && (tempcoordinate.y==coordinate.y) && (tempcoordinate.z==coordinate.z)) lineintersect=true;
+						}
+						if ((templinesum==2) && (tempcount==2) && (lineintersect)) {
+							this.bubble("tracelog","Step four succeeded - can block a double whammy");
+							foundmove=true;
+						}
+						if (foundmove) break;
+					}
+					if (!foundmove) {
+						//try other empty space
+						skipfirstone=false;
+						for (y=0;y<4;y++) {
+							coordinate=lines[x][y];
+							if ((board[coordinate.x][coordinate.y][coordinate.z]==0) && (!skipfirstone)) {
+								skipfirstone=true; // skip first space
+								continue;
+							}
+							if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
+						}
+						// search through all other lines looking for one with two X's and no O's and the same blank spot
+						for (a=0;a<numlines;a++) {
+							if (a==x) continue;
+							templinesum=0;
+							tempcount=0;
+							lineintersect=false;
+							for (b=0;b<4;b++) {
+								tempcoordinate=lines[a][b];
+								templinesum=templinesum+board[tempcoordinate.x][tempcoordinate.y][tempcoordinate.z];
+								if (board[tempcoordinate.x][tempcoordinate.y][tempcoordinate.z]!=0) tempcount++;
+								if ((tempcoordinate.x==coordinate.x) && (tempcoordinate.y==coordinate.y) && (tempcoordinate.z==coordinate.z)) lineintersect=true;
+							}
+							if ((templinesum==2) && (tempcount==2) && (lineintersect)) {
+								foundmove=true;
+								this.bubble("tracelog","Step four succeeded - can block a double whammy");
+							}
+							if (foundmove) break;
+						}
+					}
+				}
+				if (foundmove) break;
+			}
+		}
+		if (!foundmove) this.bubble("tracelog","Step four failed - cannot block a double whammy");		
 		
-		// Step three - look for two O's in the same line with no X's
+		// Step five - look for two O's in the same line with no X's
 		if (!foundmove) {
 			for (x=0;x<numlines;x++) {
 				linesum=0;
@@ -363,14 +506,14 @@ var tmp = function () {
 						coordinate=lines[x][y];
 						if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
 					}
-					this.bubble("tracelog","Step three succeeded - found a line with two O's and no X's");
+					this.bubble("tracelog","Step five succeeded - found a line with two O's and no X's");
 				}
 				if (foundmove) break;
 			}
 		}
-		if (!foundmove) this.bubble("tracelog","Step three failed - no line with two O's and no X's");
+		if (!foundmove) this.bubble("tracelog","Step five failed - no line with two O's and no X's");
 		
-		// Step four - look for one O in the same line with no X's
+		// Step six - look for one O in the same line with no X's
 		if (!foundmove) {
 			for (x=0;x<numlines;x++) {
 				linesum=0;
@@ -387,14 +530,14 @@ var tmp = function () {
 						coordinate=lines[x][y];
 						if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
 					}
-					this.bubble("tracelog","Step four succeeded - found a line with one O and no X's");
+					this.bubble("tracelog","Step six succeeded - found a line with one O and no X's");
 				}
 				if (foundmove) break;
 			}
 		}
-		if (!foundmove) this.bubble("tracelog","Step four failed - no line with one O's and no X's");
+		if (!foundmove) this.bubble("tracelog","Step six failed - no line with one O's and no X's");
 
-		// Step five - look to move in the central area (to control the game better!)
+		// Step seven - look to move in the central area (to control the game better!)
 		if (!foundmove) {
 			for (x=0;x<8;x++) {
 				count=0;
@@ -407,15 +550,15 @@ var tmp = function () {
 					coordinate=centre[x];
 					if (board[coordinate.x][coordinate.y][coordinate.z]==0) {
 						foundmove=true;
-						this.bubble("tracelog","Step five succeeded - found move in central area");
+						this.bubble("tracelog","Step seven succeeded - found move in central area");
 					}
 				}
 			}
 		}
-		if (!foundmove) this.bubble("tracelog","Step five failed - central area taken");
+		if (!foundmove) this.bubble("tracelog","Step seven failed - central area taken");
 
 		
-		// Step six - look for no O's in the same line with no X's
+		// Step eight - look for no O's in the same line with no X's
 		if (!foundmove) {
 			for (x=0;x<numlines;x++) {
 				linesum=0;
@@ -430,12 +573,12 @@ var tmp = function () {
 					// choose 2nd or 3rd position
 					y=Math.floor(Math.random()*2)+1;
 					coordinate=lines[x][y];
-					this.bubble("tracelog","Step six succeeded - found a line with no O's and no X's");
+					this.bubble("tracelog","Step eight succeeded - found a line with no O's and no X's");
 				}
 				if (foundmove) break;
 			}
 		}
-		if (!foundmove) this.bubble("tracelog","Step six failed - no line with no O's and no X's");
+		if (!foundmove) this.bubble("tracelog","Step eight failed - no line with no O's and no X's");
 		
 		// Last step - do random move
 		while (!foundmove) {
