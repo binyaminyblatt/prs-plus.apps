@@ -15,6 +15,7 @@
 // 2011-03-29 Ben Chenoweth - Further improvements to AI
 // 2011-03-30 Ben Chenoweth - Added new first step to AI: look for multi-step jump
 // 2011-03-31 Ben Chenoweth - Change board format for kings (to make regular and ai representations the same)
+// 2011-04-03 Ben Chenoweth - Moved all labels around slightly
 
 var tmp = function () {
 	

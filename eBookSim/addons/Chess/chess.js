@@ -22,6 +22,7 @@
 //  2011-03-23 Ben Chenoweth - Added icon; implemented 10-depth undo.
 //  2011-03-25 Ben Chenoweth - Skins changed over to use common AppAssests.
 //  2011-03-27 Ben Chenoweth - Fixed labels for PRS-950.
+//  2011-04-03 Ben Chenoweth - Moved all labels around slightly; switched Prev and Next function for Touch.
 
 var tmp = function () {
 	var sMovesList;
@@ -1101,9 +1102,9 @@ var tmp = function () {
 		return;
 	}
 	
-	target.doNext = function () {
+	target.doPrev = function () {
 		if (hasNumericButtons) {
-			this.moveCursor("right");
+			this.moveCursor("left");
 			return;
 		}
 		// This indicates the AI level. It can be 1: "very stupid", 2: "slow, stupid", or 3: "very slow".
@@ -1114,31 +1115,31 @@ var tmp = function () {
 		}
 		if (level == 1) {
 			if (automode) {
-				this.touchButtons1.setValue("[Next] AI speed: Fast (Auto ON)");
+				this.touchButtons1.setValue("[Prev] AI speed: Fast (Auto ON)");
 			} else {
-				this.touchButtons1.setValue("[Next] AI speed: Fast (Auto OFF)");
+				this.touchButtons1.setValue("[Prev] AI speed: Fast (Auto OFF)");
 			}
 		}
 		if (level == 2) {
 			if (automode) {
-				this.touchButtons1.setValue("[Next] AI speed: Medium (Auto ON)");
+				this.touchButtons1.setValue("[Prev] AI speed: Medium (Auto ON)");
 			} else {
-				this.touchButtons1.setValue("[Next] AI speed: Medium (Auto OFF)");
+				this.touchButtons1.setValue("[Prev] AI speed: Medium (Auto OFF)");
 			}
 		}
 		if (level == 3) {
 			if (automode) {
-				this.touchButtons1.setValue("[Next] AI speed: Slow (Auto ON)");
+				this.touchButtons1.setValue("[Prev] AI speed: Slow (Auto ON)");
 			} else {
-				this.touchButtons1.setValue("[Next] AI speed: Slow (Auto OFF)");
+				this.touchButtons1.setValue("[Prev] AI speed: Slow (Auto OFF)");
 			}
 		}
 		return;
 	}
 	
-	target.doPrev = function () {
+	target.doNext = function () {
 		if (hasNumericButtons) {
-			this.moveCursor("left");
+			this.moveCursor("right");
 			return;
 		}
 		etc.nPromotion++;
@@ -1146,16 +1147,16 @@ var tmp = function () {
 			etc.nPromotion = 0;
 		}
 		if (etc.nPromotion == 0) {
-			this.sometext1.setValue("[Prev] Pawn promotion to: Queen");
+			this.sometext1.setValue("[Next] Pawn promotion to: Queen");
 		}
 		if (etc.nPromotion == 1) {
-			this.sometext1.setValue("[Prev] Pawn promotion to: Rook");
+			this.sometext1.setValue("[Next] Pawn promotion to: Rook");
 		}
 		if (etc.nPromotion == 2) {
-			this.sometext1.setValue("[Prev] Pawn promotion to: Bishop");
+			this.sometext1.setValue("[Next] Pawn promotion to: Bishop");
 		}
 		if (etc.nPromotion == 3) {
-			this.sometext1.setValue("[Prev] Pawn promotion to: Knight");
+			this.sometext1.setValue("[Next] Pawn promotion to: Knight");
 		}
 		return;
 	}

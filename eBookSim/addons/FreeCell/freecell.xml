@@ -378,8 +378,8 @@
 			<label id="instr5" skin="quitinstr" right="10" top="660" width="200" height="20" align="right" text="0: Quit"/>			
             <!--sprite id='touchHelp'  	skin='hHelpT' left='42' width='516' top='50' height='611' active='false' canFocus='false'/-->
             <text id='helpText' skin='helpText' left='42' right='42' top='50' bottom='50' active='false' visible='false' />		
-            <label id='touchButtons1'   skin='touchText'    left='1' right='0' bottom='5' height='10' align='left' text='Open snapshot       Save snapshot                Quit                        Undo                     Help'/>
-			<label id='nonTouch'   skin='touchText'    left='1' right='0' bottom='5' height='10' align='left' text='PREV to open and NEXT to save snapshot           SIZE to undo           MENU to show/hide help'/>
+            <label id='touchButtons1'   skin='touchText'    left='1' right='0' bottom='3' height='15' align='left' text='Open snapshot       Save snapshot                Quit                        Undo                     Help'/>
+			<label id='nonTouch'   skin='touchText'    left='1' right='0' bottom='3' height='15' align='left' text='PREV to open and NEXT to save snapshot           SIZE to undo           MENU to show/hide help'/>
         </group>
     </group>
 </document>

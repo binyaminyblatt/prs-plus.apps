@@ -18,6 +18,7 @@
  2011-03-25 Ben Chenoweth: made a few small adjustments to AppAssests skins; added copyright label
  2011-03-29 Ben Chenoweth: small fix for non-Touch: better handles unselecting card
  2011-04-01 Ben Chenoweth: Reinstated better shuffling routine that got lost in transition to repository
+ 2011-04-03 Ben Chenoweth: Moved all labels around slightly
 */
 
 
