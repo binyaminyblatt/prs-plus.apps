@@ -7,12 +7,14 @@
 // 2011-04-01 Ben Chenoweth - Less predictable AI by shuffling lines array
 // 2011-04-01 Ben Chenoweth - Fixed some coordinate errors in the lines array
 // 2011-04-03 Ben Chenoweth - AI improvement: Double whammies are now found and blocked
+// 2011-04-03 Ben Chenoweth - Added difficulty level (easy/hard)
 
 var tmp = function () {
 	var Exiting;
 	var gameover;
 	var players=1;
 	var player1turn;
+	var difficulty="easy";
 	var firstX = 110;
 	var curDX = 98;
 	var firstY = 16;
@@ -88,22 +90,24 @@ var tmp = function () {
 			this.instr1.show(false);
 			this.instr2.show(false);
 			this.instr3.show(false);
-			this.instr4.show(false);
 			this.gridnums1.show(false);
 			this.gridnums2.show(false);
 			this.gridnums3.show(false);
 			this.gridnums4.show(false);
+			this.nonTouch4.show(false);
+			this.nonTouch6.show(false);
 		} else {
 			isTouch = false;
 			this.grid1Cursor.show(true);
 			this.grid2Cursor.show(false);
-			this.instr1.show(true);
-			this.instr2.show(true);
-			this.instr3.show(true);
-			this.instr4.show(true);
+			//this.instr1.show(true);
+			//this.instr2.show(true);
+			//this.instr3.show(true);
+			//this.instr4.show(true);
 			this.BUTTON_EXT.show(false);
 			this.BUTTON_ONE.show(false);
 			this.BUTTON_TWO.show(false);
+			this.touchButtons1.show(false);
 		}
 		// board array needs to be initialised to be one column, row and height larger than the button array (for board-searching purposes)
 		for (var a = 0; a <= maxX; a++) {
@@ -348,7 +352,7 @@ var tmp = function () {
 		if (!foundmove) this.bubble("tracelog","Step two failed - no move to block a win");
 
 		// Step three - look for intersection point of two lines each with two O's and no X's (to complete a double-whammy)
-		if (!foundmove) {
+		if ((!foundmove) && (difficulty=="hard")) {
 			for (x=0;x<numlines;x++) {
 				linesum=0;
 				count=0;
@@ -416,10 +420,10 @@ var tmp = function () {
 				if (foundmove) break;
 			}
 		}
-		if (!foundmove) this.bubble("tracelog","Step three failed - cannot complete a double whammy");
+		if ((!foundmove) && (difficulty=="hard")) this.bubble("tracelog","Step three failed - cannot complete a double whammy");
 
 		// Step four - look for intersection point of two lines each with two X's and no O's (to block a double-whammy)
-		if (!foundmove) {
+		if ((!foundmove) && (difficulty=="hard")) {
 			for (x=0;x<numlines;x++) {
 				linesum=0;
 				count=0;
@@ -487,7 +491,7 @@ var tmp = function () {
 				if (foundmove) break;
 			}
 		}
-		if (!foundmove) this.bubble("tracelog","Step four failed - cannot block a double whammy");		
+		if ((!foundmove) && (difficulty=="hard")) this.bubble("tracelog","Step four failed - cannot block a double whammy");		
 		
 		// Step five - look for two O's in the same line with no X's
 		if (!foundmove) {
@@ -1080,11 +1084,37 @@ var tmp = function () {
 			}
 		case 0:
 			{
-				kbook.autoRunRoot.exitIf(kbook.model);
+				if (difficulty == "easy") {
+					difficulty="hard";
+					this.nonTouch6.setValue("[0] Difficulty: Hard");
+				} else if (difficulty == "hard") {
+					difficulty="easy";
+					this.nonTouch6.setValue("[0] Difficulty: Easy");
+				}
 				return;
 			}
 		}
 	}
+
+	target.doPrev = function () {
+		if (hasNumericButtons) {
+			this.moveCursor("left");
+			return;
+		}
+		if (difficulty == "easy") {
+			difficulty="hard";
+			this.touchButtons1.setValue("[Prev] Difficulty: Hard");
+		} else if (difficulty == "hard") {
+			difficulty="easy";
+			this.touchButtons1.setValue("[Prev] Difficulty: Easy");
+		}
+		return;
+	}
+	
+	target.doHold0 = function () {
+		kbook.autoRunRoot.exitIf(kbook.model);
+		return;
+	}	
 };
 tmp();
 tmp = undefined;

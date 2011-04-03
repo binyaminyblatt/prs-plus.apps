@@ -118,7 +118,7 @@
                 <function id="doCenter"> this.placeXO();</function>
                 <function id="doMark"> this.init();</function>
                 <function id="doLeft"> this.moveCursor("left");</function>
-                <function id="doPrevious"> this.moveCursor("left");</function>
+                <function id="doPrevious"> this.doPrev();</function>
                 <function id="doRight"> this.moveCursor("right");</function>
                 <function id="doNext"> this.moveCursor("right");</function>
                 <function id="doUp"> this.moveCursor("up");</function>
@@ -334,13 +334,13 @@
             <sprite skin="grid1Cursor" id="grid1Cursor" left="110" width="120" top="16" height="38" u="0" active="false" canFocus="true"/>
             <sprite skin="grid2Cursor" id="grid2Cursor" left="404" width="120" top="16" height="38" u="0" active="false" canFocus="true"/>
 
-            <label id="showTurn" skin="boldtext" left="0" right="0" top="650" height="60" align="center" text="Your turn..."/>
-
+            <label id="showTurn" skin="boldtext" left="0" right="0" top="620" height="60" align="center" text="Your turn..."/>
+			<label id='touchButtons1'   skin='touchText'    left='1' right='0' bottom='5' height='15' align='left' text='[Prev] Difficulty: Easy'/>
+			<label id='nonTouch6'   skin='touchText'    left='1' right='0' bottom='5' height='15' align='left' text='[0] Difficulty: Easy'/>
             <label id="instr1" skin="digits" left="460" right="0" top="-64" height="20" align="left" text="For new game"/>
             <label id="instr2" skin="digits" left="460" right="0" top="-44" height="20" align="left" text="   8: 1 Player"/>
             <label id="instr3" skin="digits" left="460" right="0" top="-24" height="20" align="left" text="   9: 2 Players"/>
-            <label id="instr4" skin="blackdigits" right="10" top="668" width="200" height="20" align="right" text="0: Quit"/>
-
+			<label id='nonTouch4'   skin='touchText'    left='460' right='0' bottom='5' height='15' align='left' text='[Hold 0] Quit'/>
         </group>
     </group>
 </document>
