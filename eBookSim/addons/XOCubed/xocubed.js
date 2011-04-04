@@ -8,6 +8,7 @@
 // 2011-04-01 Ben Chenoweth - Fixed some coordinate errors in the lines array
 // 2011-04-03 Ben Chenoweth - AI improvement: Double whammies are now found and blocked
 // 2011-04-03 Ben Chenoweth - Added difficulty level (easy/hard)
+// 2011-04-04 Ben Chenoweth - Commented out the debug bubble outputs
 
 var tmp = function () {
 	var Exiting;
@@ -321,11 +322,11 @@ var tmp = function () {
 					coordinate=lines[x][y];
 					if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
 				}
-				this.bubble("tracelog","Step one succeeded - found a winning move");
+				//this.bubble("tracelog","Step one succeeded - found a winning move");
 			}
 			if (foundmove) break;
 		}
-		if (!foundmove) this.bubble("tracelog","Step one failed - no move to win");
+		//if (!foundmove) this.bubble("tracelog","Step one failed - no move to win");
 		
 		// Step two - look for three X's in the same line and block
 		if (!foundmove) {
@@ -344,12 +345,12 @@ var tmp = function () {
 						coordinate=lines[x][y];
 						if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
 					}
-					this.bubble("tracelog","Step two succeeded - blocked a win.  linesum="+linesum+", count="+count);
+					//this.bubble("tracelog","Step two succeeded - blocked a win.  linesum="+linesum+", count="+count);
 				}
 				if (foundmove) break;
 			}
 		}
-		if (!foundmove) this.bubble("tracelog","Step two failed - no move to block a win");
+		//if (!foundmove) this.bubble("tracelog","Step two failed - no move to block a win");
 
 		// Step three - look for intersection point of two lines each with two O's and no X's (to complete a double-whammy)
 		if ((!foundmove) && (difficulty=="hard")) {
@@ -381,7 +382,7 @@ var tmp = function () {
 							if ((tempcoordinate.x==coordinate.x) && (tempcoordinate.y==coordinate.y) && (tempcoordinate.z==coordinate.z)) lineintersect=true;
 						}
 						if ((templinesum==-2) && (tempcount==2) && (lineintersect)) {
-							this.bubble("tracelog","Step three succeeded - can complete a double whammy");
+							//this.bubble("tracelog","Step three succeeded - can complete a double whammy");
 							foundmove=true;
 						}
 						if (foundmove) break;
@@ -411,7 +412,7 @@ var tmp = function () {
 							}
 							if ((templinesum==-2) && (tempcount==2) && (lineintersect)) {
 								foundmove=true;
-								this.bubble("tracelog","Step three succeeded - can complete a double whammy");
+								//this.bubble("tracelog","Step three succeeded - can complete a double whammy");
 							}
 							if (foundmove) break;
 						}
@@ -420,7 +421,7 @@ var tmp = function () {
 				if (foundmove) break;
 			}
 		}
-		if ((!foundmove) && (difficulty=="hard")) this.bubble("tracelog","Step three failed - cannot complete a double whammy");
+		//if ((!foundmove) && (difficulty=="hard")) this.bubble("tracelog","Step three failed - cannot complete a double whammy");
 
 		// Step four - look for intersection point of two lines each with two X's and no O's (to block a double-whammy)
 		if ((!foundmove) && (difficulty=="hard")) {
@@ -452,7 +453,7 @@ var tmp = function () {
 							if ((tempcoordinate.x==coordinate.x) && (tempcoordinate.y==coordinate.y) && (tempcoordinate.z==coordinate.z)) lineintersect=true;
 						}
 						if ((templinesum==2) && (tempcount==2) && (lineintersect)) {
-							this.bubble("tracelog","Step four succeeded - can block a double whammy");
+							//this.bubble("tracelog","Step four succeeded - can block a double whammy");
 							foundmove=true;
 						}
 						if (foundmove) break;
@@ -482,7 +483,7 @@ var tmp = function () {
 							}
 							if ((templinesum==2) && (tempcount==2) && (lineintersect)) {
 								foundmove=true;
-								this.bubble("tracelog","Step four succeeded - can block a double whammy");
+								//this.bubble("tracelog","Step four succeeded - can block a double whammy");
 							}
 							if (foundmove) break;
 						}
@@ -491,7 +492,7 @@ var tmp = function () {
 				if (foundmove) break;
 			}
 		}
-		if ((!foundmove) && (difficulty=="hard")) this.bubble("tracelog","Step four failed - cannot block a double whammy");		
+		//if ((!foundmove) && (difficulty=="hard")) this.bubble("tracelog","Step four failed - cannot block a double whammy");		
 		
 		// Step five - look for two O's in the same line with no X's
 		if (!foundmove) {
@@ -510,12 +511,12 @@ var tmp = function () {
 						coordinate=lines[x][y];
 						if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
 					}
-					this.bubble("tracelog","Step five succeeded - found a line with two O's and no X's");
+					//this.bubble("tracelog","Step five succeeded - found a line with two O's and no X's");
 				}
 				if (foundmove) break;
 			}
 		}
-		if (!foundmove) this.bubble("tracelog","Step five failed - no line with two O's and no X's");
+		//if (!foundmove) this.bubble("tracelog","Step five failed - no line with two O's and no X's");
 		
 		// Step six - look for one O in the same line with no X's
 		if (!foundmove) {
@@ -534,12 +535,12 @@ var tmp = function () {
 						coordinate=lines[x][y];
 						if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
 					}
-					this.bubble("tracelog","Step six succeeded - found a line with one O and no X's");
+					//this.bubble("tracelog","Step six succeeded - found a line with one O and no X's");
 				}
 				if (foundmove) break;
 			}
 		}
-		if (!foundmove) this.bubble("tracelog","Step six failed - no line with one O's and no X's");
+		//if (!foundmove) this.bubble("tracelog","Step six failed - no line with one O's and no X's");
 
 		// Step seven - look to move in the central area (to control the game better!)
 		if (!foundmove) {
@@ -554,12 +555,12 @@ var tmp = function () {
 					coordinate=centre[x];
 					if (board[coordinate.x][coordinate.y][coordinate.z]==0) {
 						foundmove=true;
-						this.bubble("tracelog","Step seven succeeded - found move in central area");
+						//this.bubble("tracelog","Step seven succeeded - found move in central area");
 					}
 				}
 			}
 		}
-		if (!foundmove) this.bubble("tracelog","Step seven failed - central area taken");
+		//if (!foundmove) this.bubble("tracelog","Step seven failed - central area taken");
 
 		
 		// Step eight - look for no O's in the same line with no X's
@@ -577,23 +578,23 @@ var tmp = function () {
 					// choose 2nd or 3rd position
 					y=Math.floor(Math.random()*2)+1;
 					coordinate=lines[x][y];
-					this.bubble("tracelog","Step eight succeeded - found a line with no O's and no X's");
+					//this.bubble("tracelog","Step eight succeeded - found a line with no O's and no X's");
 				}
 				if (foundmove) break;
 			}
 		}
-		if (!foundmove) this.bubble("tracelog","Step eight failed - no line with no O's and no X's");
+		//if (!foundmove) this.bubble("tracelog","Step eight failed - no line with no O's and no X's");
 		
 		// Last step - do random move
 		while (!foundmove) {
 			x=Math.floor(Math.random()*4);
 			y=Math.floor(Math.random()*4);
 			z=Math.floor(Math.random()*4);
-			this.bubble("tracelog","x="+x+", y="+y+", z="+z+", board[x][y][z]="+board[x][y][z]);
+			//this.bubble("tracelog","x="+x+", y="+y+", z="+z+", board[x][y][z]="+board[x][y][z]);
 			if (board[x][y][z]==0) {
 				foundmove=true;
 				coordinate=this.coord(x,y,z);
-				this.bubble("tracelog","Last step succeeded - random move found");
+				//this.bubble("tracelog","Last step succeeded - random move found");
 			}
 		}
 		
@@ -807,7 +808,7 @@ var tmp = function () {
 		id = getSoValue(sender, "id");
 		num = id.substring(9, 11);
 		u = getSoValue(sender,"u");
-		this.bubble("tracelog","id="+id+", num="+num+", u="+u);
+		//this.bubble("tracelog","id="+id+", num="+num+", u="+u);
 		if (u == 0) {
 			if (players == 2) {
 				if (player1turn) {
@@ -966,7 +967,7 @@ var tmp = function () {
 	}
 	
 	target.digitF = function (digit) {
-		this.bubble("tracelog","digit="+digit);
+		//this.bubble("tracelog","digit="+digit);
 		switch (digit*1) {	/* typecast to number */
 		case 1:
 			{
@@ -982,7 +983,7 @@ var tmp = function () {
 					pos1Z=0;
 					this.drawgrid1Cursor(pos1X, pos1Y,pos1Z);
 				}
-				this.bubble("tracelog","pos1X="+pos1X+", pos1Y="+pos1Y+", pos1Z="+pos1Z);
+				//this.bubble("tracelog","pos1X="+pos1X+", pos1Y="+pos1Y+", pos1Z="+pos1Z);
 				return;
 			}
 		case 2:
@@ -999,7 +1000,7 @@ var tmp = function () {
 					pos1Z=1;
 					this.drawgrid1Cursor(pos1X, pos1Y,pos1Z);
 				}
-				this.bubble("tracelog","pos1X="+pos1X+", pos1Y="+pos1Y+", pos1Z="+pos1Z);
+				//this.bubble("tracelog","pos1X="+pos1X+", pos1Y="+pos1Y+", pos1Z="+pos1Z);
 				return;
 			}
 		case 3:
@@ -1016,7 +1017,7 @@ var tmp = function () {
 					pos1Z=2;
 					this.drawgrid1Cursor(pos1X, pos1Y,pos1Z);
 				}
-				this.bubble("tracelog","pos1X="+pos1X+", pos1Y="+pos1Y+", pos1Z="+pos1Z);
+				//this.bubble("tracelog","pos1X="+pos1X+", pos1Y="+pos1Y+", pos1Z="+pos1Z);
 				return;
 			}
 		case 4:
@@ -1033,7 +1034,7 @@ var tmp = function () {
 					pos1Z=3;
 					this.drawgrid1Cursor(pos1X, pos1Y,pos1Z);
 				}
-				this.bubble("tracelog","pos1X="+pos1X+", pos1Y="+pos1Y+", pos1Z="+pos1Z);
+				//this.bubble("tracelog","pos1X="+pos1X+", pos1Y="+pos1Y+", pos1Z="+pos1Z);
 				return;
 			}
 			case 8:
