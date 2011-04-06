@@ -9,12 +9,15 @@
 // 2011-04-03 Ben Chenoweth - AI improvement: Double whammies are now found and blocked
 // 2011-04-03 Ben Chenoweth - Added difficulty level (easy/hard)
 // 2011-04-04 Ben Chenoweth - Commented out the debug bubble outputs
+// 2011-04-06 Ben Chenoweth - AI improvement: Make and block triple whammies; added difficulty level "very hard"; losing player goes first next game
 
 var tmp = function () {
 	var Exiting;
 	var gameover;
 	var players=1;
 	var player1turn;
+	var previousplayers=1;
+	var lastwinner=0;
 	var difficulty="easy";
 	var firstX = 110;
 	var curDX = 98;
@@ -39,8 +42,10 @@ var tmp = function () {
 	var xMovesY = [];
 	var xMovesZ = [];
 	var lines = [];
+	var planes = [];
 	var centre;
 	var numlines;
+	var numplanes;
 	var isTouch;
 	var uD;
 
@@ -197,7 +202,23 @@ var tmp = function () {
 		lines[75]=[this.coord(0,3,0),this.coord(1,2,1),this.coord(2,1,2),this.coord(3,0,3)];
 		numlines=76;
 		centre=[this.coord(1,1,1),this.coord(2,1,1),this.coord(1,2,1),this.coord(2,2,1),this.coord(1,1,2),this.coord(2,1,2),this.coord(1,2,2),this.coord(2,2,2)];
-		
+		planes[0]=[this.coord(0,0,0),this.coord(1,0,0),this.coord(2,0,0),this.coord(3,0,0),this.coord(0,1,0),this.coord(1,1,0),this.coord(2,1,0),this.coord(3,1,0),this.coord(0,2,0),this.coord(1,2,0),this.coord(2,2,0),this.coord(3,2,0),this.coord(0,3,0),this.coord(1,3,0),this.coord(2,3,0),this.coord(3,3,0)];
+		planes[1]=[this.coord(0,0,1),this.coord(1,0,1),this.coord(2,0,1),this.coord(3,0,1),this.coord(0,1,1),this.coord(1,1,1),this.coord(2,1,1),this.coord(3,1,1),this.coord(0,2,1),this.coord(1,2,1),this.coord(2,2,1),this.coord(3,2,1),this.coord(0,3,1),this.coord(1,3,1),this.coord(2,3,1),this.coord(3,3,1)];
+		planes[2]=[this.coord(0,0,2),this.coord(1,0,2),this.coord(2,0,2),this.coord(3,0,2),this.coord(0,1,2),this.coord(1,1,2),this.coord(2,1,2),this.coord(3,1,2),this.coord(0,2,2),this.coord(1,2,2),this.coord(2,2,2),this.coord(3,2,2),this.coord(0,3,2),this.coord(1,3,2),this.coord(2,3,2),this.coord(3,3,2)];
+		planes[3]=[this.coord(0,0,3),this.coord(1,0,3),this.coord(2,0,3),this.coord(3,0,3),this.coord(0,1,3),this.coord(1,1,3),this.coord(2,1,3),this.coord(3,1,3),this.coord(0,2,3),this.coord(1,2,3),this.coord(2,2,3),this.coord(3,2,3),this.coord(0,3,3),this.coord(1,3,3),this.coord(2,3,3),this.coord(3,3,3)];
+		planes[4]=[this.coord(0,0,0),this.coord(0,0,1),this.coord(0,0,2),this.coord(0,0,3),this.coord(1,0,0),this.coord(1,0,1),this.coord(1,0,2),this.coord(1,0,3),this.coord(2,0,0),this.coord(2,0,1),this.coord(2,0,2),this.coord(2,0,3),this.coord(3,0,0),this.coord(3,0,1),this.coord(3,0,2),this.coord(3,0,3)];
+		planes[5]=[this.coord(0,1,0),this.coord(0,1,1),this.coord(0,1,2),this.coord(0,1,3),this.coord(1,1,0),this.coord(1,1,1),this.coord(1,1,2),this.coord(1,1,3),this.coord(2,1,0),this.coord(2,1,1),this.coord(2,1,2),this.coord(2,1,3),this.coord(3,1,0),this.coord(3,1,1),this.coord(3,1,2),this.coord(3,1,3)];
+		planes[6]=[this.coord(0,2,0),this.coord(0,2,1),this.coord(0,2,2),this.coord(0,2,3),this.coord(1,2,0),this.coord(1,2,1),this.coord(1,2,2),this.coord(1,2,3),this.coord(2,2,0),this.coord(2,2,1),this.coord(2,2,2),this.coord(2,2,3),this.coord(3,2,0),this.coord(3,2,1),this.coord(3,2,2),this.coord(3,2,3)];
+		planes[7]=[this.coord(0,3,0),this.coord(0,3,1),this.coord(0,3,2),this.coord(0,3,3),this.coord(1,3,0),this.coord(1,3,1),this.coord(1,3,2),this.coord(1,3,3),this.coord(2,3,0),this.coord(2,3,1),this.coord(2,3,2),this.coord(2,3,3),this.coord(3,3,0),this.coord(3,3,1),this.coord(3,3,2),this.coord(3,3,3)];
+		planes[8]=[this.coord(0,0,0),this.coord(0,1,1),this.coord(0,2,2),this.coord(0,3,3),this.coord(1,0,0),this.coord(1,1,1),this.coord(1,2,2),this.coord(1,3,3),this.coord(2,0,0),this.coord(2,1,1),this.coord(2,2,2),this.coord(2,3,3),this.coord(3,0,0),this.coord(3,1,1),this.coord(3,2,2),this.coord(3,3,3)];
+		planes[9]=[this.coord(0,3,0),this.coord(0,2,1),this.coord(0,1,2),this.coord(0,0,3),this.coord(1,3,0),this.coord(1,2,1),this.coord(1,1,2),this.coord(1,0,3),this.coord(2,3,0),this.coord(2,2,1),this.coord(2,1,2),this.coord(2,0,3),this.coord(3,3,0),this.coord(3,2,1),this.coord(3,1,2),this.coord(3,0,3)];
+		planes[10]=[this.coord(0,0,0),this.coord(0,1,0),this.coord(0,2,0),this.coord(0,3,0),this.coord(0,0,1),this.coord(0,1,1),this.coord(0,2,1),this.coord(0,3,1),this.coord(0,0,2),this.coord(0,1,2),this.coord(0,2,2),this.coord(0,3,2),this.coord(0,0,3),this.coord(0,1,3),this.coord(0,2,3),this.coord(0,3,3)];
+		planes[11]=[this.coord(1,0,0),this.coord(1,1,0),this.coord(1,2,0),this.coord(1,3,0),this.coord(1,0,1),this.coord(1,1,1),this.coord(1,2,1),this.coord(1,3,1),this.coord(1,0,2),this.coord(1,1,2),this.coord(1,2,2),this.coord(1,3,2),this.coord(1,0,3),this.coord(1,1,3),this.coord(1,2,3),this.coord(1,3,3)];
+		planes[12]=[this.coord(2,0,0),this.coord(2,1,0),this.coord(2,2,0),this.coord(2,3,0),this.coord(2,0,1),this.coord(2,1,1),this.coord(2,2,1),this.coord(2,3,1),this.coord(2,0,2),this.coord(2,1,2),this.coord(2,2,2),this.coord(2,3,2),this.coord(2,0,3),this.coord(2,1,3),this.coord(2,2,3),this.coord(2,3,3)];
+		planes[13]=[this.coord(3,0,0),this.coord(3,1,0),this.coord(3,2,0),this.coord(3,3,0),this.coord(3,0,1),this.coord(3,1,1),this.coord(3,2,1),this.coord(3,3,1),this.coord(3,0,2),this.coord(3,1,2),this.coord(3,2,2),this.coord(3,3,2),this.coord(3,0,3),this.coord(3,1,3),this.coord(3,2,3),this.coord(3,3,3)];
+		planes[14]=[this.coord(0,0,0),this.coord(0,1,0),this.coord(0,2,0),this.coord(0,3,0),this.coord(1,0,1),this.coord(1,1,1),this.coord(1,2,1),this.coord(1,3,1),this.coord(2,0,2),this.coord(2,1,2),this.coord(2,2,2),this.coord(2,3,2),this.coord(3,0,3),this.coord(3,1,3),this.coord(3,2,3),this.coord(3,3,3)]
+		planes[15]=[this.coord(3,0,0),this.coord(3,1,0),this.coord(3,2,0),this.coord(3,3,0),this.coord(2,0,1),this.coord(2,1,1),this.coord(2,2,1),this.coord(2,3,1),this.coord(1,0,2),this.coord(1,1,2),this.coord(1,2,2),this.coord(1,3,2),this.coord(0,0,3),this.coord(0,1,3),this.coord(0,2,3),this.coord(0,3,3)]
+		numplanes=16;
 		this.startPlay();
 		return;
 	}
@@ -353,7 +374,7 @@ var tmp = function () {
 		//if (!foundmove) this.bubble("tracelog","Step two failed - no move to block a win");
 
 		// Step three - look for intersection point of two lines each with two O's and no X's (to complete a double-whammy)
-		if ((!foundmove) && (difficulty=="hard")) {
+		if ((!foundmove) && ((difficulty=="hard") || (difficulty=="very hard"))) {
 			for (x=0;x<numlines;x++) {
 				linesum=0;
 				count=0;
@@ -421,10 +442,10 @@ var tmp = function () {
 				if (foundmove) break;
 			}
 		}
-		//if ((!foundmove) && (difficulty=="hard")) this.bubble("tracelog","Step three failed - cannot complete a double whammy");
+		//if ((!foundmove) && ((difficulty=="hard") || (difficulty=="very hard"))) this.bubble("tracelog","Step three failed - cannot complete a double whammy");
 
 		// Step four - look for intersection point of two lines each with two X's and no O's (to block a double-whammy)
-		if ((!foundmove) && (difficulty=="hard")) {
+		if ((!foundmove) && ((difficulty=="hard") || (difficulty=="very hard"))) {
 			for (x=0;x<numlines;x++) {
 				linesum=0;
 				count=0;
@@ -492,9 +513,67 @@ var tmp = function () {
 				if (foundmove) break;
 			}
 		}
-		//if ((!foundmove) && (difficulty=="hard")) this.bubble("tracelog","Step four failed - cannot block a double whammy");		
+		//if ((!foundmove) && ((difficulty=="hard") || (difficulty=="very hard"))) this.bubble("tracelog","Step four failed - cannot block a double whammy");		
+
+		// Step five - look to make triple whammy
+		if ((!foundmove) && (difficulty=="very hard")) {
+			for (x=0;x<numplanes;x++) {
+				planesum=0;
+				count=0;
+				pos5=false;
+				pos6=false;
+				pos9=false;
+				pos10=false;
+				for (y=0;y<16;y++) {
+					coordinate=planes[x][y];
+					planesum=planesum+board[coordinate.x][coordinate.y][coordinate.z];
+					if (board[coordinate.x][coordinate.y][coordinate.z]!=0) count++;
+					if ((y==5) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos5=true;
+					if ((y==6) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos6=true;
+					if ((y==9) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos9=true;
+					if ((y==10) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos10=true;
+				}
+				if ((planesum==-4) && (count==4) && (pos5) && (pos6) && (pos9) && (pos10)) {
+					// found a plane with four X's in the middle positions and no O's
+					//this.bubble("tracelog","Step five succeeded - can make a triple whammy");
+					coordinate=planes[x][0];
+					foundmove=true;
+				}
+				if (foundmove) break;
+			}
+		}
+		//if ((!foundmove) && (difficulty=="very hard")) this.bubble("tracelog","Step five failed - cannot make a triple whammy");
 		
-		// Step five - look for two O's in the same line with no X's
+		// Step six - look to block potential triple whammy
+		if ((!foundmove) && (difficulty=="very hard")) {
+			for (x=0;x<numplanes;x++) {
+				planesum=0;
+				count=0;
+				pos5=false;
+				pos6=false;
+				pos9=false;
+				pos10=false;
+				for (y=0;y<16;y++) {
+					coordinate=planes[x][y];
+					planesum=planesum+board[coordinate.x][coordinate.y][coordinate.z];
+					if (board[coordinate.x][coordinate.y][coordinate.z]!=0) count++;
+					if ((y==5) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos5=true;
+					if ((y==6) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos6=true;
+					if ((y==9) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos9=true;
+					if ((y==10) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos10=true;
+				}
+				if ((planesum==4) && (count==4) && (pos5) && (pos6) && (pos9) && (pos10)) {
+					// found a plane with four X's in the middle positions and no O's
+					//this.bubble("tracelog","Step six succeeded - can block a triple whammy");
+					coordinate=planes[x][0];
+					foundmove=true;
+				}
+				if (foundmove) break;
+			}
+		}
+		//if ((!foundmove) && (difficulty=="very hard")) this.bubble("tracelog","Step six failed - cannot block a triple whammy");
+		
+		// Step seven - look for two O's in the same line with no X's
 		if (!foundmove) {
 			for (x=0;x<numlines;x++) {
 				linesum=0;
@@ -511,14 +590,14 @@ var tmp = function () {
 						coordinate=lines[x][y];
 						if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
 					}
-					//this.bubble("tracelog","Step five succeeded - found a line with two O's and no X's");
+					//this.bubble("tracelog","Step seven succeeded - found a line with two O's and no X's");
 				}
 				if (foundmove) break;
 			}
 		}
-		//if (!foundmove) this.bubble("tracelog","Step five failed - no line with two O's and no X's");
+		//if (!foundmove) this.bubble("tracelog","Step seven failed - no line with two O's and no X's");
 		
-		// Step six - look for one O in the same line with no X's
+		// Step eight - look for one O in the same line with no X's
 		if (!foundmove) {
 			for (x=0;x<numlines;x++) {
 				linesum=0;
@@ -535,14 +614,14 @@ var tmp = function () {
 						coordinate=lines[x][y];
 						if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
 					}
-					//this.bubble("tracelog","Step six succeeded - found a line with one O and no X's");
+					//this.bubble("tracelog","Step eight succeeded - found a line with one O and no X's");
 				}
 				if (foundmove) break;
 			}
 		}
-		//if (!foundmove) this.bubble("tracelog","Step six failed - no line with one O's and no X's");
+		//if (!foundmove) this.bubble("tracelog","Step eight failed - no line with one O's and no X's");
 
-		// Step seven - look to move in the central area (to control the game better!)
+		// Step nine - look to move in the central area (to control the game better!)
 		if (!foundmove) {
 			for (x=0;x<8;x++) {
 				count=0;
@@ -555,15 +634,15 @@ var tmp = function () {
 					coordinate=centre[x];
 					if (board[coordinate.x][coordinate.y][coordinate.z]==0) {
 						foundmove=true;
-						//this.bubble("tracelog","Step seven succeeded - found move in central area");
+						//this.bubble("tracelog","Step nine succeeded - found move in central area");
 					}
 				}
 			}
 		}
-		//if (!foundmove) this.bubble("tracelog","Step seven failed - central area taken");
+		//if (!foundmove) this.bubble("tracelog","Step nine failed - central area taken");
 
 		
-		// Step eight - look for no O's in the same line with no X's
+		// Step ten - look for no O's in the same line with no X's
 		if (!foundmove) {
 			for (x=0;x<numlines;x++) {
 				linesum=0;
@@ -578,12 +657,12 @@ var tmp = function () {
 					// choose 2nd or 3rd position
 					y=Math.floor(Math.random()*2)+1;
 					coordinate=lines[x][y];
-					//this.bubble("tracelog","Step eight succeeded - found a line with no O's and no X's");
+					//this.bubble("tracelog","Step ten succeeded - found a line with no O's and no X's");
 				}
 				if (foundmove) break;
 			}
 		}
-		//if (!foundmove) this.bubble("tracelog","Step eight failed - no line with no O's and no X's");
+		//if (!foundmove) this.bubble("tracelog","Step ten failed - no line with no O's and no X's");
 		
 		// Last step - do random move
 		while (!foundmove) {
@@ -641,17 +720,21 @@ var tmp = function () {
 					if (player == 1) {
 						// player 1 wins
 						this.showTurn.setValue("Player 1 won!");
+						lastwinner=1;
 					} else {
 						// player 2 wins
 						this.showTurn.setValue("Player 2 won!");
+						lastwinner=2;
 					}
 				} else {
 					if (player == 1) {
 						// player 1 wins
 						this.showTurn.setValue("Congratulations!  You won!");
+						lastwinner=1;
 					} else {
 						// reader wins
 						this.showTurn.setValue("Bad luck!  I won!");
+						lastwinner=2;
 					}
 				}
 				this.grid2Cursor.show(false);
@@ -936,11 +1019,35 @@ var tmp = function () {
 		xMoves = 0;
 		this.drawgrid1Cursor(pos1X, pos1Y,pos1Z);
 		this.drawgrid2Cursor(pos2X, pos2Y,pos2Z);
-		this.showTurn.setValue("Your turn...");
-		player1turn = true;
 		if (!isTouch) {
 			this.grid1Cursor.show(true);
 			this.grid2Cursor.show(false);
+		}		
+		
+		if ((lastwinner==2) && (previousplayers==1)) {
+			// reader won last game
+			this.showTurn.setValue("Your turn...");
+			player1turn = true;
+		} else if ((lastwinner==1) && (previousplayers==1)) {
+			// human won last game
+			this.showTurn.setValue("My turn...");
+			player1turn = false;
+			if (!isTouch) {
+				this.grid1Cursor.show(false);
+			}
+			FskUI.Window.update.call(kbook.model.container.getWindow());
+			id = target.placeO();
+			this[id].u = 2;
+			this.showTurn.setValue("Your turn...");
+			player1turn = true;
+			if (!isTouch) {
+				this.grid1Cursor.show(true);
+			}
+		} else {
+			// previously playing 2 player game, now switching to 1 player game
+			this.showTurn.setValue("Your turn...");
+			player1turn = true;
+			previousplayers=1;
 		}
 	}
 	
@@ -958,12 +1065,25 @@ var tmp = function () {
 		xMoves = 0;
 		this.drawgrid1Cursor(pos1X, pos1Y,pos1Z);
 		this.drawgrid2Cursor(pos2X, pos2Y,pos2Z);
-		this.showTurn.setValue("Player 1's turn...");
-		player1turn = true;
 		if (!isTouch) {
 			this.grid1Cursor.show(true);
 			this.grid2Cursor.show(false);
 		}
+
+		if ((lastwinner==2) && (previousplayers==2)) {
+			// Player 2 won last game
+			this.showTurn.setValue("Player 1's turn...");
+			player1turn = true;
+		} else if ((lastwinner==1) && (previousplayers==2)) {
+			// Player 1 won last game
+			this.showTurn.setValue("Player 2's turn...");
+			player1turn = false;
+		} else {
+			// previously playing 1 player game, now switching to 2 player game
+			this.showTurn.setValue("Player 1's turn...");
+			player1turn = true;
+			previousplayers=2;
+		}		
 	}
 	
 	target.digitF = function (digit) {
@@ -1037,50 +1157,14 @@ var tmp = function () {
 				//this.bubble("tracelog","pos1X="+pos1X+", pos1Y="+pos1Y+", pos1Z="+pos1Z);
 				return;
 			}
-			case 8:
+		case 8:
 			{
-				players = 1;
-				this.resetButtons();
-				pos1X = 0;
-				pos1Y = 0;
-				pos1Z = 0;
-				pos2X = 3;
-				pos2Y = 0;
-				pos2Z = 0;
-				gameover = false;
-				oMoves = 0;
-				xMoves = 0;
-				this.drawgrid1Cursor(pos1X, pos1Y,pos1Z);
-				this.drawgrid2Cursor(pos2X, pos2Y,pos2Z);
-				this.showTurn.setValue("Your turn...");
-				player1turn = true;
-				if (!isTouch) {
-					this.grid1Cursor.show(true);
-					this.grid2Cursor.show(false);
-				}
+				this.GameOnePlayer();
 				return;
 			}
 		case 9:
 			{
-				players = 2;
-				this.resetButtons();
-				pos1X = 0;
-				pos1Y = 0;
-				pos1Z = 0;
-				pos2X = 3;
-				pos2Y = 0;
-				pos2Z = 0;
-				gameover = false;
-				oMoves = 0;
-				xMoves = 0;
-				this.drawgrid1Cursor(pos1X, pos1Y,pos1Z);
-				this.drawgrid2Cursor(pos2X, pos2Y,pos2Z);
-				this.showTurn.setValue("Player 1's turn...");
-				player1turn = true;
-				if (!isTouch) {
-					this.grid1Cursor.show(true);
-					this.grid2Cursor.show(false);
-				}
+				this.GameTwoPlayers();
 				return;
 			}
 		case 0:
@@ -1089,6 +1173,9 @@ var tmp = function () {
 					difficulty="hard";
 					this.nonTouch6.setValue("[0] Difficulty: Hard");
 				} else if (difficulty == "hard") {
+					difficulty="very hard";
+					this.nonTouch6.setValue("[0] Difficulty: Very hard");
+				} else if (difficulty == "very hard") {
 					difficulty="easy";
 					this.nonTouch6.setValue("[0] Difficulty: Easy");
 				}
@@ -1106,6 +1193,9 @@ var tmp = function () {
 			difficulty="hard";
 			this.touchButtons1.setValue("[Prev] Difficulty: Hard");
 		} else if (difficulty == "hard") {
+			difficulty="very hard";
+			this.touchButtons1.setValue("[Prev] Difficulty: Very hard");
+		} else if (difficulty == "very hard") {
 			difficulty="easy";
 			this.touchButtons1.setValue("[Prev] Difficulty: Easy");
 		}
