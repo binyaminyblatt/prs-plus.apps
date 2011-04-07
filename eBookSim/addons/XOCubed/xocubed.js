@@ -9,7 +9,8 @@
 // 2011-04-03 Ben Chenoweth - AI improvement: Double whammies are now found and blocked
 // 2011-04-03 Ben Chenoweth - Added difficulty level (easy/hard)
 // 2011-04-04 Ben Chenoweth - Commented out the debug bubble outputs
-// 2011-04-06 Ben Chenoweth - AI improvement: Make and block triple whammies; added difficulty level "very hard"; losing player goes first next game
+// 2011-04-06 Ben Chenoweth - AI improvement: Make and block triple whammies; added difficulty level 'very hard'; losing player goes first next game
+// 2011-04-07 Ben Chenoweth - AI tweaks; combined 'very hard' into 'hard'; commented out make triple whammies; added two missing planes
 
 var tmp = function () {
 	var Exiting;
@@ -46,6 +47,7 @@ var tmp = function () {
 	var centre;
 	var numlines;
 	var numplanes;
+	var whammyinplay;
 	var isTouch;
 	var uD;
 
@@ -218,7 +220,9 @@ var tmp = function () {
 		planes[13]=[this.coord(3,0,0),this.coord(3,1,0),this.coord(3,2,0),this.coord(3,3,0),this.coord(3,0,1),this.coord(3,1,1),this.coord(3,2,1),this.coord(3,3,1),this.coord(3,0,2),this.coord(3,1,2),this.coord(3,2,2),this.coord(3,3,2),this.coord(3,0,3),this.coord(3,1,3),this.coord(3,2,3),this.coord(3,3,3)];
 		planes[14]=[this.coord(0,0,0),this.coord(0,1,0),this.coord(0,2,0),this.coord(0,3,0),this.coord(1,0,1),this.coord(1,1,1),this.coord(1,2,1),this.coord(1,3,1),this.coord(2,0,2),this.coord(2,1,2),this.coord(2,2,2),this.coord(2,3,2),this.coord(3,0,3),this.coord(3,1,3),this.coord(3,2,3),this.coord(3,3,3)]
 		planes[15]=[this.coord(3,0,0),this.coord(3,1,0),this.coord(3,2,0),this.coord(3,3,0),this.coord(2,0,1),this.coord(2,1,1),this.coord(2,2,1),this.coord(2,3,1),this.coord(1,0,2),this.coord(1,1,2),this.coord(1,2,2),this.coord(1,3,2),this.coord(0,0,3),this.coord(0,1,3),this.coord(0,2,3),this.coord(0,3,3)]
-		numplanes=16;
+		planes[16]=[this.coord(0,3,0),this.coord(1,2,0),this.coord(2,1,0),this.coord(3,0,0),this.coord(0,3,1),this.coord(1,2,1),this.coord(2,1,1),this.coord(3,0,1),this.coord(0,3,2),this.coord(1,2,2),this.coord(2,1,2),this.coord(3,0,2),this.coord(0,3,3),this.coord(1,2,3),this.coord(2,1,3),this.coord(3,0,3)]
+		planes[17]=[this.coord(0,0,0),this.coord(1,1,0),this.coord(2,2,0),this.coord(3,3,0),this.coord(0,0,1),this.coord(1,1,1),this.coord(2,2,1),this.coord(3,3,1),this.coord(0,0,2),this.coord(1,1,2),this.coord(2,2,2),this.coord(3,3,2),this.coord(0,0,3),this.coord(1,1,3),this.coord(2,2,3),this.coord(3,3,3)]
+		numplanes=18;
 		this.startPlay();
 		return;
 	}
@@ -298,7 +302,17 @@ var tmp = function () {
 			templine=cloneObject(lines[j]);
 			lines[j]=lines[k];
 			lines[k]=templine;
-		}		
+		}
+		
+		// Shuffle planes using Knuth Sort (this makes the AI less predictable)
+		for (j=numplanes-1; j>=0; j--)
+		{
+			k=Math.floor(Math.random()*j);
+			tempplane=cloneObject(planes[j]);
+			planes[j]=planes[k];
+			planes[k]=tempplane;
+		}
+
 		
 		this.drawgrid1Cursor(pos1X, pos1Y,pos1Z);
 		this.drawgrid2Cursor(pos2X, pos2Y,pos2Z);
@@ -366,7 +380,7 @@ var tmp = function () {
 						coordinate=lines[x][y];
 						if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
 					}
-					//this.bubble("tracelog","Step two succeeded - blocked a win.  linesum="+linesum+", count="+count);
+					//this.bubble("tracelog","Step two succeeded - blocked a win.");
 				}
 				if (foundmove) break;
 			}
@@ -374,7 +388,7 @@ var tmp = function () {
 		//if (!foundmove) this.bubble("tracelog","Step two failed - no move to block a win");
 
 		// Step three - look for intersection point of two lines each with two O's and no X's (to complete a double-whammy)
-		if ((!foundmove) && ((difficulty=="hard") || (difficulty=="very hard"))) {
+		if ((!foundmove) && (difficulty=="hard")) {
 			for (x=0;x<numlines;x++) {
 				linesum=0;
 				count=0;
@@ -442,10 +456,10 @@ var tmp = function () {
 				if (foundmove) break;
 			}
 		}
-		//if ((!foundmove) && ((difficulty=="hard") || (difficulty=="very hard"))) this.bubble("tracelog","Step three failed - cannot complete a double whammy");
+		//if ((!foundmove) && (difficulty=="hard")) this.bubble("tracelog","Step three failed - cannot complete a double whammy");
 
 		// Step four - look for intersection point of two lines each with two X's and no O's (to block a double-whammy)
-		if ((!foundmove) && ((difficulty=="hard") || (difficulty=="very hard"))) {
+		if ((!foundmove) && (difficulty=="hard")) {
 			for (x=0;x<numlines;x++) {
 				linesum=0;
 				count=0;
@@ -513,10 +527,10 @@ var tmp = function () {
 				if (foundmove) break;
 			}
 		}
-		//if ((!foundmove) && ((difficulty=="hard") || (difficulty=="very hard"))) this.bubble("tracelog","Step four failed - cannot block a double whammy");		
+		//if ((!foundmove) && (difficulty=="hard")) this.bubble("tracelog","Step four failed - cannot block a double whammy");		
 
-		// Step five - look to make triple whammy
-		if ((!foundmove) && (difficulty=="very hard")) {
+/*		// Step five - look to make triple whammy
+		if ((!foundmove) && (difficulty=="hard")) {
 			for (x=0;x<numplanes;x++) {
 				planesum=0;
 				count=0;
@@ -534,18 +548,130 @@ var tmp = function () {
 					if ((y==10) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos10=true;
 				}
 				if ((planesum==-4) && (count==4) && (pos5) && (pos6) && (pos9) && (pos10)) {
-					// found a plane with four X's in the middle positions and no O's
-					//this.bubble("tracelog","Step five succeeded - can make a triple whammy");
+					// found a plane with four O's in the middle positions and no X's
+					this.bubble("tracelog","Step five succeeded - can make a triple whammy");
 					coordinate=planes[x][0];
 					foundmove=true;
 				}
 				if (foundmove) break;
 			}
 		}
-		//if ((!foundmove) && (difficulty=="very hard")) this.bubble("tracelog","Step five failed - cannot make a triple whammy");
-		
+		//if ((!foundmove) && (difficulty=="hard")) this.bubble("tracelog","Step five failed - cannot make a triple whammy");
+*/		
 		// Step six - look to block potential triple whammy
-		if ((!foundmove) && (difficulty=="very hard")) {
+		if ((!foundmove) && (difficulty=="hard")) {
+			for (x=0;x<numplanes;x++) {
+				planesum=0;
+				count=0;
+				pos5=false;
+				pos6=false;
+				pos9=false;
+				pos10=false;
+				posO=0;
+				for (y=0;y<16;y++) {
+					coordinate=planes[x][y];
+					planesum=planesum+board[coordinate.x][coordinate.y][coordinate.z];
+					if (board[coordinate.x][coordinate.y][coordinate.z]!=0) count++;
+					if ((y==5) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos5=true;
+					if ((y==6) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos6=true;
+					if ((y==9) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos9=true;
+					if ((y==10) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos10=true;
+					if ((y==5) && (board[coordinate.x][coordinate.y][coordinate.z]==-1)) posO=5;
+					if ((y==6) && (board[coordinate.x][coordinate.y][coordinate.z]==-1)) posO=6;
+					if ((y==9) && (board[coordinate.x][coordinate.y][coordinate.z]==-1)) posO=9;
+					if ((y==10) && (board[coordinate.x][coordinate.y][coordinate.z]==-1)) posO=10;
+				}
+				if ((planesum==3) && (count==3)) {
+					// found a plane with three X's and no O's
+					if (!pos5) {
+						//this.bubble("tracelog","Step six succeeded - can block a triple whammy");
+						coordinate=planes[x][5];
+						foundmove=true;
+					} else if (!pos6) {
+						//this.bubble("tracelog","Step six succeeded - can block a triple whammy");
+						coordinate=planes[x][6];
+						foundmove=true;
+					} else if (!pos9) {
+						//this.bubble("tracelog","Step six succeeded - can block a triple whammy");
+						coordinate=planes[x][9];
+						foundmove=true;
+					} else if (!pos10) {
+						//this.bubble("tracelog","Step six succeeded - can block a triple whammy");
+						coordinate=planes[x][10];
+						foundmove=true;
+					}
+				}
+				if ((planesum==4) && (count==6)) {
+					// try and block the 'w' construction
+					if (posO==10) {
+						coordinate=planes[x][0];
+						if (board[coordinate.x][coordinate.y][coordinate.z]==0) {
+							foundmove=true;
+						} else {
+							coordinate=planes[x][1];
+							if  (board[coordinate.x][coordinate.y][coordinate.z]==0) {
+								foundmove=true;
+							} else {
+								coordinate=planes[x][4];
+								if  (board[coordinate.x][coordinate.y][coordinate.z]==0) {
+									foundmove=true;
+								}
+							}
+						}
+					} else if (posO==6) {
+						coordinate=planes[x][12];
+						if (board[coordinate.x][coordinate.y][coordinate.z]==0) {
+							foundmove=true;
+						} else {
+							coordinate=planes[x][8];
+							if  (board[coordinate.x][coordinate.y][coordinate.z]==0) {
+								foundmove=true;
+							} else {
+								coordinate=planes[x][13];
+								if  (board[coordinate.x][coordinate.y][coordinate.z]==0) {
+									foundmove=true;
+								}
+							}
+						}
+					} else if (posO==5) {
+						coordinate=planes[x][15];
+						if (board[coordinate.x][coordinate.y][coordinate.z]==0) {
+							foundmove=true;
+						} else {
+							coordinate=planes[x][11];
+							if  (board[coordinate.x][coordinate.y][coordinate.z]==0) {
+								foundmove=true;
+							} else {
+								coordinate=planes[x][14];
+								if  (board[coordinate.x][coordinate.y][coordinate.z]==0) {
+									foundmove=true;
+								}
+							}
+						}
+					} else if (posO==9) {
+						coordinate=planes[x][3];
+						if (board[coordinate.x][coordinate.y][coordinate.z]==0) {
+							foundmove=true;
+						} else {
+							coordinate=planes[x][2];
+							if  (board[coordinate.x][coordinate.y][coordinate.z]==0) {
+								foundmove=true;
+							} else {
+								coordinate=planes[x][7];
+								if  (board[coordinate.x][coordinate.y][coordinate.z]==0) {
+									foundmove=true;
+								}
+							}
+						}
+					} 
+				}
+				if (foundmove) break;
+			}
+		}
+		//if ((!foundmove) && (difficulty=="hard")) this.bubble("tracelog","Step six failed - cannot block a triple whammy");
+/*		
+		// Step seven - look to setup potential triple whammy
+		if ((!foundmove) && (difficulty=="hard") && (!whammyinplay)) {
 			for (x=0;x<numplanes;x++) {
 				planesum=0;
 				count=0;
@@ -557,23 +683,83 @@ var tmp = function () {
 					coordinate=planes[x][y];
 					planesum=planesum+board[coordinate.x][coordinate.y][coordinate.z];
 					if (board[coordinate.x][coordinate.y][coordinate.z]!=0) count++;
-					if ((y==5) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos5=true;
-					if ((y==6) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos6=true;
-					if ((y==9) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos9=true;
-					if ((y==10) && (board[coordinate.x][coordinate.y][coordinate.z]==1)) pos10=true;
+					if ((y==5) && (board[coordinate.x][coordinate.y][coordinate.z]==-1)) pos5=true;
+					if ((y==6) && (board[coordinate.x][coordinate.y][coordinate.z]==-1)) pos6=true;
+					if ((y==9) && (board[coordinate.x][coordinate.y][coordinate.z]==-1)) pos9=true;
+					if ((y==10) && (board[coordinate.x][coordinate.y][coordinate.z]==-1)) pos10=true;
 				}
-				if ((planesum==4) && (count==4) && (pos5) && (pos6) && (pos9) && (pos10)) {
-					// found a plane with four X's in the middle positions and no O's
-					//this.bubble("tracelog","Step six succeeded - can block a triple whammy");
-					coordinate=planes[x][0];
-					foundmove=true;
+				if ((planesum*-1==count) && (count>2)) {
+					// found a plane with 3 or more O's and no X's
+					if ((pos5) && (pos6) && (pos9) && (pos10)) {
+						// middle positions already taken
+						//this.bubble("tracelog","Step seven succeeded - can play a triple whammy");
+						coordinate=planes[x][0];
+						foundmove=true;
+						whammyinplay=true;
+					} else if (!pos5) {
+						//this.bubble("tracelog","Step seven succeeded - can work towards a triple whammy");
+						coordinate=planes[x][5];
+						foundmove=true;
+					} else if (!pos6) {
+						//this.bubble("tracelog","Step seven succeeded - can work towards a triple whammy");
+						coordinate=planes[x][6];
+						foundmove=true;
+					} else if (!pos9) {
+						//this.bubble("tracelog","Step seven succeeded - can work towards a triple whammy");
+						coordinate=planes[x][9];
+						foundmove=true;
+					} else if (!pos10) {
+						//this.bubble("tracelog","Step seven succeeded - can work towards a triple whammy");
+						coordinate=planes[x][10];
+						foundmove=true;
+					}
 				}
 				if (foundmove) break;
 			}
 		}
-		//if ((!foundmove) && (difficulty=="very hard")) this.bubble("tracelog","Step six failed - cannot block a triple whammy");
-		
-		// Step seven - look for two O's in the same line with no X's
+		if ((!foundmove) && (difficulty=="hard") && (!whammyinplay)) {
+			for (x=0;x<numplanes;x++) {
+				planesum=0;
+				count=0;
+				pos5=false;
+				pos6=false;
+				pos9=false;
+				pos10=false;
+				for (y=0;y<16;y++) {
+					coordinate=planes[x][y];
+					planesum=planesum+board[coordinate.x][coordinate.y][coordinate.z];
+					if (board[coordinate.x][coordinate.y][coordinate.z]!=0) count++;
+					if ((y==5) && (board[coordinate.x][coordinate.y][coordinate.z]==-1)) pos5=true;
+					if ((y==6) && (board[coordinate.x][coordinate.y][coordinate.z]==-1)) pos6=true;
+					if ((y==9) && (board[coordinate.x][coordinate.y][coordinate.z]==-1)) pos9=true;
+					if ((y==10) && (board[coordinate.x][coordinate.y][coordinate.z]==-1)) pos10=true;
+				}
+				if ((planesum*-1==count) && (count==2)) {
+					// found a plane with only 2 O's
+					if (!pos5) {
+						//this.bubble("tracelog","Step seven succeeded - can work towards a triple whammy");
+						coordinate=planes[x][5];
+						foundmove=true;
+					} else if (!pos6) {
+						//this.bubble("tracelog","Step seven succeeded - can work towards a triple whammy");
+						coordinate=planes[x][6];
+						foundmove=true;
+					} else if (!pos9) {
+						//this.bubble("tracelog","Step seven succeeded - can work towards a triple whammy");
+						coordinate=planes[x][9];
+						foundmove=true;
+					} else if (!pos10) {
+						//this.bubble("tracelog","Step seven succeeded - can work towards a triple whammy");
+						coordinate=planes[x][10];
+						foundmove=true;
+					}
+				}
+				if (foundmove) break;
+			}
+		}
+		//if ((!foundmove) && (difficulty=="hard")) this.bubble("tracelog","Step seven failed - cannot work towards a triple whammy");
+*/
+		// Step eight - look for two O's in the same line with no X's
 		if (!foundmove) {
 			for (x=0;x<numlines;x++) {
 				linesum=0;
@@ -590,14 +776,34 @@ var tmp = function () {
 						coordinate=lines[x][y];
 						if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
 					}
-					//this.bubble("tracelog","Step seven succeeded - found a line with two O's and no X's");
+					//this.bubble("tracelog","Step eight succeeded - found a line with two O's and no X's");
 				}
 				if (foundmove) break;
 			}
 		}
-		//if (!foundmove) this.bubble("tracelog","Step seven failed - no line with two O's and no X's");
+		//if (!foundmove) this.bubble("tracelog","Step eight failed - no line with two O's and no X's");
 		
-		// Step eight - look for one O in the same line with no X's
+		// Step nine - look to move in the central area (to control the game better!)
+		if (!foundmove) {
+			count=0;
+			for (x=0;x<8;x++) {
+				coordinate=centre[x];
+				if (board[coordinate.x][coordinate.y][coordinate.z]==0) count++;
+			}
+			if (count>0) {
+				while (!foundmove) {
+					x=Math.floor(Math.random()*8);
+					coordinate=centre[x];
+					if (board[coordinate.x][coordinate.y][coordinate.z]==0) {
+						foundmove=true;
+						//this.bubble("tracelog","Step nine succeeded - found move in central area");
+					}
+				}
+			}
+		}
+		//if (!foundmove) this.bubble("tracelog","Step nine failed - central area taken");
+		
+		// Step ten - look for one O in the same line with no X's
 		if (!foundmove) {
 			for (x=0;x<numlines;x++) {
 				linesum=0;
@@ -614,35 +820,14 @@ var tmp = function () {
 						coordinate=lines[x][y];
 						if (board[coordinate.x][coordinate.y][coordinate.z]==0) break;
 					}
-					//this.bubble("tracelog","Step eight succeeded - found a line with one O and no X's");
+					//this.bubble("tracelog","Step ten succeeded - found a line with one O and no X's");
 				}
 				if (foundmove) break;
 			}
 		}
-		//if (!foundmove) this.bubble("tracelog","Step eight failed - no line with one O's and no X's");
-
-		// Step nine - look to move in the central area (to control the game better!)
-		if (!foundmove) {
-			for (x=0;x<8;x++) {
-				count=0;
-				coordinate=centre[x];
-				if (board[coordinate.x][coordinate.y][coordinate.z]==0) count++;
-			}
-			if (count>0) {
-				while (!foundmove) {
-					x=Math.floor(Math.random()*8);
-					coordinate=centre[x];
-					if (board[coordinate.x][coordinate.y][coordinate.z]==0) {
-						foundmove=true;
-						//this.bubble("tracelog","Step nine succeeded - found move in central area");
-					}
-				}
-			}
-		}
-		//if (!foundmove) this.bubble("tracelog","Step nine failed - central area taken");
-
+		//if (!foundmove) this.bubble("tracelog","Step ten failed - no line with one O's and no X's");
 		
-		// Step ten - look for no O's in the same line with no X's
+		// Step eleven - look for no O's in the same line with no X's
 		if (!foundmove) {
 			for (x=0;x<numlines;x++) {
 				linesum=0;
@@ -657,12 +842,12 @@ var tmp = function () {
 					// choose 2nd or 3rd position
 					y=Math.floor(Math.random()*2)+1;
 					coordinate=lines[x][y];
-					//this.bubble("tracelog","Step ten succeeded - found a line with no O's and no X's");
+					//this.bubble("tracelog","Step eleven succeeded - found a line with no O's and no X's");
 				}
 				if (foundmove) break;
 			}
 		}
-		//if (!foundmove) this.bubble("tracelog","Step ten failed - no line with no O's and no X's");
+		//if (!foundmove) this.bubble("tracelog","Step eleven failed - no line with no O's and no X's");
 		
 		// Last step - do random move
 		while (!foundmove) {
@@ -1015,6 +1200,7 @@ var tmp = function () {
 		pos2Y = 0;
 		pos2Z = 0;
 		gameover = false;
+		whammyinplay=false;
 		oMoves = 0;
 		xMoves = 0;
 		this.drawgrid1Cursor(pos1X, pos1Y,pos1Z);
@@ -1061,6 +1247,7 @@ var tmp = function () {
 		pos2Y = 0;
 		pos2Z = 0;
 		gameover = false;
+		whammyinplay=false;
 		oMoves = 0;
 		xMoves = 0;
 		this.drawgrid1Cursor(pos1X, pos1Y,pos1Z);
@@ -1173,9 +1360,6 @@ var tmp = function () {
 					difficulty="hard";
 					this.nonTouch6.setValue("[0] Difficulty: Hard");
 				} else if (difficulty == "hard") {
-					difficulty="very hard";
-					this.nonTouch6.setValue("[0] Difficulty: Very hard");
-				} else if (difficulty == "very hard") {
 					difficulty="easy";
 					this.nonTouch6.setValue("[0] Difficulty: Easy");
 				}
@@ -1193,9 +1377,6 @@ var tmp = function () {
 			difficulty="hard";
 			this.touchButtons1.setValue("[Prev] Difficulty: Hard");
 		} else if (difficulty == "hard") {
-			difficulty="very hard";
-			this.touchButtons1.setValue("[Prev] Difficulty: Very hard");
-		} else if (difficulty == "very hard") {
 			difficulty="easy";
 			this.touchButtons1.setValue("[Prev] Difficulty: Easy");
 		}
