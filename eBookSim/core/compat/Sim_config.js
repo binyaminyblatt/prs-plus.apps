@@ -15,6 +15,7 @@
 //		Mahjong by Clemenseken
 //		Sudoku by Obelix
 //		Dictionary by Clemenseken, lysak, m-land, Mark Nord
+//	2011-04-01 Mark Nord - adapted for Sim
 
 return {
 	// Menu icon indices 
@@ -47,13 +48,16 @@ return {
 		DATETIME: 28,
 		DB: 29,
 		SHUTDOWN: 31,
+		FOLDER: 37,
+		MS: 34,
+		SD: 35,
+		INTERNAL_MEM: 36,
 		LANGUAGE: 34,
 		TEXT_SCALE: 2, //FIXME add icon
-		HOME: 40, 
-		INTERNAL_MEM: 42,
-		FOLDER: 43,
-		GAME: 44,
-		DEFAULT: 43,
+		INTERNAL_MEM: 36,
+		FOLDER: 37,
+		GAME: 38,
+		DEFAULT: 37,
 		
 		// At least 600 and 900 have more than one type of icons
 		getIcon: function (strKind, type) {
@@ -88,7 +92,7 @@ return {
 	// are there "other" buttons
 	hasOtherButtons: true,
 	// Are there SD/MS card slots
-	hasCardSlots: false,
+	hasCardSlots: false /*,
 	
 	// Where to find which node, relative to kbook.root
 	standardMenuLayout: {
@@ -121,7 +125,7 @@ return {
 			{ name: "Sudoku", parent: "gamesAndUtils" },
 			{ name: "PRSPSettings", parent: "settings", position: 8 }
 		],
-		movableNodes: [1,0 /* by author */,1,1,1,/* all bookmarks */ 0, /* settings */ 0, 1,1,1],
+		movableNodes: [1,0 ,1,1,1, 0,  0, 1,1,1],
 		defaultLayout: [
 			{ name: "continue"}, 
 			{ name: "booksByTitle"}, 
@@ -150,5 +154,5 @@ return {
 			return 0;
 		}
 		return a > b ? 1 : -1;
-	}
+	} */
 };

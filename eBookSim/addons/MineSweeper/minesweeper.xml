@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.kinoma.com/fskin/1" id="DOCUMENT">
+
+<assets>
+	<import href="../AppAssets/AppAssets.xml"/>
+
+	<behavior id="sprite">
+		<script on="mouseUp" params="event">
+				if (this.hitBounds(event.x, event.y))
+				this.bubble("doNumKey",this);
+		</script>
+	</behavior>
+
+	<behavior id="gridSprite">
+		<script on="mouseUp" params="event">
+			if (this.hitBounds(event.x, event.y))
+				this.bubble("doGridClick",this);
+			</script>
+	</behavior>
+
+	<style font="Swis721 BT">
+		<style id="swis24gry" size="24" style="" color="#6D6D6D"/>
+		<style id="digits" size="22" style="bold" color="#000000"/>
+		<style id="gameclock" size="22" style="bold" color="#000000"/>
+		<style id="copynote" size="14" style="italic" color="#707070"/>
+		<style id="touchText" size="12" style="bold" color="#000000"/>
+	</style>
+	
+	<style font="Swis721 BT" size="20">
+		<style id="control-e" style="normal" size="14" left="25" halign="left">
+			<style id="control-d"/>
+			<style id="control-p"/>
+			<style id="control-s"/>
+		</style>
+
+		<style id="menu-e" halign="left" left="25" top="0" right="5" bottom="0">
+			<style id="menu-d"/>
+			<style id="menu-p"/>
+			<style id="menu-s"/>
+		</style>
+		<style halign="left" left="25" top="0" right="15" bottom="0">
+			<style id="menu_d" color="#6D6D6D"/>
+			<style id="menu_e" color="#000000"/>
+			<style id="menu_p" color="#000000"/>
+			<style id="menu_s" color="#000000"/>
+		</style>
+		<style halign="right" left="0" top="0" right="15" bottom="0">
+			<style id="key_d" color="#6D6D6D"/>
+			<style id="key_e" color="#000000"/>
+			<style id="key_p" color="#000000"/>
+			<style id="key_s" color="#000000"/>
+		</style>
+		<style style="bold" halign="center" left="10" right="6">
+			<style id="menuBar_d" color="#6D6D6D"/>
+			<style id="menuBar_e" color="#000000"/>
+			<style id="menuBar_p" color="#000000"/>
+			<style id="menuBar_s" color="#000000"/>
+		</style>
+	</style>
+
+
+<texture href="msskins/ms_labels.png">
+	<cutout id="square_c" x="0" y="0" width="32" height="32"/>
+	<cutout id="smilie_c" x="0" y="32" width="52" height="52"/>
+	<cutout id="sevensgment_c" x="0" y="83" width="26" height="46"/>
+
+	<cutout id="frame-tl" x="315" y="32" width="21" height="21"/>
+ 	<cutout id="frame-tc" x="336" y="32" width="5" height="21"/>
+	<cutout id="frame-tr" x="342" y="32" width="21" height="21"/> 	
+	<cutout id="frame-jl" x="315" y="52" width="21" height="21"/>
+ 	<cutout id="frame-jc" x="336" y="52" width="5" height="21"/>
+	<cutout id="frame-jr" x="342" y="52" width="21" height="21"/> 	
+	<cutout id="frame-ml" x="315" y="72" width="21" height="5"/>	
+	<cutout id="frame-mc" x="336" y="72" width="5" height="5"/>
+	<cutout id="frame-mr" x="342" y="72" width="21" height="5"/>
+	<cutout id="frame-bl" x="315" y="80" width="21" height="21"/>
+	<cutout id="frame-bc" x="336" y="80" width="5" height="21"/>
+	<cutout id="frame-br" x="342" y="80" width="21" height="21"/>
+	
+	<cutout id="null" x="370" y="32" width="1" height="1" lines="1"/>
+</texture>
+
+<skin id="swis20blk" styles="menu_e"/>
+<skin id="swis24gry" styles="swis24gry"/>	
+<skin id="touchText" styles="touchText"/>		
+<skin id="menu"
+		cutouts="menu_lt,menu_ct,menu_rt,menu_lu,menu_cu,menu_ru,menu_ls,menu_cs,menu_rs,menu_li,menu_ci,menu_ri,menu_ld,menu_cd,menu_rd,menu_lb,menu_cb,menu_rb"
+		styles="menu_d,menu_e,menu_p,menu_s,key_d,key_e,key_p,key_s"/>
+<skin id="panel"
+		cutouts="menu_lt,menu_ct,menu_rt,menu_li,menu_ci,menu_ri,menu_lb,menu_cb,menu_rb"/>
+
+<skin id="frame1"
+		cutouts="frame-tl,frame-tc,frame-tr,frame-ml,frame-mc,frame-mr,null,null,null"/>
+<skin id="frame2"
+		cutouts="frame-jl,frame-jc,frame-jr,frame-ml,frame-mc,frame-mr,frame-bl,frame-bc,frame-br"/>		
+
+<skin id="menuBar"
+		cutouts="null,null,null,null"
+		styles="menuBar_d,menuBar_e,menuBar_p,menuBar_s"/>
+
+<skin id="square" 
+		cutouts="square_c"/>
+<skin id="smilie" 
+		cutouts="smilie_c"/>
+<skin id="sevensegment" 
+		cutouts="sevensgment_c"/>			
+
+</assets>
+
+<code>
+    <function id="runJs" params="path,target">
+        try {
+            var f = new Stream.File(path);
+            var fn = new Function("target", f.toString());
+            fn(target);
+            delete fn;
+        }
+        catch(e)
+        {
+        }
+    </function>
+    <function id="loadScript">
+        if (!this.hasOwnProperty('_scriptLoaded'))
+            this._scriptLoaded = false;
+        if (!this._scriptLoaded)
+        {
+	   		if(kbook.autoRunRoot.path==undefined){
+				path = this.getBaseURI().slice(7);
+				kbook.model=this;
+			}else{
+				path = kbook.autoRunRoot.path;
+			}
+            var index = path.lastIndexOf('/');
+            if (index > 0)
+               path = path.substring(0, index + 1);
+            this.driveroot = path.substring(0,2);
+            var target = this.AUTORUN_GROUP.AUTORUN;
+            target.driveroot = this.driveroot;
+		    target.mineSweeperRoot = path;
+
+            this.runJs(path+"minesweeper.js",target);
+        }
+        this._scriptLoaded = true;
+    </function>
+    <function id="modelChanged">
+		arguments.callee.grammar.call(this);
+        var state = this.getVariable("STATE");
+
+        var target;
+
+
+        if (this.state != state) {
+            this.focus(true)
+            this.AUTORUN_GROUP.show(false)
+            switch(state) {
+            case "AUTORUN":
+                this.loadScript();
+                this.AUTORUN_GROUP.show(true);
+                target = this.AUTORUN_GROUP.AUTORUN;
+                break;
+            }
+            this.state = state;
+            target.init();
+             if (target.isEnabled())
+                {
+
+                target.focus(true);
+
+                };
+        }
+    </function>
+    <!-- Menu-Functions -->
+ 	<function id="always">
+	 		return true;
+ 	</function>
+ 	<function id="doGameRandom">
+ 	 	this.AUTORUN_GROUP.AUTORUN.GameRandom();
+ 	</function>
+ 	<function id="doGameNext">
+ 	 	this.AUTORUN_GROUP.AUTORUN.GameNext();
+ 	</function>
+ 	<function id="doGameSelect">
+ 	 	this.AUTORUN_GROUP.AUTORUN.GameSelect();
+ 	</function>
+ 	<function id="doGameLoad">
+ 	 	this.AUTORUN_GROUP.AUTORUN.GameLoad();
+ 	</function>
+   	<function id="doExitQuit">
+	 	this.AUTORUN_GROUP.AUTORUN.ExitQuit();
+	</function>
+ 	<function id="doGameSave">
+ 	 	this.AUTORUN_GROUP.AUTORUN.GameSave();
+ 	</function>
+</code>
+
+<group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
+	<panel skin="AppMainSkin" left="0" right="0" top="0" bottom="0"/>
+    <group id="AUTORUN" width="600" top="70" bottom="33">
+	   	<sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="38" v="1" active="false" canFocus="false"/>   
+		<label id="appTitle" skin="title" left="70" right="0" top="-70" height="70" align="left" text="MineSweeper"/>
+		<code>
+         <function id="doDigit" params="part">
+	         this.drawDigit(part.key)
+         </function>
+         <function id="doMenu">
+         	this.doMenuF();
+         </function>
+         <function id="doRoot">
+         	this.ExitQuit();
+         </function>
+         <function id="doCenter">
+         	this.doCenterF();
+         </function>
+         <function id="doMark">
+	         this.doCenterF();
+         </function>
+         <function id="doLeft">
+         	this.moveCursor("left");
+         </function>
+	      <function id="doPrevious">
+         	this.moveCursor("left");
+         </function>
+         <function id="doRight">
+         	this.moveCursor("right");
+         </function>
+         <function id="doNext">
+         	this.moveCursor("right");
+         </function>
+         <function id="doUp">
+         	this.moveCursor("up");
+         </function>
+         <function id="doDown">
+        		this.moveCursor("down");
+         </function>
+		 <function id="doRoot">	this.ExitQuit();
+		 </function>
+      </code>
+		
+		<!--group id="nonTouch" width="600" top="0" bottom="0">
+			<sprite skin="menuMenu1" id="menuMenu0"  left="40" width="150" top="45" height="40" active="false" canFocus="true"/>
+			<sprite skin="menuMenu3" id="menuMenu2"  left="420" width="150" top="45" height="40" active="false"/>
+			<sprite skin="menuMenu2" id="menuMenu1"  left="225" width="150" top="45" height="40" active="false"/>
+
+			<sprite skin="subMenul" id="subMenu0"  left="70" width="120" top="90" height="88" active="false" />
+			<sprite skin="subMenu2" id="subMenu1"  left="255" width="120" top="90" height="88" active="false" />
+			<sprite skin="subMenu3" id="subMenu2"  left="430" width="120" top="90" height="44" active="false" />
+
+			<label id="currentNum" skin="sometext" left="120" right="0" top="114" height="60" align="left" text=""/>
+			<sprite skin="menuCursor" id="menuCursor"  left="206" width="188" top="45" height="45" active="false"/>
+			<sprite skin="subCursor" id="subCursor"  left="70" width="22" top="90" height="22" active="false"/>
+		</group-->
+
+		<group id="Touch" width="600" top="0" bottom="0">
+			<menuBar id="MENUBAR" alignment="left" left="3" width="600" top="3" height="30">
+				<menu title="GAME">
+					<item title="New" do="doGameRandom" can="always"/>
+					<separator/>
+					<item title="Beginner"   do="" can="always" />
+					<item title="Intermediate" do="" can="always" />
+					<item title="Expert"   do="" can="always" />
+					<item title="Custom"   do="" can="always" />					
+					<separator/>
+					<item title="Personal Best"   do="" can="always" />										
+					<separator/>
+					<item title="Exit"   do="doExitQuit" can="always" />														
+				</menu>
+				<menu title="OPTION" >
+					<item title="Opening Move" do="" can="always"/>
+					<item title="Marker"   do="" can="always"/>
+					<item title="Area Open" do="" can="always"/>
+					<item title="Open Remaining"   do="" can="always"/>
+				</menu>
+				<menu title="HELP" >
+					<item title="Instructions" do="" can="always"/>
+					<separator/>
+					<item title="About" do="" can="always"/>
+				</menu>
+			</menuBar>
+		<label id="mode" skin="swis20blk" left="450" width="150" top="3" height="30" text="MODE: step" />
+		</group>
+	
+	<panel id="frame1" skin="frame1" left="151" top="30" width="298" height="85"/>
+	<sprite id="Mine100" skin="sevensegment" left="174" width="26" top="55" height="46" u="0" />
+	<sprite id="Mine010" skin="sevensegment" left="200" width="26" top="55" height="46" u="1" />
+	<sprite id="Mine001" skin="sevensegment" left="226" width="26" top="55" height="46" u="2" /> 
+	<sprite id="Smilie" skin="smilie" left="274" width="52" top="52" height="52" u="1" active="false" canFocus="true"/>
+	<sprite id="Time100" skin="sevensegment" left="348" width="26" top="55" height="46" u="0" />
+	<sprite id="Time010" skin="sevensegment" left="374" width="26" top="55" height="46" u="3" />
+	<sprite id="Time001" skin="sevensegment" left="400" width="26" top="55" height="46" u="8" /> 
+
+	<panel id="frame2" skin="frame2" left="151" top="105" width="298" height="298"/>	
+	<sprite skin="square" id="sq000"  left="172" width="32" top="126" height="32" u="1" v="0" active="true" >
+		<behave like="gridSprite"/>
+	</sprite>	
+	<sprite skin="square" id="sq001"  left="204" width="32" top="126" height="32" u="11" v="0" active="true" >
+		<behave like="gridSprite"/>
+	</sprite>
+	<sprite skin="square" id="sq002"  left="236" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>
+	</sprite>
+	<sprite skin="square" id="sq003"  left="268" width="32" top="126" height="32" u="13" v="0" active="true" >
+		<behave like="gridSprite"/>
+	</sprite>
+	<sprite skin="square" id="sq004"  left="300" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>
+	</sprite>
+	<sprite skin="square" id="sq005"  left="332" width="32" top="126" height="32" u="3" v="0" active="true" >
+		<behave like="gridSprite"/>
+	</sprite>
+	<sprite skin="square" id="sq006"  left="364" width="32" top="126" height="32" u="9" v="0" active="true" >
+		<behave like="gridSprite"/>		
+	</sprite>  
+	<sprite skin="square" id="sq007"  left="396" width="32" top="126" height="32" u="9" v="0" active="true" >
+		<behave like="gridSprite"/>		
+	</sprite>  
+   
+	 <label skin="swis24gry" left="0" right="0" bottom="80" height="30" align="center" text="WORK in PROGRESS" />
+ 	 <label skin="swis24gry" left="0" right="0" bottom="50" height="30" align="center" text="not operational jet" />
+ 	 
+	  <label id='btn_hint_home'   skin='touchText'    left='285' right='0' bottom='5' height='10' align='left' text='Quit'/>
+    </group>
+   
+</group>
+
+</document>

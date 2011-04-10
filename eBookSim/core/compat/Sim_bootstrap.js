@@ -16,6 +16,7 @@
 //	2011-03-02 kartu - Added #57 Spanish localization (by Carlos)
 //	2011-03-21 kartu - Added Ukrainian localization by Bookoman
 //	2011-04-01 kartu - Renamed language files to corresponding 2 letter ISO codes
+//	2011-04-01 Mark Nord - Adapted for Sim
 
 var tmp = function() {
 	var oldSetLocale, localize;
@@ -25,10 +26,10 @@ var tmp = function() {
 	//-----------------------------------------------------------------------------------------------------
 	localize = function(Core) {
 		try {
-			var i, n, currentLang, settingsNode, langNode, languages, langNames, enter, node, langFile;
+			var i, n, currentLang, settingsNode, langNode, languages, langNames, enter, node, prspLanguages, langFile;
 			currentLang = kbook.model.language;
 	
-			settingsNode = kbook.root.nodes[6];
+			// settingsNode = kbook.root.nodes[6];
 			languages = ["en", "es", "de", "fr", "ka", "it", "nl", "ru", "ua"];
 			langNames = {
 				en: "English",
@@ -48,11 +49,10 @@ var tmp = function() {
 	
 			// Load core js		
 			PARAMS.loadCore();
-			
 			// Load PRS+ strings
-			langFile = Core.config.corePath + "lang/" + currentLang + ".js";
+			langFile = Core.config.corePath + "lang/" + prspLanguages[currentLang];
 			Core.lang.init(langFile);
-			
+	/*		
 			// FIXME localize date strings
 			for (i = 0, n = languages.length; i < n; i++) {
 				if (!Date.prototype.strings[languages[i]]) {
@@ -102,20 +102,21 @@ var tmp = function() {
 			}
 			
 			// Replace "language" node with custom node
-			settingsNode.nodes[4] = langNode;
-			
+			settingsNode.nodes[4] = langNode; 
+	*/		
 			// self destruct :)
 			delete this.localize;
 			
 			// Language strings were loaded, time to init Core
-			PARAMS.loadAddons();
-			Core.init();
+			// PARAMS.loadAddons();
+			// Core.init();
 		} catch (e) {
-			PARAMS.bootLog("localize", e);
+			PARAMS.bootLog("error in localize", e);
 		}
 	};
 	
 	// Init language related stuff once setLocale was called and strings were loaded
+/*
 	oldSetLocale = Fskin.localize.setLocale;
 	Fskin.localize.setLocale = function() {
 		try {
@@ -127,7 +128,7 @@ var tmp = function() {
 			PARAMS.bootLog("in overriden setLocale", e);
 		}
 	};
-	
+*/	
 	/*
 		<function id="doDigit" params="part"><![CDATA[
 			var c = this.PAGE.countPages().toString().length - 1;
@@ -141,7 +142,7 @@ var tmp = function() {
 		]]></function>
 	*/
 	// First digit is ignored, if it is zero, when opening "goto" dialog (original function quoted above)
-	kbook.model.container.sandbox.PAGE_GROUP.sandbox.doDigit = function(part) {
+/*	kbook.model.container.sandbox.PAGE_GROUP.sandbox.doDigit = function(part) {
 		try {
 			var c, s, i, container, key;
 			PARAMS.bootLog("sandbox.PAGE is " + this.sandbox.PAGE);
@@ -162,15 +163,20 @@ var tmp = function() {
 		} catch (ignore) {
 			PARAMS.bootLog("error in doDigit: " + ignore);
 		}
-	};
+	}; */
 	
 	// Fix sorting
 	var compareStrings =  PARAMS.Core.config.compat.compareStrings;
 	String.prototype.localeCompare = function(a) {
 		return compareStrings(this.valueOf(), a);
 	};
-};
 
+	try {
+		localize(PARAMS.Core);
+		} catch (e) {
+			PARAMS.bootLog("in overriden setLocale", e);
+		}
+};
 try {
 	tmp();
 } catch (ignore) {
