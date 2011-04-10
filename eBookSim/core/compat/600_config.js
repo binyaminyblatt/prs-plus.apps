@@ -4,6 +4,16 @@
 // History:
 //	2010-09-11 kartu - Initial version
 //	2010-12-01 kartu - Added link to Calculator
+//	2010-12-04 kartu - BrowseFolders will apear in "more", if not shown on the main page.
+//	2011-02-27 kartu - Periodicals node no longer "unmovable", replaced with "Browse Folders" by default
+//	2011-02-28 kartu -  ALL: Added 
+//		Calculator by Mark Nord
+//		Chess by Ben Chenoweth / Stefano Gioffre
+//		Five in a Row by Ben Chenoweth
+//		Five Balls by Clemenseken
+//		Free Cell by Ben Chenoweth
+//		Mahjong by Clemenseken
+//		Sudoku by Obelix
 
 return {
 	// Menu icon indices 
@@ -122,10 +132,17 @@ return {
 		// Nodes assigned to certain nodes
 		customNodes: [
 			{ name: "BookHistory", parent: "more"},
-			{ name: "Calculator", parent: "more"},
+			{ name: "BrowseFolders", parent: "more"},
 			{ name: "collections", parent: "more" },
 			{ name: "notes", parent: "more"},
-			{ name: "PRSPSettings", parent: "more" }
+			{ name: "PRSPSettings", parent: "more" },
+			{ name: "Calculator", parent: "more" },	
+			{ name: "Chess", parent: "more" },
+			{ name: "FiveBalls", parent: "more" },	
+			{ name: "FiveRow", parent: "more" },	
+			{ name: "FreeCell", parent: "more" },
+			{ name: "Mahjong", parent: "more" },
+			{ name: "Sudoku", parent: "more" }
 		],
 		movableNodes: [0, 0, 1, 1, 1, 1],
 		defaultLayout: [

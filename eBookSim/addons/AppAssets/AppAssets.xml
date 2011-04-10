@@ -70,6 +70,26 @@
 			<cutout id="popup-bl" x="728" y="81" width="5" height="5"/>
 			<cutout id="popup-bc" x="733" y="81" width="42" height="5"/>
 			<cutout id="popup-br" x="775" y="81" width="5" height="5"/>
+			
+			<cutout id="menu_lt" x="400" y="370" width="20" height="4"/>
+			<cutout id="menu_ct" x="420" y="370" width="20" height="4"/>
+			<cutout id="menu_rt" x="440" y="370" width="20" height="4"/>
+			<cutout id="menu_lu" x="400" y="374" width="20" height="6"/>
+			<cutout id="menu_cu" x="420" y="374" width="20" height="6"/>
+			<cutout id="menu_ru" x="440" y="374" width="20" height="6"/>
+			<cutout id="menu_ls" x="400" y="380" width="20" height="10"/>
+			<cutout id="menu_cs" x="420" y="380" width="20" height="10"/>
+			<cutout id="menu_rs" x="440" y="380" width="20" height="10"/>
+			<cutout id="menu_li" x="400" y="390" width="20" height="20" columns="60"/>
+			<cutout id="menu_ci" x="420" y="390" width="20" height="20" columns="60"/>
+			<cutout id="menu_ri" x="440" y="390" width="20" height="20" columns="60"/>
+			<cutout id="menu_ld" x="400" y="430" width="20" height="6"/>
+			<cutout id="menu_cd" x="420" y="430" width="20" height="6"/>
+			<cutout id="menu_rd" x="440" y="430" width="20" height="6"/>
+			<cutout id="menu_lb" x="400" y="436" width="20" height="8"/>
+			<cutout id="menu_cb" x="420" y="436" width="20" height="8"/>
+			<cutout id="menu_rb" x="440" y="436" width="20" height="8"/>
+			
 
 			<cutout id="allBlack_c" x="0" y="305" width="10" height="10"/>	
 			<cutout id="allWhite_c" x="0" y="375" width="10" height="10"/>		  

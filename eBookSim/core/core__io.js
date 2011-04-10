@@ -9,6 +9,7 @@
 //	2010-11-11 kartu - Added listFiles function
 //	2010-11-30 kartu - Refactoring Core.stirng => Core.text
 //	2010-11-30 kartu - Fixed nasty double-bug with getFileContent not working properly on 600 plus finally block hijacking control.
+//	2011-03-03 kartu - Added moveFile, deleteFile, getFileSize
 
 try {
 	Core.io = {
@@ -88,6 +89,15 @@ try {
 				}
 			}
 		},
+
+		// Deletes file, if it exists.
+		//
+		// Throws exceptions on errors
+		deleteFile: function (path) {
+			if (FileSystem.getFileInfo(path)) {
+				FileSystem.deleteFile(path);
+			}
+		},
 		
 		// Copies file from <from> to <to>, deleting the target file first
 		//
@@ -97,9 +107,7 @@ try {
 		//
 		// Throws exceptions on errors. 
 		copyFile: function (from, to) {
-			if (FileSystem.getFileInfo(to)) {
-				FileSystem.deleteFile(to);
-			}
+			this.deleteFile(to);
 			//FileSystem.copyFile(from, to);
 			// Copy/paste from FileSystem.copyFile, slightly modified (removed progress)
 			var s, d, c, len, totalLen, copied;
@@ -128,6 +136,27 @@ try {
 					d.close();
 				}
 			}
+		},
+		
+		// Moves file from <from> to <to>, deleting the target file first
+		//
+		// Arguments:
+		//	from - source file
+		//	to - target file
+		//
+		// Throws exceptions on errors. 
+		moveFile: function (from, to) {
+			this.copyFile(from, to);
+			this.deleteFile(from);
+		},
+		
+		// Returns size of the file in bytes or null, if file cannot be found
+		getFileSize: function (path) {
+			var info = FileSystem.getFileInfo(path);
+			if (info) {
+				return info.size;
+			}
+			return null;
 		}
 	};
 } catch (e) {

@@ -6,6 +6,15 @@
 //	2010-09-24 kartu - Added hasJoypadButtons / hasOtherButtons
 //	2010-11-16 kartu - Added BOOK_HISTORY icon
 //	2010-11-27 kartu - restored "hold" events for numeric buttons, erroneously lost in previous commit
+//	2011-02-28 kartu -  ALL: Added 
+//		Calculator by Mark Nord
+//		Chess by Ben Chenoweth / Stefano Gioffre
+//		Five in a Row by Ben Chenoweth
+//		Five Balls by Clemenseken
+//		Free Cell by Ben Chenoweth
+//		Mahjong by Clemenseken
+//		Sudoku by Obelix
+//		Dictionary by Clemenseken, lysak, m-land, Mark Nord
 
 return {
 	// Menu icon indices 
@@ -102,9 +111,12 @@ return {
 		// Nodes assigned to certain nodes
 		customNodes: [
 			{ name: "BookHistory", parent: "gamesAndUtils"},
-			{ name: "Calculator", parent: "gamesAndUtils" },
 			{ name: "DictionaryCL", parent: "gamesAndUtils" },
+			{ name: "Calculator", parent: "gamesAndUtils" },				
+			{ name: "Chess", parent: "gamesAndUtils" },				
 			{ name: "FiveBalls", parent: "gamesAndUtils" },				
+			{ name: "FiveRow", parent: "gamesAndUtils" },				
+			{ name: "FreeCell", parent: "gamesAndUtils" },				
 			{ name: "Mahjong", parent: "gamesAndUtils" },
 			{ name: "Sudoku", parent: "gamesAndUtils" },
 			{ name: "PRSPSettings", parent: "settings", position: 8 }

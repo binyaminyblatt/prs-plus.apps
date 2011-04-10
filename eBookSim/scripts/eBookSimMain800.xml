@@ -50,18 +50,19 @@
 				var path = this.getBaseURI().slice(7); 				
 				path=path.substring(0,path.indexOf('/eBookSim/')+10);
 					
-				if(FileSystem.getFileInfo(path.concat('PRSPlus.js'))) {
-					var f = new Stream.File(path.concat('PRSPlus.js'));
+				if(FileSystem.getFileInfo(path.concat('prsp.js'))) {
+					var f = new Stream.File(path.concat('prsp.js'));
 					try {					
 						var fn = prsp.compile("target,root",f.toString());			 				
 						var theRoot = fn(this,path);
 						delete fn;
-						} finally {
+					} catch (e1) { this.bubble("tracelog","error run compiled func: "+e);
+					} finally {
 						f.close();		
 					}
 				}
-			} catch(e) {this.bubble("tracelog","error compile func: "+e);
-			}
+			} catch(e2) {this.bubble("tracelog","error compile func: "+e);}
+			
 			/* replicate Core into sandbox  */
 			try {
 				if(FileSystem.getFileInfo(path.concat('_PRSPlus.js'))) {
@@ -70,21 +71,23 @@
 						var fn = new Function("target", "root", "theRoot", f.toString());	
 						fn(this,path,theRoot);
 						delete fn;
-						} finally {
+					} catch(e) {this.bubble("tracelog","error run _PRSPlus.js: "+e);
+					} finally {
 						f.close();
 						this.setView("Menu");					
 						//this.setView("TestApp");		
 					}
 				}
-			} catch(e) {this.bubble("tracelog","error repicate: "+e);
+			} catch(e2) {this.bubble("tracelog","outer Error _PRSPlus: "+e2);}
 			
 	   /* initialize global functions and variables (ugly but works) */
+  		 try {
   		    fnPageScroll = _Core.system.getSoValue(this.TRACER, 'scrollPage');
 			touch = !_Core.config.compat.hasNumericButtons;
 		 	this.changeInterface(touch);
 		 	var items = _Core.system.getSoValue(this,"root.window.systemBox.menu.items");
 			items[6].check(touch);
-			} 		
+			} 	catch(e3) {this.bubble("tracelog","error init global vars: "+e3);}	
 		</function>   
 
     <function id="modelChanged">
@@ -308,27 +311,28 @@
 								this.MAIN.EINK.VIEW.setURI("../addons/Freecell/freecell.xml");				
 								break;
 								}				
-				 case "XOCubed" : {
- 							    kbook.autoRunRoot._icon = 46; 
-								kbook.autoRunRoot._title = "XO-Cubed";				
-								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
+				case "MineSweeper" : {
+								this.bubble("tracelog","MineSweeper ");
+								kbook.autoRunRoot._icon = 38;
+								kbook.autoRunRoot._title = "MineSweeper";				
 								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
 				 				kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
-								this.MAIN.EINK.VIEW.setURI("../addons/XOCubed/xocubed.xml");				
+						//		kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
+								this.MAIN.EINK.VIEW.setURI("../addons/MineSweeper/minesweeper.xml");				
 								break;
-								}	
+								}
 				 case "Menu" : {
 								this.bubble("tracelog","Menu ");
 								this.MAIN.EINK.VIEW.setURI("SimMenu.xml");	
-						        this.container.enable();
-								this.container.focus(true);
+						        //this.container.enable();
+								//this.container.focus(true);
 								break;
 								}										
 				 case "Menu2" : {
 								this.bubble("tracelog","Menu2 ");
 								this.MAIN.EINK.VIEW.setURI("SimMenu2.xml");	
-						        this.container.enable();
-								this.container.focus(true);
+						        //this.container.enable();
+								//this.container.focus(true);
 								break;
 								}	
 				}

@@ -5,6 +5,7 @@
 // History:
 //	2010-10-03 Mark Nord - initial release
 // 	2011-03-20 Mark Nord - fix for Core.String => Core.text
+//	2011-04-01 Mark Nord - adjustments for lang and compat
 
 // Started at, in milliseconds
 var startedAt = (new Date()).getTime();
@@ -21,8 +22,9 @@ var config = {
 	defaultLogLevel: "none",
 	logFile: root + "PRSPlus.log",
 	settingsRoot: root + "settings/",
-	compat: {hasNumericButtons: true}	// also sets startup-skin
+	compat: {hasNumericButtons: true}
 };
+
 
 /* Mark Nord: intentionally "_Core" NOT defined as var to have _Core as <global> mapper-object for Core
    	      don't know why, but this does the trick */
@@ -37,13 +39,15 @@ _Core = {
 	system:{},
 	io:{},
 	log:{},
-	debug:{}
+	debug:{},
+	lang:{},
 };
 
 // Definitions needed for the Sim
 kbook = { autoRunRoot :{},
-          simEnviro : true
-	};
+          simEnviro : true,
+          model : {}
+	}; 
 
 kbook.autoRunRoot.exitIf = function (model) {
 	model.bubble("setView","Menu");
@@ -123,25 +127,32 @@ _Core.debug.dumpToString = function (o, prefix, depth) {
 	return str;
 };
 
-// silly 1:1  assignment
+//target.bubble('tracelog','getsoVal(theRoot,Core)= '+ getSoValue(theRoot,'Core'));
 
-_Core.hook.hookAfter = getSoValue(theRoot,'Core.hook.hookAfter');
-_Core.hook.hookBefore = getSoValue(theRoot,'Core.hook.hookBefore');
-_Core.hook.hook = getSoValue(theRoot,'Core.hook.hook');
+// silly 1:1  assignment
 
 _Core.system.cloneObj = getSoValue(theRoot,'Core.system.cloneObj');
 _Core.system.compile = prsp.compile;
 _Core.system.setSoValue = prsp.setSoValue;
 _Core.system.getSoValue = getSoValue;
+_Core.system.getFastSoValue =  getSoValue(theRoot,'Core.system.getFastSoValue');
 _Core.system.rootObj = getSoValue(theRoot,'Core.system.rootObj');
+//target.bubble('tracelog','done system');
 
+_Core.text.trim = getSoValue(theRoot,'Core.text.trim');
 _Core.text.endsWith = getSoValue(theRoot,'Core.text.endsWith');
 _Core.text.startsWith = getSoValue(theRoot,'Core.text.startsWith');
 _Core.text.compareStrings = getSoValue(theRoot,'Core.text.compareStrings');
+//target.bubble('tracelog','done text');
 
+_Core.io.getFileSize = getSoValue(theRoot,'Core.io.getFileSize');
+_Core.io.moveFile = getSoValue(theRoot,'Core.io.moveFile');
 _Core.io.copyFile = getSoValue(theRoot,'Core.io.copyFile');
+_Core.io.deleteFile = getSoValue(theRoot,'Core.io.deleteFile');
 _Core.io.setFileContent = getSoValue(theRoot,'Core.io.setFileContent');
 _Core.io.getFileContent = getSoValue(theRoot,'Core.io.getFileContent');
+_Core.io.listFiles = getSoValue(theRoot,'Core.io.listFilest');
+//target.bubble('tracelog','done io');
 
 _Core.shell.umount = getSoValue(theRoot,'Core.shell.umount');
 _Core.shell.mount = getSoValue(theRoot,'Core.shell.mount');
@@ -151,8 +162,10 @@ _Core.shell.MS_MOUNT_PATH = getSoValue(theRoot,'Core.shell.MS_MOUNT_PATH');
 _Core.shell.MOUNT_PATH = getSoValue(theRoot,'Core.shell.MOUNT_PATH');
 _Core.shell.MS = 1;
 _Core.shell.SD = 0;
+//target.bubble('tracelog','done shell');
 
 _Core.debug.dump = getSoValue(theRoot,'Core.debug.dump');
+//target.bubble('tracelog','done debug');
 
 _Core.log.error = getSoValue(theRoot,'Core.log.error');
 _Core.log.warn = getSoValue(theRoot,'Core.log.warn');
@@ -163,79 +176,14 @@ _Core.log.log = getSoValue(theRoot,'Core.log.log ');
 _Core.log.getLogger = getSoValue(theRoot,'Core.log.getLogger');
 _Core.log.createLogger = getSoValue(theRoot,'Core.log.createLogger');
 _Core.log.loggers = getSoValue(theRoot,'Core.log.loggers');
+//target.bubble('tracelog','done log');
 
-//_Core.actions = getSoValue(theRoot,'_Core.actions');
+_Core.lang.lang  = getSoValue(theRoot,'Core.lang.lang');
+_Core.lang.LX  = getSoValue(theRoot,'Core.lang.LX');
+_Core.lang.getLocalizer  = getSoValue(theRoot,'Core.lang.getLocalizer');
+_Core.lang.getStrings  = getSoValue(theRoot,'Core.lang.getStrings');
+//target.bubble('tracelog','done lang');
 
-/*
-_Core.config.settingsRoot = getSoValue(theRoot,'Core.config.settingsRoot');
-_Core.config.logFile = getSoValue(theRoot,'Core.config.logFile');
-_Core.config.defaultLogLevel => getSoValue(theRoot,'Core.config.defaultLogLevel');
-_Core.config.coreFile = getSoValue(theRoot,'Core.config.coreFile');
-_Core.config.coreRoot = getSoValue(theRoot,'Core.config.coreRoot');
-_Core.config.addonRoot = getSoValue(theRoot,'Core.config.addonRoot');
-_Core.config.root = getSoValue(theRoot,'Core.config.root');
-*/
-
-/* First idea for a automatic mapper, but can't figure out the dependencies between sandboxed and "compiled" functions
-should run in compiled context ?
-I gues Fskin.function and Fskin.script hold the answers  */
-/*
-var sandboxing = function (o, root, depth) {
-	var typeofo = typeof o;
-	if (typeofo == "string" || typeofo == "boolean" || typeofo == "number") {
-		root.sandbox[o.id] = o;
-		return;
-	}
-	// Default depth is 1
-	if (typeof depth == "undefined") {
-		depth = 1;
-	}
-	// we show prefix if depth is 
-	if (typeofo == "undefined") {
-		return ;
-	}
-	if (o === null) {
-		return ;
-	}
-	if (typeofo == "function") {
-		root.sandbox[o.id] = o;
-		return ;
-	}
-	if (o.constructor == Array) {
-		root.sandbox[o.id] = o;
-		if (depth > 0) {
-			for (var i = 0, n = o.length; i < n; i++) {
-				this.sandboxing(o[i], root.sandbox[o.id], depth - 1);
-			}
-		}
-		return;
-	}
-	if (typeofo != "object") {
-		root.sandbox[o.id] = o 
-		return;
-	}
-	
-	// if depth is less than 1, return just "an object" string
-	if (depth < 1) {
-		root.sandbox[o.id] = o;
-		return;
-	}
-
-	// at this point, o is not null, and is an object
-	var hasProps = false;
-	for (var prop in o) {
-		hasProps = true;
-		var oprop = o[prop];
-		try {
-			this.sandboxing(oprop, root.sandbox[o.id], depth - 1);
-		} catch (ee) {
-		}
-	}
-	if (!hasProps) {
-		return;
-	}
-	return 'done';
-};			/**/
 
 /* something to play with; Output is routed to the simulators trace-window
 var dump = getSoValue(theRoot,'Core.debug.dumpToString');
@@ -245,3 +193,14 @@ target.bubble('tracelog',_Core.debug.dumpToString(_Core,'_Core.',1));
 */
 
 
+var userConfig = _Core.config.root + "user.config";
+if (FileSystem.getFileInfo(userConfig)) {
+      	try {	
+//      target.bubble('tracelog',_Core.debug.dumpToString(_Core.config,'_Core.config.',2))
+      		var f = new Function('config', _Core.io.getFileContent(userConfig));
+	      	f(_Core.config);
+	      	delete f;
+
+	 } catch(e) {target.bubble('tracelog','error running user.config')}
+//	 target.bubble('tracelog',_Core.debug.dumpToString(_Core.config,'_Core.config.',2))
+      }
