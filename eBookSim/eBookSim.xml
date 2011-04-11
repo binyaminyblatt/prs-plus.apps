@@ -4,8 +4,8 @@
 
 		<!--bytecode href="[applicationPath]FskCache"/-->
 		<bytecode href="[applicationPath]prsp"/>
-		<!--document href="[applicationPath]eBookSim/scripts/eBookSimMain.xml"/-->
+		<document href="[applicationPath]eBookSim/scripts/eBookSimMain.xml"/>
 		<!--document href="[applicationPath]eBookSim/scripts/eBookSimMain800.xml"/-->
-		<document href="[applicationPath]eBookSim/scripts/eBookSimMainPRS950.xml"/>
+		<!--document href="[applicationPath]eBookSim/scripts/eBookSimMainPRS950.xml"/-->
 	</vm>
 </fsk>

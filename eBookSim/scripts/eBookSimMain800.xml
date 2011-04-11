@@ -321,7 +321,16 @@
 								this.MAIN.EINK.VIEW.setURI("../addons/MineSweeper/minesweeper.xml");				
 								break;
 								}
-				 case "Menu" : {
+				case "XOCubed" : {
+ 							    kbook.autoRunRoot._icon = 46; 
+								kbook.autoRunRoot._title = "XO-Cubed";				
+								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
+								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
+				 				kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
+								this.MAIN.EINK.VIEW.setURI("../addons/XOCubed/xocubed.xml");				
+								break;
+								}	
+				case "Menu" : {
 								this.bubble("tracelog","Menu ");
 								this.MAIN.EINK.VIEW.setURI("SimMenu.xml");	
 						        //this.container.enable();
