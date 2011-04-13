@@ -96,7 +96,7 @@
 	<cutout id="popup-c" x="565" y="332" width="20" height="22" lines="30"/>
 	<cutout id="popup-r" x="585" y="332" width="15" height="22" lines="30"/-->
 
-	<cutout id="menu_lt" x="420" y="332" width="20" height="4"/>
+	<!--cutout id="menu_lt" x="420" y="332" width="20" height="4"/>
 	<cutout id="menu_ct" x="440" y="332" width="20" height="4"/>
 	<cutout id="menu_rt" x="460" y="332" width="20" height="4"/>
 	<cutout id="menu_lu" x="420" y="336" width="20" height="6"/>
@@ -113,7 +113,7 @@
 	<cutout id="menu_rd" x="460" y="392" width="20" height="6"/>
 	<cutout id="menu_lb" x="420" y="398" width="20" height="8"/>
 	<cutout id="menu_cb" x="440" y="398" width="20" height="8"/>
-	<cutout id="menu_rb" x="460" y="398" width="20" height="8"/>
+	<cutout id="menu_rb" x="460" y="398" width="20" height="8"/-->
 
 	<!--cutout id="menuBar_l" x="560" y="0" width="10" height="28" lines="30"/>
 	<cutout id="menuBar_c" x="570" y="0" width="20" height="28" lines="30"/>

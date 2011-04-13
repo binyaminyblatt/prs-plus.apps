@@ -4,10 +4,10 @@
 <assets>
 	<import href="../AppAssets/AppAssets.xml"/>
 
-	<behavior id="sprite">
+	<behavior id="face">
 		<script on="mouseUp" params="event">
 				if (this.hitBounds(event.x, event.y))
-				this.bubble("doNumKey",this);
+				this.bubble("init");
 		</script>
 	</behavior>
 
@@ -218,13 +218,13 @@
          	this.moveCursor("left");
          </function>
 	      <function id="doPrevious">
-         	this.moveCursor("left");
+         	this.changeClickMode();
          </function>
          <function id="doRight">
          	this.moveCursor("right");
          </function>
          <function id="doNext">
-         	this.moveCursor("right");
+         	this.changeClickMode();
          </function>
          <function id="doUp">
          	this.moveCursor("up");
@@ -280,42 +280,161 @@
 		</group>
 	
 	<panel id="frame1" skin="frame1" left="151" top="30" width="298" height="85"/>
-	<sprite id="Mine100" skin="sevensegment" left="174" width="26" top="55" height="46" u="0" />
-	<sprite id="Mine010" skin="sevensegment" left="200" width="26" top="55" height="46" u="1" />
-	<sprite id="Mine001" skin="sevensegment" left="226" width="26" top="55" height="46" u="2" /> 
-	<sprite id="Smilie" skin="smilie" left="274" width="52" top="52" height="52" u="1" active="false" canFocus="true"/>
-	<sprite id="Time100" skin="sevensegment" left="348" width="26" top="55" height="46" u="0" />
-	<sprite id="Time010" skin="sevensegment" left="374" width="26" top="55" height="46" u="3" />
-	<sprite id="Time001" skin="sevensegment" left="400" width="26" top="55" height="46" u="8" /> 
+	<sprite id="bomb100s" skin="sevensegment" left="174" width="26" top="55" height="46" u="0" />
+	<sprite id="bomb10s" skin="sevensegment" left="200" width="26" top="55" height="46" u="1" />
+	<sprite id="bomb1s" skin="sevensegment" left="226" width="26" top="55" height="46" u="2" /> 
+	<sprite id="face" skin="smilie" left="274" width="52" top="52" height="52" u="1" active="true" canFocus="true">
+		<behave like="face"/>	</sprite>	
+	<sprite id="time100s" skin="sevensegment" left="348" width="26" top="55" height="46" u="0" />
+	<sprite id="time10s" skin="sevensegment" left="374" width="26" top="55" height="46" u="3" />
+	<sprite id="time1s" skin="sevensegment" left="400" width="26" top="55" height="46" u="8" /> 
 
 	<panel id="frame2" skin="frame2" left="151" top="105" width="298" height="298"/>	
-	<sprite skin="square" id="sq000"  left="172" width="32" top="126" height="32" u="1" v="0" active="true" >
-		<behave like="gridSprite"/>
-	</sprite>	
-	<sprite skin="square" id="sq001"  left="204" width="32" top="126" height="32" u="11" v="0" active="true" >
-		<behave like="gridSprite"/>
-	</sprite>
-	<sprite skin="square" id="sq002"  left="236" width="32" top="126" height="32" u="0" v="0" active="true" >
-		<behave like="gridSprite"/>
-	</sprite>
-	<sprite skin="square" id="sq003"  left="268" width="32" top="126" height="32" u="13" v="0" active="true" >
-		<behave like="gridSprite"/>
-	</sprite>
-	<sprite skin="square" id="sq004"  left="300" width="32" top="126" height="32" u="0" v="0" active="true" >
-		<behave like="gridSprite"/>
-	</sprite>
-	<sprite skin="square" id="sq005"  left="332" width="32" top="126" height="32" u="3" v="0" active="true" >
-		<behave like="gridSprite"/>
-	</sprite>
-	<sprite skin="square" id="sq006"  left="364" width="32" top="126" height="32" u="9" v="0" active="true" >
-		<behave like="gridSprite"/>		
-	</sprite>  
-	<sprite skin="square" id="sq007"  left="396" width="32" top="126" height="32" u="9" v="0" active="true" >
-		<behave like="gridSprite"/>		
-	</sprite>  
-   
+	<sprite skin="square" id="sq000"  left="0" width="32" top="0" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>	
+	<sprite skin="square" id="sq001"  left="0" width="32" top="0" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq002"  left="0" width="32" top="0" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq003"  left="0" width="32" top="0" height="32" u="3" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq004"  left="0" width="32" top="0" height="32" u="4" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq005"  left="0" width="32" top="0" height="32" u="5" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq006"  left="0" width="32" top="0" height="32" u="6" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>  
+	<sprite skin="square" id="sq007"  left="0" width="32" top="0" height="32" u="7" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>  
+	<sprite skin="square" id="sq008"  left="0" width="32" top="0" height="32" u="13" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>	
+	<sprite skin="square" id="sq009"  left="204" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq010"  left="236" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq011"  left="268" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq012"  left="300" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq013"  left="332" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq014"  left="364" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>  
+	<sprite skin="square" id="sq015"  left="396" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>     
+	<sprite skin="square" id="sq016"  left="172" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>	
+	<sprite skin="square" id="sq017"  left="204" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq018"  left="236" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq019"  left="268" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq020"  left="300" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq021"  left="332" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq022"  left="364" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>  
+	<sprite skin="square" id="sq023"  left="396" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>     
+	<sprite skin="square" id="sq024"  left="172" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>	
+	<sprite skin="square" id="sq025"  left="204" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq026"  left="236" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq027"  left="268" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq028"  left="300" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq029"  left="332" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq030"  left="364" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>  
+	<sprite skin="square" id="sq031"  left="396" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>     		
+	<sprite skin="square" id="sq032"  left="204" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq033"  left="236" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq034"  left="268" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq035"  left="300" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq036"  left="332" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq037"  left="364" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>  
+	<sprite skin="square" id="sq038"  left="396" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>  
+	<sprite skin="square" id="sq039"  left="172" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>	
+	<sprite skin="square" id="sq040"  left="204" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq041"  left="236" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq042"  left="268" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq043"  left="300" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq044"  left="332" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq045"  left="364" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>  
+	<sprite skin="square" id="sq046"  left="396" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>     
+	<sprite skin="square" id="sq047"  left="172" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>	
+	<sprite skin="square" id="sq048"  left="204" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq049"  left="236" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq050"  left="268" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq051"  left="300" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq052"  left="332" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq053"  left="364" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>  
+	<sprite skin="square" id="sq054"  left="396" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>     
+	<sprite skin="square" id="sq055"  left="172" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>	
+	<sprite skin="square" id="sq056"  left="204" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq057"  left="236" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq058"  left="268" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq059"  left="300" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq060"  left="332" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq061"  left="364" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>  
+	<sprite skin="square" id="sq062"  left="396" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>     
+	<sprite skin="square" id="sq063"  left="172" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>	
+	<!--sprite skin="square" id="sq064"  left="204" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq065"  left="236" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq066"  left="268" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq067"  left="300" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq068"  left="332" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>
+	<sprite skin="square" id="sq069"  left="364" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite>  
+	<sprite skin="square" id="sq070"  left="396" width="32" top="126" height="32" u="0" v="0" active="true" >
+		<behave like="gridSprite"/>	</sprite--> 
+
 	 <label skin="swis24gry" left="0" right="0" bottom="80" height="30" align="center" text="WORK in PROGRESS" />
- 	 <label skin="swis24gry" left="0" right="0" bottom="50" height="30" align="center" text="not operational jet" />
+ 	 <label skin="swis24gry" left="0" right="0" bottom="50" height="30" align="center" text="basic funcionallity enabled" />
  	 
 	  <label id='btn_hint_home'   skin='touchText'    left='285' right='0' bottom='5' height='10' align='left' text='Quit'/>
     </group>
