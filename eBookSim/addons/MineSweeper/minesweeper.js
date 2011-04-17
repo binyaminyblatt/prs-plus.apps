@@ -17,6 +17,8 @@ var tmp = function () {
 	
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
 	var getSoValue = kbook.autoRunRoot.getSoValue;
+	var getFileContent = kbook.autoRunRoot.getFileContent;
+	var fnPageScroll = getSoValue(target.helpText, 'scrollPage');
 	var clickMode = 0;
 
       //
@@ -38,6 +40,7 @@ var tmp = function () {
          var useMacroOpen = true;
          var useFirstClickUseful = true;
          var openRemaining = false;
+         var showNumMoves = false;
          
          // Set global constants   
         
@@ -67,7 +70,7 @@ var tmp = function () {
          var killLastClock= false;                 // To start new time w/ old still running
          var clockCurrent = -1;                    // Current time
       
-         // preload images: the many faces of bombs and bomb markers
+         // define images: the many faces of bombs and bomb markers
          var bombFlagged = 11;
          var bombRevealed = 14;
          var bombMisFlagged = 12;
@@ -75,7 +78,7 @@ var tmp = function () {
          var bombQuestion = 13;
          var blankCell = 9;
       
-         // preload images: the 3 faces (can't use "oh" w/o mouseUp/Down methods)
+         // define images: the 3 faces 
          var faceDead = 4;
          var faceSmile = 0;
          var faceWin = 1;
@@ -83,14 +86,20 @@ var tmp = function () {
          var faceOoh = 3;
          var facePirate = 2;	
          
+         // load helptext and hide instructions once 
+	target.helpText.setValue(getFileContent(target.mineSweeperRoot.concat('MineSweeper_Help_EN.txt'),'help.txt missing')); 
+	target.helpText.show(false);
+	var displayHelp = false; 
+         
+         
 	target.init = function () {
 	var i,j;
-	var maxSquares = 299;
+	var maxSquares = 367; // 16*23-1
 	
 		/* set translated appTitle and appIcon */
 		this.appTitle.setValue(kbook.autoRunRoot._title);
 		this.appIcon.u = kbook.autoRunRoot._icon;
-	
+
                  // Read in the board dimensions settings 
                  // to get started with just set it to "Beginner"
                                
@@ -107,9 +116,9 @@ var tmp = function () {
                     maxNumBombs = 40; }
                  // Expert
                  else { if (gameFormat == "Expert") {
-                    maxX = 30;
-                    maxY = 15;
-                    maxNumBombs = 99; }
+                    maxX = 15;
+                    maxY = 22;
+                    maxNumBombs = 77; }
                  // Beginner (also the default)
                  else { 
                     maxX = 7;
@@ -134,6 +143,7 @@ var tmp = function () {
         	 cellArray = new Array(maxCells);      // One per cell on the board
                  for (l=0; l<=maxCells; l++) {
                     cellArray[l]=new constructCell()}	
+		
 		// check MenuOptions
  		 var menuBar = this.findContent("MENUBAR"); // menuBar had to be defined as id="MENUBAR" in XML!!
 		//	this.bubble("tracelog","MENUBAR1 "+menuBar); // debug
@@ -161,20 +171,20 @@ var tmp = function () {
         				}
         		  } 		
         		}  
-      		items = getSoValue(menus[1],"items");	// Options-Menu
-      		items[0].check(useFirstClickUseful);
-  		items[1].check(useQuestionMarks); 
-          	items[2].check(useMacroOpen); 
-      		items[3].check(openRemaining); 
-	
-		target.bubble('tracelog','maxX= '+maxX);
-		target.bubble('tracelog','maxY= '+maxY);
+		updateOptMenu();
 
-		// dynamicale resize frame
-		this.frame1.changeLayout(300-21-(maxX+1)*32/2,21+21+(maxX+1)*32,uD,30,85,uD);
-		this.frame2.changeLayout(300-21-(maxX+1)*32/2,21+21+(maxX+1)*32,uD,105,21+21+(maxY+1)*32,uD);
+		this.btn_hint_prev_next.setValue('Change Mode step/flag');
+		
+	//	target.bubble('tracelog','height='+(getSoValue(this,'height')>900));
+	//	target.bubble('tracelog','maxX= '+maxX);
+	//	target.bubble('tracelog','maxY= '+maxY);
+
+		// resize frame dynamical 
 		gridLeft = 300-(maxX+1)*32/2;
-		target.bubble('tracelog','gridLeft= '+gridLeft);
+	//	target.bubble('tracelog','gridLeft= '+gridLeft);
+		this.frame1.changeLayout(gridLeft-21, 21+21+(maxX+1)*32, uD,  30, 85,uD);
+		this.frame2.changeLayout(gridLeft-21, 21+21+(maxX+1)*32, uD, 105, 21+21+(maxY+1)*32, uD);
+
 		// fill grid
         	   for (i=0; i<=maxX; i++) {
                     for (j=0; j<=maxY; j++) {
@@ -190,7 +200,7 @@ var tmp = function () {
 	};
 	
 	
-	target.ExitQuit = function () {
+	target.exitQuit = function () {
 		var ev, func, menuBar;
 		ev = newEvent(2048);
 		menuBar = this.findContent("MENUBAR"); // menuBar had to be defined as id="MENUBAR" in XML!!
@@ -205,17 +215,17 @@ var tmp = function () {
 
 	// just for debugging purposes
 	target.doGridClick = function (sender) {
-		var id, x, u, v;
+		var id, sq, u, v;
 		var e = {button :1};
 		id = getSoValue(sender,"id");
-		x = id.substring(2,5);
-		u = getSoValue(sender,"u");
-		v = getSoValue(sender,"v");
+		sq = id.substring(2,5);
+	//	u = getSoValue(sender,"u");
+	//	v = getSoValue(sender,"v");
 	//		this.bubble("tracelog","id= "+id); // debug
 	//		this.bubble("tracelog","X= "+xFromID(x)); // debug
  	//		this.bubble("tracelog","Y= "+yFromID(x)); // debug
 		e.button = (clickMode == 0) ? 1 : 2;
-		cellClick(xFromID(x),yFromID(x),e);
+		cellClick(xFromID(sq),yFromID(sq),e);
 		ticClock();	
 		//	this.bubble("tracelog","sq#= "+x); // debug
 		//	this.bubble("tracelog","u= "+u);
@@ -231,7 +241,39 @@ var tmp = function () {
 	//	this.bubble("tracelog","clickMode= "+clickMode); // debug
 	};
 
-	/* menu exist in the scope of DOCUMENT !! */
+
+	target.showHelp = function (sender) {
+		displayHelp = !displayHelp;
+		this.closeHelpText.enable(displayHelp);
+		this.closeHelpText.show(displayHelp);
+		this.helpText.show(displayHelp);
+		if (displayHelp) {
+		 this.doNext = function () {this.helpTextPgDwn()};
+		 this.doPrevious = function () {this.helpTextPgUp()};
+		 this.btn_hint_prev_next.setValue('Scroll Help');		 
+		} else {
+ 		 this.doNext = function () {this.changeClickMode()};
+		 this.doPrevious = function() {this.changeClickMode()};
+		 this.btn_hint_prev_next.setValue('Change Mode step/flag');
+		} 
+	}; 
+
+	target.toggleClockMove = function (sender) {
+		showNumMoves = !showNumMoves;
+		updateClock();	
+	}; 
+	
+	target.helpTextPgDwn = function (){
+		this.bubble("tracelog","before PgDwn"); // debug
+		fnPageScroll.call(this.helpText, true, 1);
+		this.bubble("tracelog","after PgDwn"); // debug
+	}	
+
+	target.helpTextPgUp = function (){
+		fnPageScroll.call(this.helpText, true, -1);
+	}	
+	
+	// menu exist in the scope of DOCUMENT !! 
 	target.container.container.selectLevel = function(sender) {
 		var x = getSoValue(sender,"index");
 	//	this.bubble('tracelog','sender.index= '+x);
@@ -255,6 +297,18 @@ var tmp = function () {
 		}		
 		target.init();
 	};
+	
+	var updateOptMenu = function (){
+      		var menuBar, menus, items;
+      		var menuBar = target.findContent("MENUBAR"); // menuBar had to be defined as id="MENUBAR" in XML!!
+	//	this.bubble("tracelog","MENUBAR1 "+menuBar); // debug
+		var menus = getSoValue(menuBar,"menus");
+      		items = getSoValue(menus[1],"items");	// Options-Menu
+      		items[0].check(useFirstClickUseful);
+  		items[1].check(useQuestionMarks); 
+          	items[2].check(useMacroOpen); 
+      		items[3].check(openRemaining); 
+	}
 
 	target.container.container.changeOption = function(sender) {
 		var x = getSoValue(sender,"index");
@@ -278,9 +332,14 @@ var tmp = function () {
 				break;
 				}
 		}		
-		target.init();
+		updateOptMenu();
 	};
-		
+	// checks for 900/950 screensize
+	target.container.container.is950 = function(sender) {
+		return getSoValue(target,'height') > 900;
+	};	
+	
+	
 // get X form id	
 var xFromID = function (id) {	
 	return id % (maxX+1);
@@ -288,7 +347,7 @@ var xFromID = function (id) {
 
 // get Y form id	
 var yFromID = function (id) {	
-	return Math.floor(id / (maxY+1));
+	return Math.floor(id / (maxX+1));
 }
 	
 // add leading Zeros	
@@ -302,8 +361,7 @@ var pad = function (number, length) {
     return str;
 
 }
-		
-	
+
 
 // Creates the internal cells (as opposed to the image cells).  Called once
 // per cell upon creation of the window (see above).
@@ -799,15 +857,25 @@ var faceClick = function() {
 
 // Set the clock images to the current time.  Called by ticClock
 var updateClock = function() {
-     var tempClock,digit;
-     tempClock = clockCurrent;
+     var tempClock,digit,v;
+     if (showNumMoves){
+       v=1;
+       tempClock=numMoves;
+     	} 
+     else {  
+       v=0;
+       tempClock = clockCurrent;
+     }		     
      if (tempClock == -1) { tempClock = 0; }
      digit = tempClock % 10;
      target.time1s.u = digit;
+     target.time1s.v = v;
      digit = Math.floor(tempClock / 10 % 10);
      target.time10s.u = digit;
+     target.time10s.v = v;
      digit = Math.floor(tempClock / 100 % 10);
-     target.time100s.u = digit;}
+     target.time100s.u = digit;
+     target.time100s.v = v;}
 
 
 // Updates the display w/ the current number of bombs left.
@@ -843,7 +911,7 @@ var ticClock = function() {
       if (clockMoving) {
          now = new Date();
       	 clockCurrent = Math.floor((now.getTime()-clockStartTime)/1000)}
-      	    target.bubble('tracelog','currentTime='+clockCurrent);
+  // 	 target.bubble('tracelog','currentTime='+clockCurrent);
       if ((clockMoving) && (clockCurrent < 1000)) // Max out display at 999
          updateClock(); 
       clockActive = clockMoving;
@@ -880,7 +948,7 @@ var clockStart = function() {
    clockMoving = true;
    now = new Date();
    clockStartTime = now.getTime();
-   target.bubble('tracelog','StartTime='+clockStartTime);
+//   target.bubble('tracelog','StartTime='+clockStartTime);
    ticClock();
    // harder part: We're still running.  Tells ticClock to kill old clock.
    if (clockWasActive) {

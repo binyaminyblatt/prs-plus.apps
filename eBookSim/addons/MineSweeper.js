@@ -13,6 +13,7 @@ tmp = function() {
 		activate: function () {
 		   try {
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
+			kbook.autoRunRoot.sandbox.getFileContent = Core.io.getFileContent;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
 			} catch (ignore) {}
 			
