@@ -6,8 +6,7 @@
 // Copyright (c) 1981-1995 Microsoft Corp. // beware of the (c) sign!!
 
 // History:
-//	2011-04-10 Mark Nord:	initially adopted to FSK for use with Sony PRS
-
+//	2011-04-10 Mark Nord:	initially adapted to FSK for use with Sony PRS
 
 var tmp = function () {
 	var uD;
@@ -21,72 +20,78 @@ var tmp = function () {
 	var fnPageScroll = getSoValue(target.helpText, 'scrollPage');
 	var clickMode = 0;
 
+
       //
       // Variable and document setup stuff:
       //
       
-         var maxX ,maxY, maxNumBombs, maxLegalBombs, l, maxCells, cellArray, clockStartTime;
+        var maxX ,maxY, maxNumBombs, maxLegalBombs, l, maxCells, cellArray, clockStartTime;
+
+	target.BeginnerBestTime = 999;
+	target.IntermediateBestTime = 999;
+	target.ExpertBestTime = 999;
+	target.CustomBestTime =999;
       
-         // setCookie("gameFormat",gameFormat);
-	 var gameFormat = "Beginner"; //"Intermediate";
+        // setCookie("gameFormat",gameFormat);
+	var gameFormat = "Beginner"; //"Intermediate";
       
-         /*/ Read the other param vars set by the intro page
-         // Note how the double negative will force missing to default to true
-         useQuestionMarks = ! (getCookie("useQuestionMarks") == 'false');
-         useMacroOpen = ! (getCookie("useMacroOpen") == 'false');
-         useFirstClickUseful = ! (getCookie("useFirstClickUseful") == 'false');
-         openRemaining = (getCookie("openRemaining") == 'true'); */
-         var useQuestionMarks = true;
-         var useMacroOpen = true;
-         var useFirstClickUseful = true;
-         var openRemaining = false;
-         var showNumMoves = false;
+        /* Read the other param vars set by the intro page
+        // Note how the double negative will force missing to default to true
+        useQuestionMarks = ! (getCookie("useQuestionMarks") == 'false');
+        useMacroOpen = ! (getCookie("useMacroOpen") == 'false');
+        useFirstClickUseful = ! (getCookie("useFirstClickUseful") == 'false');
+        openRemaining = (getCookie("openRemaining") == 'true'); */
+        var useQuestionMarks = true;
+        var useMacroOpen = true;
+        var useFirstClickUseful = true;
+        var openRemaining = false;
+        var showNumMoves = false;
          
-         // Set global constants   
+        // Set global constants   
         
-         var topImages = 19;                        // 7 on game menu, 8 on opt menu, 3 bomb #s, smile face, 3 time #s
-         var maxStackHeight = 300;                 // For recursive cell opening stack
-         var smileMargin=((maxX+1)*32-(26*6+52))/2;// To center smile & rt jstfy time
-      
-         // Global Arrays (created once)
-         var markedArray = new Array(maxStackHeight); // For recursive cell opening stack
+        var topImages = 19;                        // 7 on game menu, 8 on opt menu, 3 bomb #s, smile face, 3 time #s
+        var maxStackHeight = 300;                 // For recursive cell opening stack
+        var smileMargin=((maxX+1)*32-(26*6+52))/2;// To center smile & rt jstfy time
+        
+        // Global Arrays (created once)
+        var markedArray = new Array(maxStackHeight); // For recursive cell opening stack
          
-         // Variables used & reset during play
-         var dead = false;                         // Hit a bomb?
-         var win = false;                          // All cells open?
-         var bombsFlagged = 0;                     // How many bombs marked so far?
-         var cellsOpen = 0;                        // How many cells open so far?
-         var markedCount = -1;                     // For recursive cell opening stack
-         var highestStackHeight = -1;              // For recursive cell opening stack
-         var pointingAtX = -1;                     // Current cell being pointed at.
-         var pointingAtY = -1;                     // Used for space bar bomb flagging
-         var numMoves = 0;                         // Count the number of clicks
-         var openRemainingUsed = false;            // Was openRemaining used by the player?
-         var lastClickOnMenu = false;              // Used to control smooth menu closing
+        // Variables used & reset during play
+        var dead = false;                         // Hit a bomb?
+        var win = false;                          // All cells open?
+        var bombsFlagged = 0;                     // How many bombs marked so far?
+        var cellsOpen = 0;                        // How many cells open so far?
+        var markedCount = -1;                     // For recursive cell opening stack
+        var highestStackHeight = -1;              // For recursive cell opening stack
+        var pointingAtX = -1;                     // Current cell being pointed at.
+        var pointingAtY = -1;                     // Used for space bar bomb flagging
+        var numMoves = 0;                         // Count the number of clicks
+        var openRemainingUsed = false;            // Was openRemaining used by the player?
+        var lastClickOnMenu = false;              // Used to control smooth menu closing
       
-         // Vars for the clock time
-         var clockMoving  = false;                 // Is it moving?
-         var clockActive  = false;                 // Should it be moving?
-         var killLastClock= false;                 // To start new time w/ old still running
-         var clockCurrent = -1;                    // Current time
+        // Vars for the clock time
+        var clockMoving  = false;                 // Is it moving?
+        var clockActive  = false;                 // Should it be moving?
+        var killLastClock= false;                 // To start new time w/ old still running
+        var clockCurrent = -1;                    // Current time
       
-         // define images: the many faces of bombs and bomb markers
-         var bombFlagged = 11;
-         var bombRevealed = 14;
-         var bombMisFlagged = 12;
-         var bombDeath = 10;
-         var bombQuestion = 13;
-         var blankCell = 9;
+        // define images: the many faces of bombs and bomb markers
+        var bombFlagged = 11;
+        var bombRevealed = 14;
+        var bombMisFlagged = 12;
+        var bombDeath = 10;
+        var bombQuestion = 13;
+        var blankCell = 9;
       
-         // define images: the 3 faces 
-         var faceDead = 4;
-         var faceSmile = 0;
-         var faceWin = 1;
-         var faceWait = 5;
-         var faceOoh = 3;
-         var facePirate = 2;	
+        // define images: the 3 faces 
+        var faceDead = 4;
+        var faceSmile = 0;
+        var faceWin = 1;
+        var faceWait = 5;
+        var faceOoh = 3;
+        var facePirate = 2;	
          
-         // load helptext and hide instructions once 
+        // load helptext and hide instructions once 
 	target.helpText.setValue(getFileContent(target.mineSweeperRoot.concat('MineSweeper_Help_EN.txt'),'help.txt missing')); 
 	target.helpText.show(false);
 	var displayHelp = false; 
@@ -121,8 +126,8 @@ var tmp = function () {
                     maxNumBombs = 77; }
                  // Beginner (also the default)
                  else { 
-                    maxX = 7;
-                    maxY = 7;
+                    maxX = 8;
+                    maxY = 8;
                     maxNumBombs = 10; // 10 when not testing
                     gameFormat = "Beginner"; } } }
                     
@@ -264,14 +269,15 @@ var tmp = function () {
 	}; 
 	
 	target.helpTextPgDwn = function (){
-		this.bubble("tracelog","before PgDwn"); // debug
+	//	this.bubble("tracelog","before PgDwn"); // debug
 		fnPageScroll.call(this.helpText, true, 1);
-		this.bubble("tracelog","after PgDwn"); // debug
+	//	this.bubble("tracelog","after PgDwn"); // debug
 	}	
 
 	target.helpTextPgUp = function (){
 		fnPageScroll.call(this.helpText, true, -1);
 	}	
+	
 	
 	// menu exist in the scope of DOCUMENT !! 
 	target.container.container.selectLevel = function(sender) {
@@ -416,11 +422,17 @@ var cursorClearLoc = function(x,y) {
 
 // Complete the Win process. Save the cookies, and call the winning window.
 var winShowWindow = function() {
+   var bestTime = target[gameFormat+'BestTime'];
    win = true;
 //   setCookie("gameTime",clockCurrent);
 //   setCookie("numMoves",numMoves);
 //   setCookie("openRemainingUsed",openRemainingUsed);
+   target.WIN_DIALOG.winTime.setValue('Game time: '+ clockCurrent);
+   target.WIN_DIALOG.bestTime.setValue("Your best "+gameFormat+ " time is: "+bestTime);
+   target.WIN_DIALOG.numClicks.setValue("Number of Clicks: "+ numMoves);
    target.face.u = faceWin;
+   if (clockCurrent<bestTime) {target[gameFormat+'BestTime']=clockCurrent}
+   target.WIN_DIALOG.open();
 //   window.open('highscores/minewin.html','MinesweeperWin','toolbar=0,directories=0,menubar=0,scrollbars=1,resizable=0,width=400,height=420'); 
 }
 	
@@ -893,9 +905,6 @@ var updateNumBombs = function() {
       target.bomb100s.u = digit;
       if (maxNumBombs < bombsFlagged)
          target.bomb100s.u = 10; } }
-
-
-
 
 //
 // TIME functions begin here...

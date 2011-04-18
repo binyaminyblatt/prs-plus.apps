@@ -90,7 +90,7 @@
 			<cutout id="menu_cb" x="420" y="436" width="20" height="8"/>
 			<cutout id="menu_rb" x="440" y="436" width="20" height="8"/>
 			
-
+			<cutout id="background-f" x="650" y="390" width="40" height="40"/>	
 			<cutout id="allBlack_c" x="0" y="305" width="10" height="10"/>	
 			<cutout id="allWhite_c" x="0" y="375" width="10" height="10"/>		  
 			
@@ -124,7 +124,10 @@
 				styles="htext-e,htext-e,htext-p,htext-s"/>    
 		<skin id="button" 
 				cutouts="button-l,button-c,button-r"
-				styles="button-d,button-e,button-p,button-s"/>				    
+				styles="button-d,button-e,button-p,button-s"/>	
+		<skin id="default-button" 
+				cutouts="button-l,button-c,button-r"
+				styles="button-d,button-e,button-p,button-s"/>							    
 		<skin id="gridCursor" 		cutouts="gCursor"/>	
         <skin id="colHelp"	  	cutouts="colHelp_c"/>
    		<skin id="congrats"		cutouts="congrat"/>
