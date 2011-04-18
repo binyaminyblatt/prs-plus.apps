@@ -316,8 +316,8 @@
 								kbook.autoRunRoot._icon = 38;
 								kbook.autoRunRoot._title = "MineSweeper";				
 								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
-				 				kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
-						//		kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
+				 			  kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
+								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
 								this.MAIN.EINK.VIEW.setURI("../addons/MineSweeper/minesweeper.xml");				
 								break;
 								}
@@ -333,15 +333,11 @@
 				case "Menu" : {
 								this.bubble("tracelog","Menu ");
 								this.MAIN.EINK.VIEW.setURI("SimMenu.xml");	
-						        //this.container.enable();
-								//this.container.focus(true);
 								break;
 								}										
 				 case "Menu2" : {
 								this.bubble("tracelog","Menu2 ");
 								this.MAIN.EINK.VIEW.setURI("SimMenu2.xml");	
-						        //this.container.enable();
-								//this.container.focus(true);
 								break;
 								}	
 				}
