@@ -29,9 +29,9 @@
 	</behavior>
 	
 	<style font="Swis721 BT">
-		<style id="swis24gry" size="24" style="" color="#6D6D6D"/>
+		<style id="swis24gry" size="24" style="" right="15" halign="right" color="#6D6D6D"/>
 		<style id="swis32blk" size="32" style="" color="#000000"/>
-		<style id="swis24blk" size="24" style="" color="#000000"/>
+		<style id="swis24blk" size="24" style="" halign="right" color="#000000"/>
 		<style id="swis16blk" size="16" style="" color="#000000"/>
 		<style id="digits" size="22" style="bold" color="#000000"/>
 		<style id="gameclock" size="22" style="bold" color="#000000"/>
@@ -45,31 +45,8 @@
 			<style id="control-p"/>
 			<style id="control-s"/>
 		</style>
-
-		<style id="menu-e" halign="left" left="25" top="0" right="5" bottom="0">
-			<style id="menu-d"/>
-			<style id="menu-p"/>
-			<style id="menu-s"/>
-		</style>
-		<style halign="left" left="25" top="0" right="15" bottom="0">
-			<style id="menu_d" color="#6D6D6D"/>
-			<style id="menu_e" color="#000000"/>
-			<style id="menu_p" color="#000000"/>
-			<style id="menu_s" color="#000000"/>
-		</style>
-		<style halign="right" left="0" top="0" right="15" bottom="0">
-			<style id="key_d" color="#6D6D6D"/>
-			<style id="key_e" color="#000000"/>
-			<style id="key_p" color="#000000"/>
-			<style id="key_s" color="#000000"/>
-		</style>
-		<style style="bold" halign="center" left="10" right="6">
-			<style id="menuBar_d" color="#6D6D6D"/>
-			<style id="menuBar_e" color="#000000"/>
-			<style id="menuBar_p" color="#000000"/>
-			<style id="menuBar_s" color="#000000"/>
-		</style>
 	</style>
+
 	<style id="dialog" background="#80000000"/>
 
 <texture href="msskins/ms_labels.png">
@@ -91,6 +68,7 @@
 	<cutout id="frame-br" x="342" y="80" width="21" height="21"/>
 	
 	<cutout id="null" x="370" y="32" width="1" height="1" lines="1"/>
+	<cutout id="null32h" x="370" y="32" width="1" height="32" lines="1"/>
 </texture>
 
 <skin id="swis16blk" styles="swis16blk"/>	
@@ -99,20 +77,11 @@
 <skin id="swis24blk" styles="swis24blk"/>	
 <skin id="swis32blk" styles="swis32blk"/>	
 <skin id="touchText" styles="touchText"/>		
-<skin id="menu"
-		cutouts="menu_lt,menu_ct,menu_rt,menu_lu,menu_cu,menu_ru,menu_ls,menu_cs,menu_rs,menu_li,menu_ci,menu_ri,menu_ld,menu_cd,menu_rd,menu_lb,menu_cb,menu_rb"
-		styles="menu_d,menu_e,menu_p,menu_s,key_d,key_e,key_p,key_s"/>
-<skin id="panel"
-		cutouts="menu_lt,menu_ct,menu_rt,menu_li,menu_ci,menu_ri,menu_lb,menu_cb,menu_rb"/>
 
 <skin id="frame1"
 		cutouts="frame-tl,frame-tc,frame-tr,frame-ml,frame-mc,frame-mr,null,null,null"/>
 <skin id="frame2"
 		cutouts="frame-jl,frame-jc,frame-jr,frame-ml,frame-mc,frame-mr,frame-bl,frame-bc,frame-br"/>		
-
-<skin id="menuBar"
-		cutouts="null,null,null,null"
-		styles="menuBar_d,menuBar_e,menuBar_p,menuBar_s"/>
 
 <skin id="square" 
 		cutouts="square_c"/>
@@ -121,7 +90,20 @@
 <skin id="sevensegment" 
 		cutouts="sevensgment_c"/>
 
+<skin id="customText"
+		cutouts="htext-lt,htext-ct,htext-rt,htext-lm,htext-cm,htext-rm,htext-lb,htext-cb,htext-rb" 
+		styles="swis24gry,swis24blk,swis24blk,swis24blk"/>  
+<skin id="nullButton" 
+		cutouts="null32h,null32h,null32h"
+		styles="button-d,button-e,button-p,button-s"/>	
 </assets>
+
+<model>
+	<variable id="custom_Height" value="8"/>
+	<variable id="custom_Width" value="8"/>
+	<variable id="custom_Bombs" value="10"/>
+	<variable id="custom_selected" value="false"/>
+</model>
 
 <code>
     <function id="runJs" params="path,target">
@@ -199,7 +181,10 @@
 		this.AUTORUN_GROUP.AUTORUN.showHelp();
  	</function> 
 	<function id="doAbout">
-		this.AUTORUN_GROUP.AUTORUN.ABOUT_DIALOG.open()
+		this.AUTORUN_GROUP.AUTORUN.ABOUT_DIALOG.open();
+	</function>
+	<function id="doShowPersBest">
+		this.AUTORUN_GROUP.AUTORUN.showPersBest();
 	</function>
 </code>
 
@@ -261,16 +246,16 @@
 		</group-->
 
 		<group id="Touch" width="600" top="0" bottom="0">
-			<menuBar id="MENUBAR" alignment="left" left="3" width="600" top="3" height="30">
+			<menuBar id="MENUBAR" alignment="left" left="3" width="600" top="3" height="32">
 				<menu title="GAME">
 					<item title="New" do="init" can="always"/>
 					<separator/>
 					<item title="Beginner"   do="selectLevel" can="always" />
 					<item title="Intermediate" do="selectLevel" can="always" />
-					<item title="Expert"   do="selectLevel" can="is950" />
-					<item title="Custom"   do="" can="never" />					
+					<item title="Expert"   do="selectLevel" can="always" />
+					<item title="Custom"   do="selectLevel" can="always" />					
 					<separator/>
-					<item title="Personal Best"   do="" can="never" />										
+					<item title="Personal Best"   do="doShowPersBest" can="always" />										
 					<separator/>
 					<item title="Exit"   do="doExitQuit" can="always" />														
 				</menu>
@@ -286,21 +271,21 @@
 					<item title="About" do="doAbout" can="always"/>
 				</menu>
 			</menuBar>
-		<label id="mode" skin="swis20blk" left="450" width="150" top="3" height="30" text="MODE: step" />
+		<label id="mode" skin="swis20blk" left="400" width="250" top="3" height="32" text="MODE: step" />
 		<button id="changeMode" left="450" width="150" top="3" height="30" active="true" visible="false" do="changeClickMode" />
 		</group>
 	
-	<panel id="frame1" skin="frame1" left="151" top="30" width="298" height="85"/>
-	<sprite id="bomb100s" skin="sevensegment" left="174" width="26" top="55" height="46" u="0" />
-	<sprite id="bomb10s"  skin="sevensegment" left="200" width="26" top="55" height="46" u="1" />
-	<sprite id="bomb1s"   skin="sevensegment" left="226" width="26" top="55" height="46" u="2" /> 
-	<sprite id="face" skin="smilie" left="274" width="52" top="52" height="52" u="1" active="true" canFocus="true">
+	<panel id="frame1" skin="frame1" left="151" top="35" width="298" height="85"/>
+	<sprite id="bomb100s" skin="sevensegment" left="174" width="26" top="60" height="46" u="0" />
+	<sprite id="bomb10s"  skin="sevensegment" left="200" width="26" top="60" height="46" u="1" />
+	<sprite id="bomb1s"   skin="sevensegment" left="226" width="26" top="60" height="46" u="2" /> 
+	<sprite id="face" skin="smilie" left="274" width="52" top="57" height="52" u="1" active="true" canFocus="true">
 		<behave like="face"/>	</sprite>	
-	<sprite id="time100s" skin="sevensegment" left="348" width="26" top="55" height="46" u="0"><behave like="toggleSprite"/></sprite>
-	<sprite id="time10s"  skin="sevensegment" left="374" width="26" top="55" height="46" u="3"><behave like="toggleSprite"/></sprite>
-	<sprite id="time1s"   skin="sevensegment" left="400" width="26" top="55" height="46" u="8"><behave like="toggleSprite"/></sprite>
+	<sprite id="time100s" skin="sevensegment" left="348" width="26" top="60" height="46" u="0"><behave like="toggleSprite"/></sprite>
+	<sprite id="time10s"  skin="sevensegment" left="374" width="26" top="60" height="46" u="3"><behave like="toggleSprite"/></sprite>
+	<sprite id="time1s"   skin="sevensegment" left="400" width="26" top="60" height="46" u="8"><behave like="toggleSprite"/></sprite>
 
-	<panel id="frame2" skin="frame2" left="151" top="105" width="298" height="298"/>	
+	<panel id="frame2" skin="frame2" left="151" top="110" width="298" height="298"/>	
 	<sprite skin="square" id="sq000"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq001"><behave like="gridSprite"/></sprite>
 	<sprite skin="square" id="sq002"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq003"><behave like="gridSprite"/></sprite>
 	<sprite skin="square" id="sq004"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq005"><behave like="gridSprite"/></sprite>	
@@ -499,7 +484,7 @@
 	<!--label id='btn_hint_size'      skin='touchText' left='360' width='120' bottom='2' height='15' align='center' text='Size'/>
 	<label id='btn_hint_option'    skin='touchText' left='480' width='129' bottom='2' height='15' align='center' text='Option'/-->
 	
-	<panel id="ABOUT_DIALOG"  width="450" height="250" visible="false">
+	<panel id="ABOUT_DIALOG" skin="mpanel" width="450" height="250" visible="false">
 		<code>
 			<function id="doOK">
 				this.show(false)
@@ -517,7 +502,7 @@
 		<default-button id="OK" text="Ok" width="70" bottom="10" do="doOK"/>
 	</panel>
 
-	<panel id="WIN_DIALOG"  width="450" height="250" visible="false">
+	<panel id="WIN_DIALOG" skin="mpanel" width="450" height="250" visible="false">
 		<code>
 			<function id="doOK">
 				this.show(false)
@@ -532,6 +517,63 @@
 		<label id="bestTime" skin="swis16blk" active="false" text="Your best undefined time is: NaN" left="28" right="28" top="130" align="center" height="28"/>
 		<label id="numClicks" skin="swis16blk" active="false" text="Number of Clicks: NaN" left="28" align="center" right="28" top="150" height="28"/>
 		<default-button id="OK" text="Ok" width="70" bottom="10" do="doOK"/>
+	</panel>
+
+	<panel id="PERSONAL_BEST_DIALOG" skin="mpanel" width="450" height="250" visible="false">
+		<code>
+			<function id="doClose">
+				this.show(false)
+			</function>
+			<function id="open">
+				this.show(true)
+			</function>
+		</code>
+		<label skin="swis32blk" active="false" text="Personal Best Times" align="center" left="28" right="28" top="20" height="28"/>
+		<label skin="swis24blk" active="false" text="Beginner: " left="100" width="200" top="70" align="left" height="28"/>
+		<label id="bestBeginnerTime" skin="swis24blk" active="false" text="999" left="200" width="100" top="70" align="right" height="28"/>
+		<label skin="swis24blk" active="false" text="Intermediate:" left="100" width="200" top="110" align="left" height="28"/>
+		<label id="bestIntermediateTime" skin="swis24blk" active="false" text="999" left="200" width="100" top="110" align="right" height="28"/>
+		<label skin="swis24blk" active="false" text="Expert:" left="100" width="200" top="150" align="left" height="28"/>
+		<label id="bestExpertTime" skin="swis24blk" active="false" text="999" left="200" width="100" top="150" align="right" height="28"/>
+		<button id="resetBest" text="Reset Scores" width="170" left ="10" bottom="10" do="doResetBest"/>
+		<default-button id="btn_close" text="Close" width="70" bottom="10" do="doClose"/>
+	</panel>
+
+	<panel id="CUSTOM_DIALOG" skin="mpanel" width="450" height="250" visible="false">
+		<code>
+			<function id="doOK">
+				this.container.setVariable("custom_selected",true);
+				this.show(false);
+				this.container.init();
+			</function>
+			<function id="doClose">
+				this.container.setVariable("custom_selected",false);
+				this.show(false)
+				this.container.init();
+			</function>
+			<function id="open">
+				this.show(true)
+			</function>
+		</code>
+		<label skin="swis32blk" active="false" text="Custom Settings" align="center" left="28" right="28" top="20" height="38"/>
+
+		<label skin="swis24blk" active="false" text="Game Height: " left="50" width="200" top="70" align="left" height="28"/>
+		<text id="cust_Height" skin="customText" active="false" variable="custom_Height" left="300" width="50" top="67" height="34"/>
+		<button id="cust_Height-" skin="nullButton" left="250" top="67" width="50" heigth="28" text="-" do="doPlusMinus"/>
+		<button id="cust_Height+" skin="nullButton" left="350" top="67" width="50" heigth="28" text="+" do="doPlusMinus"/>
+				
+		<label skin="swis24blk" active="false" text="Game Width:" left="50" width="200" top="110" align="left" height="28"/>
+		<text id="cust_Width" skin="customText" active="false" variable="custom_Width" left="300" width="50" top="107" height="34"/>
+		<button id="cust_Width-" skin="nullButton" left="250" top="107" width="50" heigth="28" text="-" do="doPlusMinus"/>
+		<button id="cust_Width+" skin="nullButton" left="350" top="107" width="50" heigth="28" text="+" do="doPlusMinus"/>
+				
+		<label skin="swis24blk" active="false" text="Number of Bombs" left="50" width="200" top="150" align="left" height="28"/>
+		<text id="cust_Bombs" skin="customText" active="false" variable="custom_Bombs" left="300" width="50" top="147" height="34"/>
+		<button id="cust_Bombs-" skin="nullButton" left="250" top="147" width="50" heigth="28" text="-" do="doPlusMinus"/>
+		<button id="cust_Bombs+" skin="nullButton" left="350" top="147" width="50" heigth="28" text="+" do="doPlusMinus"/>
+		
+		<default-button id="btn_OK" text="OK" width="70" bottom="10" do="doOK"/>
+		<button id="btn_Cancle" text="Cancle" width="100" left ="270" bottom="10" do="doClose"/>		
 	</panel>
 		 
 	<label skin="swis24gry" left="0" right="0" bottom="80" height="30" align="center" text="WORK in PROGRESS" />

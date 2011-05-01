@@ -10,7 +10,7 @@
 
 var tmp = function () {
 	var uD;
-	var gridTop = 126;
+	var gridTop = 131;
 	var gridLeft;
 	var newEvent = prsp.compile("param", "return new Event(param)");
 	
@@ -110,24 +110,29 @@ var tmp = function () {
                                
                  // Set additional params based on cookies or size defaults.
                  // Roll-your-own (custom)
-                 if (gameFormat == "Custom") {
-                    maxX = parseInt(getCookie("maxX"));
-                    maxY = parseInt(getCookie("maxY"));
-                    maxNumBombs = parseInt(getCookie("maxNumBombs")); }
+                 if (gameFormat == "Custom" && this.getVariable("custom_selected")) {
+                    maxX = parseInt(this.getVariable("custom_Width")-1);
+                    maxY = parseInt(this.getVariable("custom_Height")-1);
+                    maxNumBombs = parseInt(this.getVariable("custom_Bombs")); }
                  // Intermediate
                  else { if (gameFormat == "Intermediate") {
-                    maxX = 15;
-                    maxY = 15;
-                    maxNumBombs = 40; }
+                    maxX = 12;
+                    maxY = 12;
+                    maxNumBombs = 30; }
                  // Expert
                  else { if (gameFormat == "Expert") {
-                    maxX = 15;
-                    maxY = 22;
-                    maxNumBombs = 77; }
+ 		    if (!is950()) {		                
+	                    maxX = 15;
+        	            maxY = 15;
+                	    maxNumBombs = 50; }
+                    else {		                
+	                    maxX = 15;
+        	            maxY = 22;
+                	    maxNumBombs = 77; }}
                  // Beginner (also the default)
                  else { 
-                    maxX = 8;
-                    maxY = 8;
+                    maxX = 7;
+                    maxY = 7;
                     maxNumBombs = 10; // 10 when not testing
                     gameFormat = "Beginner"; } } }
                     
@@ -160,7 +165,7 @@ var tmp = function () {
         		  switch (i) {
         			case 2:
         			{	items[i].check(gameFormat == "Beginner"); 
-        				break;
+	        			break;
         				}
         			case 3:
         			{	items[i].check (gameFormat == "Intermediate"); 
@@ -187,8 +192,8 @@ var tmp = function () {
 		// resize frame dynamical 
 		gridLeft = 300-(maxX+1)*32/2;
 	//	target.bubble('tracelog','gridLeft= '+gridLeft);
-		this.frame1.changeLayout(gridLeft-21, 21+21+(maxX+1)*32, uD,  30, 85,uD);
-		this.frame2.changeLayout(gridLeft-21, 21+21+(maxX+1)*32, uD, 105, 21+21+(maxY+1)*32, uD);
+		this.frame1.changeLayout(gridLeft-21, 21+21+(maxX+1)*32, uD,  35, 85,uD);
+		this.frame2.changeLayout(gridLeft-21, 21+21+(maxX+1)*32, uD, 110, 21+21+(maxY+1)*32, uD);
 
 		// fill grid
         	   for (i=0; i<=maxX; i++) {
@@ -278,31 +283,80 @@ var tmp = function () {
 		fnPageScroll.call(this.helpText, true, -1);
 	}	
 	
-	
-	// menu exist in the scope of DOCUMENT !! 
-	target.container.container.selectLevel = function(sender) {
-		var x = getSoValue(sender,"index");
-	//	this.bubble('tracelog','sender.index= '+x);
-		switch (x) {
-			case 2:
-			{	gameFormat = "Beginner"; 
-				break;
-				}
-			case 3:
-			{	gameFormat = "Intermediate"; 
-				break;
-				}
-			case 4:
-			{	gameFormat = "Expert"; 
-				break;
-				}			
-			case 5:
-			{	gameFormat = "Custom"; 
-				break;
-				}
+        // shows the Personal Best Times Window
+        target.showPersBest = function() {
+           this.PERSONAL_BEST_DIALOG.bestBeginnerTime.setValue(this.BeginnerBestTime);
+           this.PERSONAL_BEST_DIALOG.bestIntermediateTime.setValue(this.IntermediateBestTime);
+           this.PERSONAL_BEST_DIALOG.bestExpertTime.setValue(this.ExpertBestTime);
+           this.PERSONAL_BEST_DIALOG.show(true);
+        }	
+
+        target.PERSONAL_BEST_DIALOG.doResetBest = function() {
+	//   target.bubble("tracelog","doRestBest"); // debug
+	   target.BeginnerBestTime = 999;
+           target.IntermediateBestTime = 999;
+           target.ExpertBestTime = 999;
+           target.showPersBest();
+	}
+
+        target.CUSTOM_DIALOG.doPlusMinus = function(sender) {
+	   var senderID, cHeight, cWidth, cBombs, step;
+	   senderID = getSoValue(sender,"id");
+	   step = ( senderID.lastIndexOf("+") != -1) ? 1 : -1;
+	   senderID = senderID.slice(0,senderID.length-1);
+	   cHeight = parseInt(target.getVariable("custom_Height"));
+	   cWidth = parseInt(target.getVariable("custom_Width"));
+	   cBombs = parseInt(target.getVariable("custom_Bombs"));
+	// target.bubble("tracelog","do "+senderID+step); // debug
+	   switch (senderID) {
+	   	case "cust_Height" :
+	   	{  if (cHeight<23-step && is950() && cHeight>7-step) {cHeight = cHeight+step;} 
+	   	   else { if (cHeight<16-step && cHeight>7-step) {cHeight = cHeight +step}};
+		   this.container.setVariable("custom_Height",cHeight);
+	           break;
+		}
+	   	case "cust_Width" :
+	   	{  if (cWidth<16-step && cWidth>7-step) cWidth = cWidth + step;
+		   this.container.setVariable("custom_Width",cWidth);
+	           break;		   
+		}	
+	   	case "cust_Bombs" :
+	   	{  if (cBombs < Math.round(cWidth*cHeight / 3)-step && cBombs>0-step) {cBombs = cBombs+step};
+		   this.container.setVariable("custom_Bombs",cBombs);
+	           break;		   
 		}		
-		target.init();
-	};
+	   }	 
+	}
+	
+      	// menu exist in the scope of DOCUMENT !! 
+      	target.container.container.selectLevel = function(sender) {
+      		var x = getSoValue(sender,"index");
+      	//	this.bubble('tracelog','sender.index= '+x);
+      		switch (x) {
+      			case 2:
+      			{	gameFormat = "Beginner"; 
+      				break;
+      				}
+      			case 3:
+      			{	gameFormat = "Intermediate"; 
+      				break;
+      				}
+      			case 4:
+      			{	gameFormat = "Expert"; 
+      				break;
+      				}			
+      			case 5:
+      			{	gameFormat = "Custom"; 
+      				target.CUSTOM_DIALOG.open();
+      				break;
+      				}
+      		}
+      	//	this.bubble("tracelog","selectLevel "+gameFormat); // debug
+      		if (gameFormat!="Custom"){
+      			target.setVariable("custom_selected",false)
+	      		target.init();
+		}      	
+      	};
 	
 	var updateOptMenu = function (){
       		var menuBar, menus, items;
@@ -340,8 +394,9 @@ var tmp = function () {
 		}		
 		updateOptMenu();
 	};
+	
 	// checks for 900/950 screensize
-	target.container.container.is950 = function(sender) {
+	var is950 = function() {
 		return getSoValue(target,'height') > 900;
 	};	
 	

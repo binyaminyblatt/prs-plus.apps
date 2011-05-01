@@ -20,12 +20,27 @@
 			<style id="button-d" color="#6D6D6D"/>
 			<style id="button-p"/>
 			<style id="button-s" />
-		</style>		
+		</style>	
+		
+		<style font="Swis721 BT" size="30">
+			<style halign="left" left="25" top="0" right="15" bottom="0">
+				<style id="menu_d" color="#6D6D6D"/>
+				<style id="menu_e" color="#000000"/>
+				<style id="menu_p" color="#000000"/>
+				<style id="menu_s" color="#000000"/>
+			</style>
+			<style style="bold" halign="center" left="10" right="6">
+				<style id="menuBar_d" color="#6D6D6D"/>
+				<style id="menuBar_e" color="#000000"/>
+				<style id="menuBar_p" color="#000000"/>
+				<style id="menuBar_s" color="#000000"/>
+			</style>
+		</style>			
 	
         <texture href="../AppAssets/AppLabels.png">
 			<cutout id="button-l" x="610" y="102" width="16" height="40" lines="60"/>
 			<cutout id="button-c" x="626" y="102" width="20" height="40" lines="60"/>
-			<cutout id="button-r" x="646" y="102" width="16" height="40" lines="60"/>
+			<cutout id="button-r" x="649" y="102" width="16" height="40" lines="60"/>
 		
 			<cutout id="radio-l" x="670" y="219" width="25" height="30" columns="60"/>
 			<cutout id="radio-c" x="695" y="219" width="15" height="30" columns="60"/>
@@ -41,15 +56,15 @@
 			<cutout id="panel-cb" x="655" y="425" width="30" height="9"/>
 			<cutout id="panel-rb" x="685" y="425" width="9" height="9"/>
 		
-			<cutout id="htext-lt" x="15" y="260" width="5" height="5" />
-			<cutout id="htext-ct" x="21" y="260" width="10" height="5" />
-			<cutout id="htext-rt" x="35" y="260" width="10" height="5" />
-			<cutout id="htext-lm" x="15" y="270" width="5" height="10" />
-			<cutout id="htext-cm" x="21" y="270" width="10" height="10" />
-			<cutout id="htext-rm" x="35" y="270" width="10" height="10" />
-			<cutout id="htext-lb" x="15" y="280" width="5" height="10" />
-			<cutout id="htext-cb" x="21" y="280" width="10" height="10" />
-			<cutout id="htext-rb" x="35" y="280" width="10" height="10" />		
+			<cutout id="htext-lt" x="15" y="230" width="5" height="5" lines="30"/>
+			<cutout id="htext-ct" x="21" y="230" width="10" height="5" lines="30" />
+			<cutout id="htext-rt" x="35" y="230" width="10" height="5" lines="30"/>
+			<cutout id="htext-lm" x="15" y="240" width="5" height="10" lines="30"/>
+			<cutout id="htext-cm" x="21" y="240" width="10" height="10" lines="30"/>
+			<cutout id="htext-rm" x="35" y="240" width="10" height="10" lines="30"/>
+			<cutout id="htext-lb" x="15" y="250" width="5" height="10" lines="30"/>
+			<cutout id="htext-cb" x="21" y="250" width="10" height="10" lines="30"/>
+			<cutout id="htext-rb" x="35" y="250" width="10" height="10" lines="30"/>		
 
 			<cutout id="AppMainHeader-l" x="0" y="300" width="5" height="70"/>
 			<cutout id="AppMainHeader-c" x="0" y="300" width="50" height="70"/>
@@ -71,18 +86,18 @@
 			<cutout id="popup-bc" x="733" y="81" width="42" height="5"/>
 			<cutout id="popup-br" x="775" y="81" width="5" height="5"/>
 			
-			<cutout id="menu_lt" x="400" y="370" width="20" height="4"/>
-			<cutout id="menu_ct" x="420" y="370" width="20" height="4"/>
-			<cutout id="menu_rt" x="440" y="370" width="20" height="4"/>
-			<cutout id="menu_lu" x="400" y="374" width="20" height="6"/>
-			<cutout id="menu_cu" x="420" y="374" width="20" height="6"/>
-			<cutout id="menu_ru" x="440" y="374" width="20" height="6"/>
-			<cutout id="menu_ls" x="400" y="380" width="20" height="10"/>
-			<cutout id="menu_cs" x="420" y="380" width="20" height="10"/>
-			<cutout id="menu_rs" x="440" y="380" width="20" height="10"/>
-			<cutout id="menu_li" x="400" y="390" width="20" height="20" columns="60"/>
-			<cutout id="menu_ci" x="420" y="390" width="20" height="20" columns="60"/>
-			<cutout id="menu_ri" x="440" y="390" width="20" height="20" columns="60"/>
+			<cutout id="menu_lt" x="400" y="332" width="20" height="6"/>
+			<cutout id="menu_ct" x="420" y="332" width="20" height="6"/>
+			<cutout id="menu_rt" x="440" y="332" width="20" height="6"/>
+			<cutout id="menu_lu" x="400" y="338" width="20" height="6"/>
+			<cutout id="menu_cu" x="420" y="338" width="20" height="6"/>
+			<cutout id="menu_ru" x="440" y="338" width="20" height="6"/>
+			<cutout id="menu_ls" x="400" y="346" width="20" height="10"/>
+			<cutout id="menu_cs" x="420" y="346" width="20" height="10"/>
+			<cutout id="menu_rs" x="440" y="346" width="20" height="10"/>
+			<cutout id="menu_li" x="400" y="355" width="20" height="38" columns="60"/>
+			<cutout id="menu_ci" x="420" y="355" width="20" height="38" columns="60"/>
+			<cutout id="menu_ri" x="440" y="355" width="20" height="38" columns="60"/>
 			<cutout id="menu_ld" x="400" y="430" width="20" height="6"/>
 			<cutout id="menu_cd" x="420" y="430" width="20" height="6"/>
 			<cutout id="menu_rd" x="440" y="430" width="20" height="6"/>
@@ -92,7 +107,8 @@
 			
 			<cutout id="background-f" x="650" y="390" width="40" height="40"/>	
 			<cutout id="allBlack_c" x="0" y="305" width="10" height="10"/>	
-			<cutout id="allWhite_c" x="0" y="375" width="10" height="10"/>		  
+			<cutout id="allWhite_c" x="0" y="375" width="10" height="10"/>		
+			<cutout id="null" x="580" y="0" width="1" height="1" lines="1"/>  
 			
 			<!-- MISCELLANEOUS SPRITES-->
 			<cutout id="congrat" x="160" y="0" width="411" height="142"/>
@@ -144,6 +160,14 @@
 	        	cutouts="AppMainHeader-l,AppMainHeader-c, AppMainHeader-r,AppMainInfo-l,AppMainInfo-c,AppMainInfo-r,
 				 		AppMainStatus-l,AppMainStatus-c,AppMainStatus-r"/>
         <skin id="popup" 
-        		cutouts="popup-tl,popup-tc,popup-tr,popup-ml,popup-mc,popup-mr,popup-bl,popup-bc,popup-br"/>		
+        		cutouts="popup-tl,popup-tc,popup-tr,popup-ml,popup-mc,popup-mr,popup-bl,popup-bc,popup-br"/>
+		<skin id="menu"
+			cutouts="menu_lt,menu_ct,menu_rt,menu_lu,menu_cu,menu_ru,menu_ls,menu_cs,menu_rs,menu_li,menu_ci,menu_ri,menu_ld,menu_cd,menu_rd,menu_lb,menu_cb,menu_rb"
+			styles="menu_d,menu_e,menu_p,menu_s,menu_d,menu_e,menu_p,menu_s"/>
+		<skin id="mpanel"
+			cutouts="menu_lt,menu_ct,menu_rt,menu_li,menu_ci,menu_ri,menu_lb,menu_cb,menu_rb"/>    
+		<skin id="menuBar"
+			cutouts="null,null,null,null"
+			styles="menuBar_d,menuBar_e,menuBar_p,menuBar_s"/>			   				
 	</assets>
 </document>

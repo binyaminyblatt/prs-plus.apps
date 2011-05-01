@@ -26,39 +26,6 @@
 		<style id="touchText" size="12" style="bold" color="#000000"/>
 	</style>
 	
-	<style font="Swis721 BT" size="20">
-		<style id="control-e" style="normal" size="14" left="25" halign="left">
-			<style id="control-d"/>
-			<style id="control-p"/>
-			<style id="control-s"/>
-		</style>
-
-		<style id="menu-e" halign="left" left="25" top="0" right="5" bottom="0">
-			<style id="menu-d"/>
-			<style id="menu-p"/>
-			<style id="menu-s"/>
-		</style>
-		<style halign="left" left="25" top="0" right="15" bottom="0">
-			<style id="menu_d" color="#6D6D6D"/>
-			<style id="menu_e" color="#000000"/>
-			<style id="menu_p" color="#000000"/>
-			<style id="menu_s" color="#000000"/>
-		</style>
-		<style halign="right" left="0" top="0" right="15" bottom="0">
-			<style id="key_d" color="#6D6D6D"/>
-			<style id="key_e" color="#000000"/>
-			<style id="key_p" color="#000000"/>
-			<style id="key_s" color="#000000"/>
-		</style>
-		<style style="bold" halign="center" left="10" right="6">
-			<style id="menuBar_d" color="#6D6D6D"/>
-			<style id="menuBar_e" color="#000000"/>
-			<style id="menuBar_p" color="#000000"/>
-			<style id="menuBar_s" color="#000000"/>
-		</style>
-	</style>
-
-
 <texture href="sudokuSkins/labels.png">
 	<cutout id="fDigit" x="0" y="0" width="44" height="44"/>
 	<cutout id="gCursor" x="0" y="80" width="44" height="44"/>
@@ -92,49 +59,7 @@
 	<cutout id="grid-bm" x="538" y="160" width="150" height="8"/>
 	<cutout id="grid-br" x="690" y="160" width="8" height="8"/>
 	
-	<!--cutout id="popup-l" x="550" y="332" width="15" height="22" lines="30"/>
-	<cutout id="popup-c" x="565" y="332" width="20" height="22" lines="30"/>
-	<cutout id="popup-r" x="585" y="332" width="15" height="22" lines="30"/-->
-
-	<!--cutout id="menu_lt" x="420" y="332" width="20" height="4"/>
-	<cutout id="menu_ct" x="440" y="332" width="20" height="4"/>
-	<cutout id="menu_rt" x="460" y="332" width="20" height="4"/>
-	<cutout id="menu_lu" x="420" y="336" width="20" height="6"/>
-	<cutout id="menu_cu" x="440" y="336" width="20" height="6"/>
-	<cutout id="menu_ru" x="460" y="336" width="20" height="6"/>
-	<cutout id="menu_ls" x="420" y="342" width="20" height="10"/>
-	<cutout id="menu_cs" x="440" y="342" width="20" height="10"/>
-	<cutout id="menu_rs" x="460" y="342" width="20" height="10"/>
-	<cutout id="menu_li" x="420" y="352" width="20" height="20" columns="60"/>
-	<cutout id="menu_ci" x="440" y="352" width="20" height="20" columns="60"/>
-	<cutout id="menu_ri" x="460" y="352" width="20" height="20" columns="60"/>
-	<cutout id="menu_ld" x="420" y="392" width="20" height="6"/>
-	<cutout id="menu_cd" x="440" y="392" width="20" height="6"/>
-	<cutout id="menu_rd" x="460" y="392" width="20" height="6"/>
-	<cutout id="menu_lb" x="420" y="398" width="20" height="8"/>
-	<cutout id="menu_cb" x="440" y="398" width="20" height="8"/>
-	<cutout id="menu_rb" x="460" y="398" width="20" height="8"/-->
-
-	<!--cutout id="menuBar_l" x="560" y="0" width="10" height="28" lines="30"/>
-	<cutout id="menuBar_c" x="570" y="0" width="20" height="28" lines="30"/>
-	<cutout id="menuBar_r" x="590" y="0" width="6" height="28" lines="30"/>
-	<cutout id="menuBar_a" x="560" y="0" width="26" height="28" lines="30"/-->
-
-	<cutout id="null" x="0" y="0" width="1" height="1" lines="1"/>
-
 </texture>
-
-<!--texture href="sudokuSkins/skinMain.png">
-	<cutout id="sudokuHeader-l" x="350" y="0" width="70" height="70"/>
-	<cutout id="sudokuHeader-c" x="421" y="0" width="70" height="70"/>
-	<cutout id="sudokuHeader-r" x="492" y="0" width="70" height="70"/>
-	<cutout id="sudokuInfo-l" x="0" y="70" width="1" height="697"/>
-	<cutout id="sudokuInfo-c" x="0" y="70" width="598" height="697"/>
-	<cutout id="sudokuInfo-r" x="0" y="70" width="1" height="697"/>
-	<cutout id="sudokuStatus-l" x="350" y="766" width="70" height="33"/>
-	<cutout id="sudokuStatus-c" x="421" y="766" width="70" height="33"/>
-	<cutout id="sudokuStatus-r" x="492" y="766" width="70" height="33"/>
-</texture-->
 
 <skin id="copynote"
 	styles="copynote"/>
@@ -186,23 +111,9 @@
 <skin id="cCon"
 	cutouts="cCon"/>
 
-<!--skin id="sudokuSkin"
-	cutouts="sudokuHeader-l,sudokuHeader-c,sudokuHeader-r,sudokuInfo-l,sudokuInfo-c,sudokuInfo-r,sudokuStatus-l,sudokuStatus-c,sudokuStatus-r"/-->
-
 <skin id="sudokuGrid"
 	cutouts="grid-tl,grid-tm,grid-tr,grid-ml,grid-mm,grid-mr,grid-bl,grid-bm,grid-br"/>
 	
-<skin id="menu"
-		cutouts="menu_lt,menu_ct,menu_rt,menu_lu,menu_cu,menu_ru,menu_ls,menu_cs,menu_rs,menu_li,menu_ci,menu_ri,menu_ld,menu_cd,menu_rd,menu_lb,menu_cb,menu_rb"
-		styles="menu_d,menu_e,menu_p,menu_s,key_d,key_e,key_p,key_s"/>
-<skin id="panel"
-		cutouts="menu_lt,menu_ct,menu_rt,menu_li,menu_ci,menu_ri,menu_lb,menu_cb,menu_rb"/>
-
-<!--	cutouts="menuBar_l,menuBar_c,menuBar_r,menuBar_a" -->
-
-<skin id="menuBar"
-		cutouts="null,null,null,null"
-		styles="menuBar_d,menuBar_e,menuBar_p,menuBar_s"/>
 
 <skin id="touchText" styles="touchText"/>
 
@@ -414,7 +325,7 @@
 			<sprite skin="allDigit" id="key9"  left="483" width="44" top="45" height="44" u="9" v="3" active="true">
 				<behave like="sprite"/>
 			</sprite>
-			<panel id="cNum" top="100" width="150" height="55">
+			<panel id="cNum" skin="mpanel" top="100" width="150" height="55">
 				<label id="cNum" skin="digits" left="15" top="10" width="100" height="31" text="123"/>
 				<sprite skin="Abort" id = "keyA" right="8" top="9" width="31" height="31">
 					<behave like="sprite"/>
