@@ -573,11 +573,11 @@
 		<button id="cust_Bombs+" skin="nullButton" left="350" top="147" width="50" heigth="28" text="+" do="doPlusMinus"/>
 		
 		<default-button id="btn_OK" text="OK" width="70" bottom="10" do="doOK"/>
-		<button id="btn_Cancle" text="Cancle" width="100" left ="270" bottom="10" do="doClose"/>		
+		<button id="btn_Cancle" text="Cancel" width="100" left ="270" bottom="10" do="doClose"/>		
 	</panel>
 		 
 	<label skin="swis24gry" left="0" right="0" bottom="80" height="30" align="center" text="WORK in PROGRESS" />
-   	<label skin="swis24gry" left="0" right="0" bottom="50" height="30" align="center" text="basic funcionality enabled" /> 
+   	<label skin="swis24gry" left="0" right="0" bottom="50" height="30" align="center" text="basic functionality enabled" /> 
   </group>
 </group>
 
