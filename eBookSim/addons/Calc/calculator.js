@@ -4,6 +4,7 @@
 //	2010-08-23 Mark Nord - Buttons enabled, should work on PRS 600 too
 //	2010-12-05 Mark Nord - translations and custom icon enabled, button-index-computed  device independent
 // 	2011-03-01 kartu - Moved into a function, to allow variable name optimizations
+//	2022-05-20 Mark Nord - fixed input of digits lile 0.0x 
 
 var tmp = function () { 	
 	// GLOBAL VARIABLES
@@ -246,7 +247,7 @@ var tmp = function () {
 				digits = 0;
 				isItThere = false;
 			}
-			if (n==0 && digits==0){
+			if (n==0 && decimal==0){
 				update();
 				return;
 			}
