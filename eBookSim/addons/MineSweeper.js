@@ -1,4 +1,4 @@
-/* Name: MineSweeper game
+/*Name: MineSweeper game
    Original code (c) D. Shep Poor
    adapted for Sony PRS by Mark Nord
    Initial version: April 2011
@@ -7,7 +7,7 @@
 tmp = function() {
 	var MineSweeper = {
 		name: "MineSweeper",
-		title: "MineSweeper,
+		title: "MineSweeper",
 		description: "Game",
 		icon: "GAME",
 		activate: function () {
