@@ -31,6 +31,9 @@ var tmp = function () {
 	target.IntermediateBestTime = 999;
 	target.ExpertBestTime = 999;
 	target.CustomBestTime =999;
+	
+	//var datPath = target.mineSweeperRoot + 'minesweeper.dat'; // for testing only
+	var datPath = '/Data/minesweeper.dat';
       
         // setCookie("gameFormat",gameFormat);
 	var gameFormat = "Beginner"; //"Intermediate";
@@ -105,6 +108,18 @@ var tmp = function () {
 		this.appTitle.setValue(kbook.autoRunRoot._title);
 		this.appIcon.u = kbook.autoRunRoot._icon;
 
+		// Load quickest times from save file
+		try {
+			if (FileSystem.getFileInfo(datPath)) {
+				var stream = new Stream.File(datPath);
+				this.BeginnerBestTime = stream.readLine();
+				this.IntermediateBestTime = stream.readLine();
+				this.ExpertBestTime = stream.readLine();
+				this.CustomBestTime = stream.readLine();
+			}
+			stream.close();
+		} catch (e) {}
+		
                  // Read in the board dimensions settings 
                  // to get started with just set it to "Beginner"
                                
@@ -296,6 +311,18 @@ var tmp = function () {
 	   target.BeginnerBestTime = 999;
            target.IntermediateBestTime = 999;
            target.ExpertBestTime = 999;
+		   
+	   // save quickest times to save file
+		try {
+			if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
+			stream = new Stream.File(datPath, 1);
+			stream.writeLine(target.BeginnerBestTime);
+			stream.writeLine(target.IntermediateBestTime);
+			stream.writeLine(target.ExpertBestTime);
+			stream.writeLine(target.CustomBestTime);		
+			stream.close();
+		} catch (e) {}
+	
            target.showPersBest();
 	}
 
@@ -487,6 +514,18 @@ var winShowWindow = function() {
    target.WIN_DIALOG.numClicks.setValue("Number of Clicks: "+ numMoves);
    target.face.u = faceWin;
    if (clockCurrent<bestTime) {target[gameFormat+'BestTime']=clockCurrent}
+   
+   // save quickest times to save file
+	try {
+		if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
+		stream = new Stream.File(datPath, 1);
+		stream.writeLine(target.BeginnerBestTime);
+		stream.writeLine(target.IntermediateBestTime);
+		stream.writeLine(target.ExpertBestTime);
+		stream.writeLine(target.CustomBestTime);		
+		stream.close();
+	} catch (e) {}
+	
    target.WIN_DIALOG.open();
 //   window.open('highscores/minewin.html','MinesweeperWin','toolbar=0,directories=0,menubar=0,scrollbars=1,resizable=0,width=400,height=420'); 
 }
