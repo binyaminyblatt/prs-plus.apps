@@ -316,6 +316,7 @@
 								kbook.autoRunRoot._icon = 38;
 								kbook.autoRunRoot._title = "MineSweeper";				
 								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
+								kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;								
 				 			  kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
 								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
 								this.MAIN.EINK.VIEW.setURI("../addons/MineSweeper/minesweeper.xml");				
