@@ -96,6 +96,12 @@
 <skin id="nullButton" 
 		cutouts="null32h,null32h,null32h"
 		styles="button-d,button-e,button-p,button-s"/>	
+<skin id="ntMenuSep"	
+	cutouts="menu_ls,menu_cs,menu_rs"
+	styles="button-d,button-e,button-p,button-s"/>
+<skin id="ntMenuChk" 
+		cutouts="menu_li"/>
+		
 </assets>
 
 <model>
@@ -195,7 +201,7 @@
 		<label id="appTitle" skin="title" left="70" right="0" top="-70" height="70" align="left" text="MineSweeper"/>
 		<code>
          <function id="doDigit" params="part">
-	         this.drawDigit(part.key)
+	         this.doDigitF(part.key)
          </function>
          <function id="doMenu">
          	this.doMenuF();
@@ -474,16 +480,51 @@
 	<sprite skin="square" id="sq364"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq365"><behave like="gridSprite"/></sprite>	
 	<sprite skin="square" id="sq366"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq367"><behave like="gridSprite"/></sprite>	 
 
+	<sprite skin="square" id="gridCursor" />
 	
     <text id='helpText' skin='helpText' left='5' right='10' top='5' bottom='15' active='false' visible='false'/>	
 	<sprite skin='square' id='closeHelpText' right='20' top='15' u='16' visible='false' active='false'><behave like="closeSprite"/></sprite>
  	<!--label id='btn_hint_prev'      skin='touchText' left=  '0' width='120' bottom='2' height='15' align='center' text='Previous'/>
  	<label id='btn_hint_next'      skin='touchText' left='120' width='120' bottom='2' height='15' align='center' text='Next'/-->
  	<label id='btn_hint_prev_next' skin='touchText' left=  '0' width='240' bottom='2' height='15' align='center'/>
-	<label id='btn_hint_home'      skin='touchText' left='240' width='120' bottom='2' height='15' align='center' text='Quit'/>
-	<!--label id='btn_hint_size'      skin='touchText' left='360' width='120' bottom='2' height='15' align='center' text='Size'/>
-	<label id='btn_hint_option'    skin='touchText' left='480' width='129' bottom='2' height='15' align='center' text='Option'/-->
+	<label id='btn_hint_home'      skin='touchText' left='240' width='120' bottom='2' height='15' align='center' text=''/>
+	<label id='btn_hint_size'      skin='touchText' left='360' width='120' bottom='2' height='15' align='center' text=''/>
+	<label id='btn_hint_option'    skin='touchText' left='480' width='129' bottom='2' height='15' align='center' text=''/>
 	
+	<!-- Panel used as Menu for non-touch readers; items are positioned dynamically -->
+	<panel id="NT_MENU" skin="mpanel" top="35" left="3" width="300" height="350" visible="false">
+		<label 	id="ntMenuItem0" skin="swis20blk" top="0" width="0" height="0" text=""/>
+		<label 	id="ntMenuItem1" skin="swis20blk" top="0" width="0" height="0" text=""/>
+		<label 	id="ntMenuItem2" skin="swis20blk" top="0" width="0" height="0" text=""/>
+		<label 	id="ntMenuItem3" skin="swis20blk" top="0" width="0" height="0" text=""/>
+		<label 	id="ntMenuItem4" skin="swis20blk" top="0" width="0" height="0" text=""/>
+		<label 	id="ntMenuItem5" skin="swis20blk" top="0" width="0" height="0" text=""/>
+		<label 	id="ntMenuItem6" skin="swis20blk" top="0" width="0" height="0" text=""/>
+		<label 	id="ntMenuItem7" skin="swis20blk" top="0" width="0" height="0" text=""/>
+		<label 	id="ntMenuItem8" skin="swis20blk" top="0" width="0" height="0" text=""/>				
+		<label 	id="ntMenuItem9" skin="swis20blk" top="0" width="0" height="0" text=""/>		
+		
+	
+		<sprite id="ntMenuChk0" skin="ntMenuChk" u="0" top="0" width="0" height="0" />
+		<sprite id="ntMenuChk1" skin="ntMenuChk" u="0" top="0" width="0" height="0" />
+		<sprite id="ntMenuChk2" skin="ntMenuChk" u="0" top="0" width="0" height="0" />
+		<sprite id="ntMenuChk3" skin="ntMenuChk" u="0" top="0" width="0" height="0" />		
+		<sprite id="ntMenuChk4" skin="ntMenuChk" u="0" top="0" width="0" height="0" />
+		<sprite id="ntMenuChk5" skin="ntMenuChk" u="0" top="0" width="0" height="0" />
+		<sprite id="ntMenuChk6" skin="ntMenuChk" u="0" top="0" width="0" height="0" />
+		<sprite id="ntMenuChk7" skin="ntMenuChk" u="0" top="0" width="0" height="0" />
+		<sprite id="ntMenuChk8" skin="ntMenuChk" u="0" top="0" width="0" height="0" />		
+		<sprite id="ntMenuChk9" skin="ntMenuChk" u="0" top="0" width="0" height="0" />	
+
+		<button id="ntMenuSep0" skin="ntMenuSep" left="0" right="0" top="0" height="0" active="false" do=""/>
+		<button id="ntMenuSep1" skin="ntMenuSep" left="0" right="0" top="0" height="0" active="false" do=""/>
+		<button id="ntMenuSep2" skin="ntMenuSep" left="0" right="0" top="0" height="0" active="false" do=""/>
+		<button id="ntMenuSep3" skin="ntMenuSep" left="0" right="0" top="0" height="0" active="false" do=""/>
+		<button id="ntMenuSep4" skin="ntMenuSep" left="0" right="0" top="0" height="0" active="false" do=""/>		
+
+		<button id="ntMenuSelector" skin="ntMenuSel" left="0" right="0" top="0" height="0" active="false" do=""/>
+	</panel>
+
 	<panel id="ABOUT_DIALOG" skin="mpanel" width="450" height="250" visible="false">
 		<code>
 			<function id="doOK">
@@ -577,7 +618,7 @@
 	</panel>
 		 
 	<label skin="swis24gry" left="0" right="0" bottom="80" height="30" align="center" text="WORK in PROGRESS" />
-   	<label skin="swis24gry" left="0" right="0" bottom="50" height="30" align="center" text="basic functionality enabled" /> 
+   	<label skin="swis24gry" left="0" right="0" bottom="50" height="30" align="center" text="basic touch and nontouch functionality enabled" /> 
   </group>
 </group>
 

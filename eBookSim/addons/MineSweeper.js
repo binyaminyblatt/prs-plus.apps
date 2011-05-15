@@ -1,4 +1,4 @@
-/*Name: MineSweeper game
+/* Name: MineSweeper game
    Original code (c) D. Shep Poor
    adapted for Sony PRS by Mark Nord
    Initial version: April 2011
@@ -13,6 +13,7 @@ tmp = function() {
 		activate: function () {
 		   try {
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
+			kbook.autoRunRoot.sandbox.setSoValue = Core.system.setSoValue;
 			kbook.autoRunRoot.sandbox.getFileContent = Core.io.getFileContent;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
 			} catch (ignore) {}

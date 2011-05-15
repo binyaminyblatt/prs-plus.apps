@@ -109,6 +109,7 @@
 			<cutout id="allBlack_c" x="0" y="305" width="10" height="10"/>	
 			<cutout id="allWhite_c" x="0" y="375" width="10" height="10"/>		
 			<cutout id="null" x="580" y="0" width="1" height="1" lines="1"/>  
+			<cutout id="ntMenuSel_c" x="70" y="370" width="30" height="32"/>
 			
 			<!-- MISCELLANEOUS SPRITES-->
 			<cutout id="congrat" x="160" y="0" width="411" height="142"/>
@@ -169,5 +170,8 @@
 		<skin id="menuBar"
 			cutouts="null,null,null,null"
 			styles="menuBar_d,menuBar_e,menuBar_p,menuBar_s"/>			   				
+		<skin id="ntMenuSel"
+			cutouts="ntMenuSel_c,ntMenuSel_c,ntMenuSel_c"
+			styles="control-d,control-e,control-p,control-s"/>
 	</assets>
 </document>

@@ -7,6 +7,7 @@
 
 // History:
 //	2011-04-10 Mark Nord:	initially adapted to FSK for use with Sony PRS
+//	2011-05-15 Mark Nord:	fist try for non-touch reader
 
 var tmp = function () {
 	var uD;
@@ -14,45 +15,56 @@ var tmp = function () {
 	var gridLeft;
 	var newEvent = prsp.compile("param", "return new Event(param)");
 	
-	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
+	var isNT = kbook.autoRunRoot.hasNumericButtons;
 	var getSoValue = kbook.autoRunRoot.getSoValue;
+	var setSoValue = kbook.autoRunRoot.setSoValue;
 	var getFileContent = kbook.autoRunRoot.getFileContent;
 	var fnPageScroll = getSoValue(target.helpText, 'scrollPage');
+	
 	var clickMode = 0;
-
+	var ntMenu;
+	var ntMenuIndex = 0;
+	var ntMenuItemIndex=0;
+	var ntMenuActive = false;
+	var width =[230,280,230];	// lazy as I can't get  >> itemWidth = itemStyle.getWidth(window, item.title);<< to work
+	
+	function ntMenuItem () {
+		this.isItem = true;
+		this.top = 0;
+		this.sender = new Object();
+		this.doCommand = '';
+		this.isBottom =true;
+	}	
 
       //
       // Variable and document setup stuff:
       //
       
-        var maxX ,maxY, maxNumBombs, maxLegalBombs, l, maxCells, cellArray, clockStartTime;
+        var maxX ,maxY, maxNumBombs, maxLegalBombs, l, maxCells, cellArray, clockStartTime, datPath, posX, posY;
 
-	target.BeginnerBestTime = 999;
-	target.IntermediateBestTime = 999;
-	target.ExpertBestTime = 999;
-	target.CustomBestTime =999;
+	// bunch of variables to be saved to a file
+	target.settings = {	
+		BeginnerBestTime : 999,
+		IntermediateBestTime : 999,
+		ExpertBestTime : 999,
+		CustomBestTime : 999,
+		useQuestionMarks : true,
+		useMacroOpen : true,
+		useFirstClickUseful : true,
+		openRemaining : false,
+		cMaxX : 8,
+		cMaxY : 8,
+		cMaxBombs :10,
+		gameFormat : "Beginner"
+	};			   
 	
-	//var datPath = target.mineSweeperRoot + 'minesweeper.dat'; // for testing only
-	var datPath = '/Data/minesweeper.dat';
-      
-        // setCookie("gameFormat",gameFormat);
-	var gameFormat = "Beginner"; //"Intermediate";
-      
-        /* Read the other param vars set by the intro page
-        // Note how the double negative will force missing to default to true
-        useQuestionMarks = ! (getCookie("useQuestionMarks") == 'false');
-        useMacroOpen = ! (getCookie("useMacroOpen") == 'false');
-        useFirstClickUseful = ! (getCookie("useFirstClickUseful") == 'false');
-        openRemaining = (getCookie("openRemaining") == 'true'); */
-        var useQuestionMarks = true;
-        var useMacroOpen = true;
-        var useFirstClickUseful = true;
-        var openRemaining = false;
-        var showNumMoves = false;
-         
+	
+	if (kbook.simEnviro) {datPath = target.mineSweeperRoot + 'minesweeper.dat';} 
+	else {datPath = '/Data/minesweeper.dat';}
+            
         // Set global constants   
         
-        var topImages = 19;                        // 7 on game menu, 8 on opt menu, 3 bomb #s, smile face, 3 time #s
+        var topImages = 19;                       // 7 on game menu, 8 on opt menu, 3 bomb #s, smile face, 3 time #s
         var maxStackHeight = 300;                 // For recursive cell opening stack
         var smileMargin=((maxX+1)*32-(26*6+52))/2;// To center smile & rt jstfy time
         
@@ -95,47 +107,110 @@ var tmp = function () {
         var facePirate = 2;	
          
         // load helptext and hide instructions once 
-	target.helpText.setValue(getFileContent(target.mineSweeperRoot.concat('MineSweeper_Help_EN.txt'),'help.txt missing')); 
+	if (!isNT) {target.helpText.setValue(getFileContent(target.mineSweeperRoot.concat('MineSweeper_Help_EN.txt'),'help.txt missing'));}
+	else {	// FixMe write Help for nt-reader
+		target.helpText.setValue(getFileContent(target.mineSweeperRoot.concat('MineSweeper_Help_EN.txt'),'help.txt missing'));
+		} 
 	target.helpText.show(false);
 	var displayHelp = false; 
-         
-         
+	
+	// This is not necessary. A simple result = (param == 'true') would do 
+	var parseBoolean = prsp.compile("param", "return Core.system.rootObj.__xs__boolean.parse(param)");
+	
+	// reads values of target.settings.xx form file
+	target.loadSettings = function (){
+	var stream, inpLine;
+	var values = [];
+      	try {
+      		if (FileSystem.getFileInfo(datPath)) {
+      			stream = new Stream.File(datPath);    			
+		      	while (stream.bytesAvailable) {
+      				inpLine = stream.readLine();
+      				values = inpLine.split(':');
+      				if ((values[1] == 'true') || (values[1] == 'false')) {   					
+ 					target.settings[values[0]] = parseBoolean(values[1]);
+      				} else {
+      					target.settings[values[0]]=values[1];  
+      				}
+      			}
+      		}	
+      		stream.close();
+      		} catch (e) {}	
+    // 	target.bubble('tracelog',_Core.debug.dumpToString(target.settings,' ',1)); // debug
+	}         
+
+/*	// reads values of target.settings.xx form file - another approach for educational purpose
+	// fails because gameFormat needs a string literal, but booleans are handeled correct this way
+	target.loadSettings2 = function (){
+	var stream, inpLine, codeLine, tmp;
+	var values = [];
+      	try {
+      		if (FileSystem.getFileInfo(datPath)) {
+      			stream = new Stream.File(datPath);    			
+			codeLine='';
+		      	while (stream.bytesAvailable) {
+      				inpLine = stream.readLine();
+      				values = inpLine.split(':');
+				codeLine = codeLine + 'settings["' +values[0]+ '"] = '+values[1]+'; ';
+     			}
+      		}	
+      		stream.close();
+     	//	target.bubble('tracelog','new Function'); // debug
+      		tmp = new Function("settings",codeLine);
+     	//	target.bubble('tracelog','calling tmp'); // debug
+      		tmp(target.settings);
+     	//	target.bubble('tracelog','delete tmp'); // debug      		
+      		delete tmp;
+      		} catch (e) {}	
+     	//	target.bubble('tracelog','Code= '+codeLine); // debug
+     	//	target.bubble('tracelog',_Core.debug.dumpToString(target.settings,' ',1)); // debug
+	} */
+
+
+	// wites values of target.settings.xx to file         
+	target.saveSettings = function (){         
+	var o, stream;
+      	  try {
+      		if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
+      		stream = new Stream.File(datPath, 1);
+      		for (o in target.settings) {
+      			stream.writeLine(o+':'+target.settings[o]);
+      		}
+      		stream.close();
+      	  } catch (e) {}         
+        } 
+
+	// Load quickest times and settings from save file once at startup
+	target.loadSettings();
+
+	// assign model-variables
+	with (target.settings) {
+		target.setVariable("custom_Height",cMaxY);
+		target.setVariable("custom_Width",cMaxX);
+		target.setVariable("custom_Bombs",cMaxBombs);
+	}
+
+
+        
 	target.init = function () {
 	var i,j;
 	var maxSquares = 367; // 16*23-1
-	
-		/* set translated appTitle and appIcon */
+		// set translated appTitle and appIcon 
 		this.appTitle.setValue(kbook.autoRunRoot._title);
 		this.appIcon.u = kbook.autoRunRoot._icon;
-
-		// Load quickest times from save file
-		try {
-			if (FileSystem.getFileInfo(datPath)) {
-				var stream = new Stream.File(datPath);
-				this.BeginnerBestTime = stream.readLine();
-				this.IntermediateBestTime = stream.readLine();
-				this.ExpertBestTime = stream.readLine();
-				this.CustomBestTime = stream.readLine();
-			}
-			stream.close();
-		} catch (e) {}
-		
-                 // Read in the board dimensions settings 
-                 // to get started with just set it to "Beginner"
-                               
-                 // Set additional params based on cookies or size defaults.
+	
                  // Roll-your-own (custom)
-                 if (gameFormat == "Custom" && this.getVariable("custom_selected")) {
+                 if (this.settings.gameFormat == "Custom" && this.getVariable("custom_selected")) {
                     maxX = parseInt(this.getVariable("custom_Width")-1);
                     maxY = parseInt(this.getVariable("custom_Height")-1);
                     maxNumBombs = parseInt(this.getVariable("custom_Bombs")); }
                  // Intermediate
-                 else { if (gameFormat == "Intermediate") {
+                 else { if (this.settings.gameFormat == "Intermediate") {
                     maxX = 12;
                     maxY = 12;
                     maxNumBombs = 30; }
                  // Expert
-                 else { if (gameFormat == "Expert") {
+                 else { if (this.settings.gameFormat == "Expert") {
  		    if (!is950()) {		                
 	                    maxX = 15;
         	            maxY = 15;
@@ -149,7 +224,7 @@ var tmp = function () {
                     maxX = 7;
                     maxY = 7;
                     maxNumBombs = 10; // 10 when not testing
-                    gameFormat = "Beginner"; } } }
+                    this.settings.gameFormat = "Beginner"; } } }
                     
                  // This pre-calc just makes the next "if" easier to handle.
                  maxLegalBombs = Math.round((maxX+1)*(maxY+1) / 3)  // Max 1/3 of all cells
@@ -157,12 +232,10 @@ var tmp = function () {
                  // Make sure all values are numbers and are within range
                  if ((isNaN(maxX)) || (maxX<7) || (maxX>31) || (isNaN(maxY)) || (maxY<7) || (maxY>24) ||
                     (isNaN(maxNumBombs)) || (maxNumBombs<1) || (maxNumBombs>maxLegalBombs)) {
-                 //Not in range: Fancy alert screen
-                 //alert("Minesweeper dimensions invalid:\n\tWidth: From 8 to 32\n\tHeight: from 8 to 24\n\tBoms: 1 to 1/3 of squares"); 
                     maxX = 7;
                     maxY = 7;
                     maxNumBombs = 10;
-                    gameFormat = "Beginner"; }
+                    this.settings.gameFormat = "Beginner"; }
         
               	 maxCells = (maxX+1)*(maxY+1)-1;       // Constant: # of cells on board
         	 cellArray = new Array(maxCells);      // One per cell on the board
@@ -171,49 +244,51 @@ var tmp = function () {
 		
 		// check MenuOptions
  		 var menuBar = this.findContent("MENUBAR"); // menuBar had to be defined as id="MENUBAR" in XML!!
-		//	this.bubble("tracelog","MENUBAR1 "+menuBar); // debug
 		 var menus = getSoValue(menuBar,"menus");
-		//	this.bubble("tracelog","menus "+menus); // debug
-		 var items = getSoValue(menus[0],"items");	// Game-Menu
-		//	this.bubble("tracelog","items "+items); // debug
+		 var items = getSoValue(menus[0],"items");
         		for (var i = 2; i < 6; i++) { 
         		  switch (i) {
         			case 2:
-        			{	items[i].check(gameFormat == "Beginner"); 
+        			{	items[i].check(this.settings.gameFormat == "Beginner"); 
 	        			break;
         				}
         			case 3:
-        			{	items[i].check (gameFormat == "Intermediate"); 
+        			{	items[i].check (this.settings.gameFormat == "Intermediate"); 
         				break;
         				}
         			case 4:
- 	    			{	items[i].check(gameFormat == "Expert"); 
+ 	    			{	items[i].check(this.settings.gameFormat == "Expert"); 
         				break;
         				}			
         			case 5:
-        			{	items[i].check(gameFormat == "Custom"); 
+        			{	items[i].check(this.settings.gameFormat == "Custom"); 
         				break;
         				}
         		  } 		
         		}  
 		updateOptMenu();
 
-		this.btn_hint_prev_next.setValue('Change Mode step/flag');
+		// setup button hint's
+		if (!isNT) {
+			this.btn_hint_prev_next.setValue('Change Mode step/flag')
+			this.btn_hint_home.setValue('Quit');
+		}
+		else {
+			this.btn_hint_prev_next.setValue('PREV/NEXT: flag/mark/clear square')
+			this.btn_hint_home.setValue('1,2,3: Restart');
+			this.btn_hint_size.setValue('CENTER: step');
+			this.btn_hint_option.setValue('0: Quit');
+			target.Touch.mode.setValue('');
+			}
 		
-	//	target.bubble('tracelog','height='+(getSoValue(this,'height')>900));
-	//	target.bubble('tracelog','maxX= '+maxX);
-	//	target.bubble('tracelog','maxY= '+maxY);
-
 		// resize frame dynamical 
 		gridLeft = 300-(maxX+1)*32/2;
-	//	target.bubble('tracelog','gridLeft= '+gridLeft);
 		this.frame1.changeLayout(gridLeft-21, 21+21+(maxX+1)*32, uD,  35, 85,uD);
 		this.frame2.changeLayout(gridLeft-21, 21+21+(maxX+1)*32, uD, 110, 21+21+(maxY+1)*32, uD);
 
 		// fill grid
         	   for (i=0; i<=maxX; i++) {
                     for (j=0; j<=maxY; j++) {
-		//	target.bubble('tracelog','sq= '+'sq'+imageIndexOf(i,j)+' X= '+i+' Y='+j);                    
                         this['sq'+imageIndexOf(i,j)].changeLayout(gridLeft+i*32,32,uD,gridTop + j*32,32,uD);
                         this['sq'+imageIndexOf(i,j)].u = 9;
                        }} 
@@ -221,12 +296,192 @@ var tmp = function () {
                  for (i=(maxX+1)*(maxY+1); i<=maxSquares; i++) { 
                        this['sq'+pad(i,3)].changeLayout(0,0,uD,0,0,uD);
                  }      
+                // show gridCursor for NT-readers hide it for all others
+		if (isNT) {
+                	posX = Math.floor(Math.random() * (maxX+1));  // set gridCursor to a random position
+                	posY = Math.floor(Math.random() * (maxY+1));
+                	this['gridCursor'].changeLayout(gridLeft+posX*32,32,uD,gridTop + posY*32,32,uD);
+                	this['gridCursor'].u = 15;	
+                	
+                	} 
+                else {
+                	this['gridCursor'].changeLayout(0,0,uD,0,0,uD);
+                } 
+                 
 		faceClick_first()
+	
+	/*	Can I use standard FSK menus w/o pointing device?	
+		var tracker, show;
+		tracker =getSoValue(menus[0],'tracker');
+		show = getSoValue(tracker,'show');
+		
+		target.bubble('tracelog','vor tracker');
+		target.bubble('tracelog',_Core.debug.dumpToString(show,'',1));
+		show.call(tracker,this.container.container,true);
+		target.bubble('tracelog','nach tracker'); */
+		
+		// buildNTMenu(0);   
 	};
 	
+	// builds a menu lookalike panel for use with non-touch readers
+	var buildNTMenu = function (MenuIdx) {
+	//	target.bubble('tracelog','enter build for MenuIndex '+MenuIdx);
+		var dx,ntItem, x, j, itemWidth, title;
+		var itemHeight=32;
+		var sepHeight=10;
+		var top = 10;
+		var uD;
+		var sep = 0;
+		
+		
+ 		var menuBar = target.findContent("MENUBAR"); // menuBar had to be defined as id="MENUBAR" in XML!!
+		dx = getSoValue(menuBar,"x");				
+		var menus = getSoValue(menuBar,"menus");
+		var items = getSoValue(menus[MenuIdx],"items");	
+		
+      		x = getSoValue(menus[MenuIdx],"x");
+		target.NT_MENU.changeLayout(3+x-dx,width[MenuIdx],uD,35,top+6,uD);	    		
+		ntMenu = new Array(9);
+      		for (var i = 0; i < getSoValue(items,'length'); i++) { 
+      			j = i;
+      			ntMenu[i] = new ntMenuItem();
+      			ntMenu[i].top = top;
+      			ntMenu[i].sender = items[i];
+      			ntMenu[i].doCommand = getSoValue(items[i],"doCommand")
+			ntMenu[i].isBottom = false;      	
+
+      			ntItem = target.NT_MENU['ntMenuItem'+i];
+      			title = getSoValue(items[i],"title");
+
+      			if (title) {setSoValue(ntItem,'text', title);} else {setSoValue(ntItem,'text', '');} 
+      			ntItem.changeLayout(0,width[MenuIdx],uD,top,32,uD);
+      			target.NT_MENU['ntMenuChk'+i].changeLayout(0,20,uD,top-5,38,uD);
+      			target.NT_MENU['ntMenuChk'+i].u = 0;
+      			if (title) {
+	      			if (items[i].isChecked()) target.NT_MENU['ntMenuChk'+i].u = 1;
+      				ntMenu[i].isItem = true;  			
+      				top = top + 32;
+      			} else {
+      				ntMenu[i].isItem = false;      			
+      				target.NT_MENU['ntMenuSep'+sep].changeLayout(0,width[MenuIdx],uD,top,10,uD); 
+      				top = top + 10;
+      				sep++;
+      				}	
+      			}
+		ntMenu[j].isBottom = true; 
+		// hide unused items
+		for (i = j+1; i <= 9; i++) {
+			ntItem = target.NT_MENU['ntMenuItem'+i];
+			setSoValue(ntItem,'text', '');
+			target.NT_MENU['ntMenuChk'+i].changeLayout(0,0,uD,0,0,uD); 
+			}
+		for (i = sep; i <= 4; i++) {
+			target.NT_MENU['ntMenuSep'+i].changeLayout(0,-0,uD,0,0,uD);
+			
+			} 
+	      	target.NT_MENU['ntMenuSelector'].changeLayout(4,width[MenuIdx]-12,uD,ntMenu[ntMenuItemIndex].top,uD,uD);
+		target.NT_MENU.show(true);
+		target.NT_MENU.changeLayout(3+x-dx,width[MenuIdx],uD,35,top+6,uD);
+		
+	//	target.bubble('tracelog',_Core.debug.dumpToString(ntMenu,'',2));
+	}
+
+	// moves the gridCursor for nt-readers
+	target.moveCursor = function (direction) {
+	if (!ntMenuActive) {	
+      		if (direction == "right") {
+      			posX++;
+      			if (posX > maxX) posX = 0;
+      		}
+      		if (direction == "left") {
+      			posX--;
+      			if (posX < 0) posX = maxX;
+      		}
+      		if (direction == "up") {
+      			posY--;
+      			if (posY < 0) posY = maxY;
+      		}
+      		if (direction == "down") {
+      			posY++;
+      			if (posY > maxY) posY = 0;
+      		}
+		this.gridCursor.changeLayout(gridLeft+posX*32,32,uD,gridTop + posY*32,32,uD);
+	  }
+	else	// handles Menu
+		{			
+		if (direction == "right") {
+      			ntMenuIndex++;
+      			if (ntMenuIndex > 2) ntMenuIndex = 0;
+      			ntMenuItemIndex=0;
+      			buildNTMenu(ntMenuIndex);
+      			}
+      		if (direction == "left") {
+			ntMenuIndex--;
+      			if (ntMenuIndex < 0) ntMenuIndex = 2;
+      			ntMenuItemIndex=0;
+     			buildNTMenu(ntMenuIndex);
+      			}
+      		if ((direction == "up") && (ntMenuItemIndex>0)) {
+      			ntMenuItemIndex--;
+      			while((!ntMenu[ntMenuItemIndex].isItem) && (ntMenuItemIndex>0)) ntMenuItemIndex--;
+      			buildNTMenu(ntMenuIndex); // why can't I just call ntMenuSelector.changeLayout() ??
+      			}	
+      		if ((direction == "down") && (!ntMenu[ntMenuItemIndex].isBottom)) {
+      			ntMenuItemIndex++;
+      			while(!ntMenu[ntMenuItemIndex].isItem) ntMenuItemIndex++;
+      			buildNTMenu(ntMenuIndex); 
+			}
+		}
+	}	
+
+	// handles center-button for nt-readers	
+	target.doCenterF = function (){
+	if (!ntMenuActive) {
+		var e = {button :1};
+		cellClick(posX,posY,e);
+		ticClock();	
+	  	}		
+	}
+
+	// handles digit-buttons for nt-readers	
+	target.doDigitF = function (sender) {
+	var n=parseInt(sender);
+		if (n>3) return;
+		switch (n) {
+		case 0: {
+        		this.exitQuit();
+	        	break;
+        		}
+        	case 1: {
+        		this.settings.gameFormat = "Beginner";
+	        	break;
+        		}
+       		case 2: {
+       			target.settings.gameFormat = "Intermediate"; 
+      			break;
+      			}
+		case 3: {
+			target.settings.gameFormat = "Expert"; 
+      			break;
+      			}			
+		}
+		this.init();
+	}
+	
+	
+	target.doMenuF = function () {
+		ntMenuActive = !ntMenuActive;
+		if (ntMenuActive) {
+			buildNTMenu(ntMenuIndex);
+			}
+		else {
+			target.NT_MENU.show(false);
+			}
+	}
 	
 	target.exitQuit = function () {
 		var ev, func, menuBar;
+		this.saveSettings();
 		ev = newEvent(2048);
 		menuBar = this.findContent("MENUBAR"); // menuBar had to be defined as id="MENUBAR" in XML!!
 		func = getSoValue(menuBar,"endLoop");
@@ -259,11 +514,18 @@ var tmp = function () {
 	
 	target.changeClickMode = function (sender) { 
 	var msg;
+	if (isNT) {
+		var e = {button :2};
+		cellClick(posX,posY,e);
+		ticClock();	
+		}
+	 else {
 		clickMode = Math.abs(clickMode-1);
 		msg = (clickMode == 0) ? "MODE: step" : "MODE: flag";
 	//	this.bubble("tracelog","clickMode= "+clickMode); // debug
 		target.Touch.mode.setValue(msg);
 	//	this.bubble("tracelog","clickMode= "+clickMode); // debug
+		}
 	};
 
 
@@ -300,28 +562,20 @@ var tmp = function () {
 	
         // shows the Personal Best Times Window
         target.showPersBest = function() {
-           this.PERSONAL_BEST_DIALOG.bestBeginnerTime.setValue(this.BeginnerBestTime);
-           this.PERSONAL_BEST_DIALOG.bestIntermediateTime.setValue(this.IntermediateBestTime);
-           this.PERSONAL_BEST_DIALOG.bestExpertTime.setValue(this.ExpertBestTime);
+           this.PERSONAL_BEST_DIALOG.bestBeginnerTime.setValue(target.settings.BeginnerBestTime);
+           this.PERSONAL_BEST_DIALOG.bestIntermediateTime.setValue(target.settings.IntermediateBestTime);
+           this.PERSONAL_BEST_DIALOG.bestExpertTime.setValue(target.settings.ExpertBestTime);
            this.PERSONAL_BEST_DIALOG.show(true);
         }	
 
         target.PERSONAL_BEST_DIALOG.doResetBest = function() {
 	//   target.bubble("tracelog","doRestBest"); // debug
-	   target.BeginnerBestTime = 999;
-           target.IntermediateBestTime = 999;
-           target.ExpertBestTime = 999;
+	   target.settings.BeginnerBestTime = 999;
+           target.settings.IntermediateBestTime = 999;
+           target.settings.ExpertBestTime = 999;
 		   
 	   // save quickest times to save file
-		try {
-			if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
-			stream = new Stream.File(datPath, 1);
-			stream.writeLine(target.BeginnerBestTime);
-			stream.writeLine(target.IntermediateBestTime);
-			stream.writeLine(target.ExpertBestTime);
-			stream.writeLine(target.CustomBestTime);		
-			stream.close();
-		} catch (e) {}
+	   //target.saveSettings();	// this isn't necessary here as settings will be saved on exit
 	
            target.showPersBest();
 	}
@@ -361,25 +615,25 @@ var tmp = function () {
       	//	this.bubble('tracelog','sender.index= '+x);
       		switch (x) {
       			case 2:
-      			{	gameFormat = "Beginner"; 
+      			{	target.settings.gameFormat = "Beginner"; 
       				break;
       				}
       			case 3:
-      			{	gameFormat = "Intermediate"; 
+      			{	target.settings.gameFormat = "Intermediate"; 
       				break;
       				}
       			case 4:
-      			{	gameFormat = "Expert"; 
+      			{	target.settings.gameFormat = "Expert"; 
       				break;
       				}			
       			case 5:
-      			{	gameFormat = "Custom"; 
+      			{	target.settings.gameFormat = "Custom"; 
       				target.CUSTOM_DIALOG.open();
       				break;
       				}
       		}
-      	//	this.bubble("tracelog","selectLevel "+gameFormat); // debug
-      		if (gameFormat!="Custom"){
+      	//	this.bubble("tracelog","selectLevel "+this.settings.gameFormat); // debug
+      		if (target.settings.gameFormat!="Custom"){
       			target.setVariable("custom_selected",false)
 	      		target.init();
 		}      	
@@ -388,13 +642,12 @@ var tmp = function () {
 	var updateOptMenu = function (){
       		var menuBar, menus, items;
       		var menuBar = target.findContent("MENUBAR"); // menuBar had to be defined as id="MENUBAR" in XML!!
-	//	this.bubble("tracelog","MENUBAR1 "+menuBar); // debug
 		var menus = getSoValue(menuBar,"menus");
       		items = getSoValue(menus[1],"items");	// Options-Menu
-      		items[0].check(useFirstClickUseful);
-  		items[1].check(useQuestionMarks); 
-          	items[2].check(useMacroOpen); 
-      		items[3].check(openRemaining); 
+      		items[0].check(target.settings.useFirstClickUseful);
+  		items[1].check(target.settings.useQuestionMarks); 
+          	items[2].check(target.settings.useMacroOpen); 
+      		items[3].check(target.settings.openRemaining); 
 	}
 
 	target.container.container.changeOption = function(sender) {
@@ -402,31 +655,29 @@ var tmp = function () {
 	//	this.bubble('tracelog','sender.index= '+x);
 		switch (x) {
 			case 0:
-			{	useFirstClickUseful = !useFirstClickUseful; 
+			{	target.settings.useFirstClickUseful = !target.settings.useFirstClickUseful; 
 				break;
 				}
 			case 1:
-			{	useQuestionMarks = !useQuestionMarks; 
+			{	target.settings.useQuestionMarks = !target.settings.useQuestionMarks; 
 				break;
 				}
 			case 2:
-			{	useMacroOpen = !useMacroOpen; 
-				sender.check(true);
+			{	target.settings.useMacroOpen = !target.settings.useMacroOpen; 
 				break;
 				}			
 			case 3:
-			{	openRemaining = !openRemaining; 
+			{	target.settings.openRemaining = !target.settings.openRemaining; 
 				break;
 				}
 		}		
 		updateOptMenu();
 	};
 	
-	// checks for 900/950 screensize
-	var is950 = function() {
-		return getSoValue(target,'height') > 900;
-	};	
-	
+// checks for 900/950 screensize
+var is950 = function() {
+	return getSoValue(target,'height') > 900;
+};
 	
 // get X form id	
 var xFromID = function (id) {	
@@ -504,30 +755,18 @@ var cursorClearLoc = function(x,y) {
 
 // Complete the Win process. Save the cookies, and call the winning window.
 var winShowWindow = function() {
-   var bestTime = target[gameFormat+'BestTime'];
+   var bestTime = target.settings[target.settings.gameFormat+'BestTime'];
    win = true;
-//   setCookie("gameTime",clockCurrent);
-//   setCookie("numMoves",numMoves);
-//   setCookie("openRemainingUsed",openRemainingUsed);
    target.WIN_DIALOG.winTime.setValue('Game time: '+ clockCurrent);
-   target.WIN_DIALOG.bestTime.setValue("Your best "+gameFormat+ " time is: "+bestTime);
+   target.WIN_DIALOG.bestTime.setValue("Your best "+target.settings.gameFormat+ " time is: "+bestTime);
    target.WIN_DIALOG.numClicks.setValue("Number of Clicks: "+ numMoves);
    target.face.u = faceWin;
-   if (clockCurrent<bestTime) {target[gameFormat+'BestTime']=clockCurrent}
+   if (clockCurrent<bestTime) {target.settings[target.settings.gameFormat+'BestTime']=clockCurrent}
    
    // save quickest times to save file
-	try {
-		if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
-		stream = new Stream.File(datPath, 1);
-		stream.writeLine(target.BeginnerBestTime);
-		stream.writeLine(target.IntermediateBestTime);
-		stream.writeLine(target.ExpertBestTime);
-		stream.writeLine(target.CustomBestTime);		
-		stream.close();
-	} catch (e) {}
+   // target.saveSettings();		// will be saved on exit
 	
    target.WIN_DIALOG.open();
-//   window.open('highscores/minewin.html','MinesweeperWin','toolbar=0,directories=0,menubar=0,scrollbars=1,resizable=0,width=400,height=420'); 
 }
 	
 //
@@ -676,7 +915,7 @@ var checkFlaggedMatrix = function(x,y) {
 // Called for first click only.  Starts the clock, and makes sure there is
 // no bomb for the first open cell (or matrix).
 var firstClick = function(x,y) {
-    if (!useFirstClickUseful) {
+    if (!target.settings.useFirstClickUseful) {
       if (cellArray[arrayIndexOf(x,y)].isBomb) {
          placeBombRandomLoc();  // Place first to insure different loc
          removeBomb(x,y); } }
@@ -720,7 +959,7 @@ var cellClick = function(x,y,e) {
 	      with (cellArray[arrayIndexOf(x,y)]) {
 	         // Is it already open?  If so, we may need to do a matrix (macro) open
 	         if (isExposed) {
-	            if ((useMacroOpen) && (checkFlaggedMatrix(x,y) == neighborBombs)) { 
+	            if ((target.settings.useMacroOpen) && (checkFlaggedMatrix(x,y) == neighborBombs)) { 
 	               markMatrixToOpen(x,y);
 	               openAllMarked(); } }
 	         else {
@@ -740,7 +979,7 @@ var cellClick = function(x,y,e) {
 	            if (isFlagged) {
 	               bombsFlagged--;
 	               isFlagged = false;
-	               if (!useQuestionMarks)
+	               if (!target.settings.useQuestionMarks)
 	                  target['sq'+imageIndexOf(x,y)].u = blankCell;
 	               else {
 	                  isQuestion = true;
@@ -810,7 +1049,7 @@ var checkKeyDown = function(e) {
 // When all bombs are marked, user can open all remaining cells.
 var bombCountClick = function() {
    closeAllMenus();
-   if ((!dead) && (!win) && (openRemaining) && ((maxNumBombs-bombsFlagged) == 0)) {
+   if ((!dead) && (!win) && (target.settings.openRemaining) && ((maxNumBombs-bombsFlagged) == 0)) {
       clockStop();
       numMoves++;
       openRemainingUsed = true;
@@ -986,7 +1225,7 @@ var updateClock = function() {
 
 // Updates the display w/ the current number of bombs left.
 var updateNumBombs = function() {
-   if ((!dead) && (!win) && (openRemaining) && ((maxNumBombs-bombsFlagged) == 0)) {
+   if ((!dead) && (!win) && (target.settings.openRemaining) && ((maxNumBombs-bombsFlagged) == 0)) {
       target.bomb1s.u = 10;
       target.bomb10s.u = 10;
       target.bomb100s.u = 10; }
