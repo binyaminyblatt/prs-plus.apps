@@ -482,8 +482,15 @@
 
 	<sprite skin="square" id="gridCursor" />
 	
-    <text id='helpText' skin='helpText' left='5' right='10' top='5' bottom='15' active='false' visible='false'/>	
-	<sprite skin='square' id='closeHelpText' right='20' top='15' u='16' visible='false' active='false'><behave like="closeSprite"/></sprite>
+    <text id='helpText' skin='helpText' left='5' right='10' top='5' bottom='15' active='false' visible='false'>	
+		<code>
+         	<function id="doCenter">
+         		this.bubble("showHelp");
+	        </function>		
+		</code>         
+		<sprite skin='square' id='closeHelpText' right='20' top='15' u='16' visible='false' active='false'><behave like="closeSprite"/></sprite>
+	</text>
+	
  	<!--label id='btn_hint_prev'      skin='touchText' left=  '0' width='120' bottom='2' height='15' align='center' text='Previous'/>
  	<label id='btn_hint_next'      skin='touchText' left='120' width='120' bottom='2' height='15' align='center' text='Next'/-->
  	<label id='btn_hint_prev_next' skin='touchText' left=  '0' width='240' bottom='2' height='15' align='center'/>
@@ -527,6 +534,9 @@
 
 	<panel id="ABOUT_DIALOG" skin="mpanel" width="450" height="250" visible="false">
 		<code>
+         	<function id="doCenter">
+         		this.doOK();
+	         </function>		
 			<function id="doOK">
 				this.show(false)
 			</function>
@@ -545,6 +555,9 @@
 
 	<panel id="WIN_DIALOG" skin="mpanel" width="450" height="250" visible="false">
 		<code>
+         	<function id="doCenter">
+         		this.doOK();
+	         </function>				
 			<function id="doOK">
 				this.show(false)
 			</function>
@@ -562,6 +575,9 @@
 
 	<panel id="PERSONAL_BEST_DIALOG" skin="mpanel" width="450" height="250" visible="false">
 		<code>
+         	<function id="doCenter">
+         		this.doClose();
+	         </function>				
 			<function id="doClose">
 				this.show(false)
 			</function>

@@ -386,6 +386,10 @@ var tmp = function () {
 	//	target.bubble('tracelog',_Core.debug.dumpToString(ntMenu,'',2));
 	}
 
+	var moveNTMenuSelector = function (MenuIdx) {
+		target.NT_MENU['ntMenuSelector'].changeLayout(4,width[MenuIdx]-12,uD,ntMenu[ntMenuItemIndex].top,uD,uD);
+	}
+
 	// moves the gridCursor for nt-readers
 	target.moveCursor = function (direction) {
 	if (!ntMenuActive) {	
@@ -424,23 +428,36 @@ var tmp = function () {
       		if ((direction == "up") && (ntMenuItemIndex>0)) {
       			ntMenuItemIndex--;
       			while((!ntMenu[ntMenuItemIndex].isItem) && (ntMenuItemIndex>0)) ntMenuItemIndex--;
-      			buildNTMenu(ntMenuIndex); // why can't I just call ntMenuSelector.changeLayout() ??
+      		//	buildNTMenu(ntMenuIndex); // why can't I just call ntMenuSelector.changeLayout() ??
+      			moveNTMenuSelector(ntMenuIndex);
       			}	
       		if ((direction == "down") && (!ntMenu[ntMenuItemIndex].isBottom)) {
       			ntMenuItemIndex++;
       			while(!ntMenu[ntMenuItemIndex].isItem) ntMenuItemIndex++;
-      			buildNTMenu(ntMenuIndex); 
+      		//	buildNTMenu(ntMenuIndex); 
+      			moveNTMenuSelector(ntMenuIndex);
 			}
 		}
 	}	
 
 	// handles center-button for nt-readers	
 	target.doCenterF = function (){
+	var doHandle, sender;
 	if (!ntMenuActive) {
 		var e = {button :1};
 		cellClick(posX,posY,e);
 		ticClock();	
-	  	}		
+	  	}	
+	else {
+		sender = ntMenu[ntMenuItemIndex].sender;
+	//	this.bubble('tracelog','sender.doHandle= '+sender.trigger);
+		doHandle = getSoValue(sender,'doHandle');
+	//	this.bubble('tracelog','doHandle= '+doHandle);
+		doHandle.call(sender,target);
+	//	this.bubble('tracelog','nach doHandle.call');
+		ntMenuActive = false;
+		target.NT_MENU.show(false);
+		} 		
 	}
 
 	// handles digit-buttons for nt-readers	
