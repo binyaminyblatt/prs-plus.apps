@@ -282,6 +282,7 @@
 					<item title="Next"   do="doGameNext" can="always" />
 					<item title="Select" do="doGameSelect" can="always" />
 					<item title="Load"   do="doGameLoad" can="always" />
+					<item title="Save" do="doGameSave" can="always"/>
 				</menu>
 				<menu title="LEVEL" >
 					<item title="Simple" do="doSelectLevel" can="always"/>
@@ -289,10 +290,10 @@
 					<item title="Medium" do="doSelectLevel" can="always"/>
 					<item title="Hard"   do="doSelectLevel" can="always"/>
 				</menu>
-				<menu title="EXIT" >
+				<!--menu title="EXIT" >
 					<item title="Quit" do="doExitQuit" can="always"/>
 					<item title="Save" do="doGameSave" can="always"/>
-				</menu>
+				</menu-->
 			</menuBar>
 
 			<sprite skin="allDigit" id="key0"  left= "33" width="44" top="45" height="44" u="10" v="3" active="true">
