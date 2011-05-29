@@ -29,9 +29,9 @@
 	</behavior>
 	
 	<style font="Swis721 BT">
-		<style id="swis24gry" size="24" style="" right="15" halign="right" color="#6D6D6D"/>
+		<style id="swis24gry" size="24" style="" right="15" halign="right" top="5" color="#6D6D6D"/>
 		<style id="swis32blk" size="32" style="" color="#000000"/>
-		<style id="swis24blk" size="24" style="" halign="right" color="#000000"/>
+		<style id="swis24blk" size="24" style="" halign="right" top="5" color="#000000"/>
 		<style id="swis16blk" size="16" style="" color="#000000"/>
 		<style id="digits" size="22" style="bold" color="#000000"/>
 		<style id="gameclock" size="22" style="bold" color="#000000"/>
@@ -262,8 +262,8 @@
 					<item title="Custom"   do="selectLevel" can="always" />					
 					<separator/>
 					<item title="Personal Best"   do="doShowPersBest" can="always" />										
-					<separator/>
-					<item title="Exit"   do="doExitQuit" can="always" />														
+					<!--separator/>
+					<item title="Exit"   do="doExitQuit" can="always" /-->														
 				</menu>
 				<menu title="OPTION" >
 					<item title="Opening Move" do="changeOption" can="always"/>
@@ -482,14 +482,8 @@
 
 	<sprite skin="square" id="gridCursor" />
 	
-    <text id='helpText' skin='helpText' left='5' right='10' top='5' bottom='15' active='false' visible='false'>	
-		<code>
-         	<function id="doCenter">
-         		this.bubble("showHelp");
-	        </function>		
-		</code>         
-		<sprite skin='square' id='closeHelpText' right='20' top='15' u='16' visible='false' active='false'><behave like="closeSprite"/></sprite>
-	</text>
+    <text id='helpText' skin='helpText' left='5' right='10' top='5' bottom='15' active='false' visible='false'/>	
+	<sprite skin='square' id='closeHelpText' right='20' top='15' u='16' visible='false' active='false'><behave like="closeSprite"/></sprite>
 	
  	<!--label id='btn_hint_prev'      skin='touchText' left=  '0' width='120' bottom='2' height='15' align='center' text='Previous'/>
  	<label id='btn_hint_next'      skin='touchText' left='120' width='120' bottom='2' height='15' align='center' text='Next'/-->
@@ -532,7 +526,7 @@
 		<button id="ntMenuSelector" skin="ntMenuSel" left="0" right="0" top="0" height="0" active="false" do=""/>
 	</panel>
 
-	<panel id="ABOUT_DIALOG" skin="mpanel" width="450" height="250" visible="false">
+	<dialog id="ABOUT_DIALOG" width="450" height="250" visible="false">
 		<code>
          	<function id="doCenter">
          		this.doOK();
@@ -544,16 +538,17 @@
 				this.show(true)
 			</function>
 		</code>
-		<label skin="swis24blk" active="false" text="MineSwepper" align="center" left="28" right="28" top="10" height="28"/>
-		<label skin="swis20blk" active="false" text="written in JavaScript" align="center" left="28" right="28" top="35" height="28"/>
-		<label skin="swis16blk" active="false" text="This version was written 1997..2004 by D. Shep Poor" align="center" left="28" right="28" top="70" height="28"/>
-		<label skin="swis16blk" active="false" text="Original on which this game is based" left="28" right="28" top="100" align="center" height="28"/>
-		<label skin="swis16blk" active="false" text="Copyright (c) 1981-2007 Microsoft Corp. " left="28" align="center" right="28" top="120" height="28"/>
-		<label skin="swis16blk" active="false" text="adapted for SONY PRS by Mark Nord 2011" left="28" align="center" right="28" top="155" height="28"/>
+		<background skin="dlg_background" left="0" right="0" top="0" bottom="0"/>
+		<label skin="swis32blk" text="MineSwepper" align="center" left="28" right="28" top="10" height="35"/>
+		<label skin="swis24blk" text="written in JavaScript" align="center" left="28" right="28" top="42" height="28"/>
+		<label skin="swis16blk" text="This version was written 1997..2004 by D. Shep Poor" align="center" left="28" right="28" top="70" height="28"/>
+		<label skin="swis16blk" text="Original on which this game is based" left="28" right="28" top="100" align="center" height="28"/>
+		<label skin="swis16blk" text="Copyright (c) 1981-2007 Microsoft Corp. " left="28" align="center" right="28" top="120" height="28"/>
+		<label skin="swis16blk" text="adapted for SONY PRS by Mark Nord 2011" left="28" align="center" right="28" top="155" height="28"/>
 		<default-button id="OK" text="Ok" width="70" bottom="10" do="doOK"/>
-	</panel>
+	</dialog>
 
-	<panel id="WIN_DIALOG" skin="mpanel" width="450" height="250" visible="false">
+	<dialog id="WIN_DIALOG"  width="450" height="250" visible="false">
 		<code>
          	<function id="doCenter">
          		this.doOK();
@@ -565,27 +560,38 @@
 				this.show(true)
 			</function>
 		</code>
-		<label skin="swis32blk" active="false" text="YOU WIN!" align="center" left="28" right="28" top="30" height="28"/>
+		<background skin="dlg_background" left="0" right="0" top="0" bottom="0"/>
+		<label skin="swis32blk" active="false" text="YOU WIN!" align="center" left="28" right="28" top="30" height="35"/>
 		<label skin="swis16blk" active="false" text="Congratulations on Winning JavaScript MineSweeper!" align="center" left="28" right="28" top="65" height="28"/>
 		<label id="winTime"  skin="swis24blk" active="false" text="Game time: NaN" align="center" left="28" right="28" top="100" height="28"/>
 		<label id="bestTime" skin="swis16blk" active="false" text="Your best undefined time is: NaN" left="28" right="28" top="130" align="center" height="28"/>
 		<label id="numClicks" skin="swis16blk" active="false" text="Number of Clicks: NaN" left="28" align="center" right="28" top="150" height="28"/>
 		<default-button id="OK" text="Ok" width="70" bottom="10" do="doOK"/>
-	</panel>
+	</dialog>
 
-	<panel id="PERSONAL_BEST_DIALOG" skin="mpanel" width="450" height="250" visible="false">
+	<dialog id="PERSONAL_BEST_DIALOG"  width="450" height="250" visible="false">
 		<code>
          	<function id="doCenter">
-         		this.doClose();
+         		this.doCenterF();
 	         </function>				
 			<function id="doClose">
 				this.show(false)
 			</function>
-			<function id="open">
-				this.show(true)
-			</function>
+			<function id="doLeft">
+	         	this.moveCursor();
+    	    </function>
+	    	<function id="doPrevious">
+			 	this.moveCursor();
+         	</function>
+         	<function id="doRight">
+         		this.moveCursor();
+	        </function>
+         	<function id="doNext">
+         		this.moveCursor();
+	        </function>         		
 		</code>
-		<label skin="swis32blk" active="false" text="Personal Best Times" align="center" left="28" right="28" top="20" height="28"/>
+		<background skin="dlg_background" left="0" right="0" top="0" bottom="0"/>
+		<label skin="swis32blk" active="false" text="Personal Best Times" align="center" left="28" right="28" top="20" height="35"/>
 		<label skin="swis24blk" active="false" text="Beginner: " left="100" width="200" top="70" align="left" height="28"/>
 		<label id="bestBeginnerTime" skin="swis24blk" active="false" text="999" left="200" width="100" top="70" align="right" height="28"/>
 		<label skin="swis24blk" active="false" text="Intermediate:" left="100" width="200" top="110" align="left" height="28"/>
@@ -594,9 +600,9 @@
 		<label id="bestExpertTime" skin="swis24blk" active="false" text="999" left="200" width="100" top="150" align="right" height="28"/>
 		<button id="resetBest" text="Reset Scores" width="170" left ="10" bottom="10" do="doResetBest"/>
 		<default-button id="btn_close" text="Close" width="70" bottom="10" do="doClose"/>
-	</panel>
+	</dialog>
 
-	<panel id="CUSTOM_DIALOG" skin="mpanel" width="450" height="250" visible="false">
+	<dialog id="CUSTOM_DIALOG" width="450" height="250" visible="false">
 		<code>
 			<function id="doOK">
 				this.container.setVariable("custom_selected",true);
@@ -608,33 +614,38 @@
 				this.show(false)
 				this.container.init();
 			</function>
-			<function id="open">
-				this.show(true)
-			</function>
+			<function id="doLeft">		this.moveCursor("left"); </function>
+	    	<function id="doPrevious">	this.moveCursor("left"); </function>
+         	<function id="doRight">		this.moveCursor("right"); </function>
+         	<function id="doNext">		this.moveCursor("right"); </function> 
+	        <function id="doUp">      	this.moveCursor("up");    </function>
+	        <function id="doDown">		this.moveCursor("down");  </function>	        
+	        <function id="doCenter">	this.doCenterF();  </function>	        
 		</code>
+		<background skin="dlg_background" left="0" right="0" top="0" bottom="0"/>
 		<label skin="swis32blk" active="false" text="Custom Settings" align="center" left="28" right="28" top="20" height="38"/>
 
-		<label skin="swis24blk" active="false" text="Game Height: " left="50" width="200" top="70" align="left" height="28"/>
-		<text id="cust_Height" skin="customText" active="false" variable="custom_Height" left="300" width="50" top="67" height="34"/>
+		<label skin="swis24blk" active="false" text="Game Height: " left="40" width="200" top="67" align="left" height="32"/>
+		<text id="cust_Height" skin="customText" active="false" variable="custom_Height" left="300" width="50" top="67" height="41"/>
 		<button id="cust_Height-" skin="nullButton" left="250" top="67" width="50" heigth="28" text="-" do="doPlusMinus"/>
 		<button id="cust_Height+" skin="nullButton" left="350" top="67" width="50" heigth="28" text="+" do="doPlusMinus"/>
 				
-		<label skin="swis24blk" active="false" text="Game Width:" left="50" width="200" top="110" align="left" height="28"/>
-		<text id="cust_Width" skin="customText" active="false" variable="custom_Width" left="300" width="50" top="107" height="34"/>
+		<label skin="swis24blk" active="false" text="Game Width:" left="40" width="200" top="107" align="left" height="32"/>
+		<text id="cust_Width" skin="customText" active="false" variable="custom_Width" left="300" width="50" top="107" height="41"/>
 		<button id="cust_Width-" skin="nullButton" left="250" top="107" width="50" heigth="28" text="-" do="doPlusMinus"/>
 		<button id="cust_Width+" skin="nullButton" left="350" top="107" width="50" heigth="28" text="+" do="doPlusMinus"/>
 				
-		<label skin="swis24blk" active="false" text="Number of Bombs" left="50" width="200" top="150" align="left" height="28"/>
-		<text id="cust_Bombs" skin="customText" active="false" variable="custom_Bombs" left="300" width="50" top="147" height="34"/>
+		<label skin="swis24blk" active="false" text="Number of Bombs" left="40" width="200" top="147" align="left" height="32"/>
+		<text id="cust_Bombs" skin="customText" active="false" variable="custom_Bombs" left="300" width="50" top="147" height="41"/>
 		<button id="cust_Bombs-" skin="nullButton" left="250" top="147" width="50" heigth="28" text="-" do="doPlusMinus"/>
 		<button id="cust_Bombs+" skin="nullButton" left="350" top="147" width="50" heigth="28" text="+" do="doPlusMinus"/>
 		
-		<default-button id="btn_OK" text="OK" width="70" bottom="10" do="doOK"/>
-		<button id="btn_Cancle" text="Cancel" width="100" left ="270" bottom="10" do="doClose"/>		
-	</panel>
+		<default-button id="btn_Ok" text="OK" width="70" bottom="10" do="doOK"/>
+		<button id="btn_Cancel" text="Cancel" width="100" left ="270" bottom="10" do="doClose"/>		
+	</dialog>
 		 
-	<label skin="swis24gry" left="0" right="0" bottom="80" height="30" align="center" text="WORK in PROGRESS" />
-   	<label skin="swis24gry" left="0" right="0" bottom="50" height="30" align="center" text="basic touch and nontouch functionality enabled" /> 
+	<!--label skin="swis24gry" left="0" right="0" bottom="80" height="30" align="center" text="WORK in PROGRESS" />
+   	<label skin="swis24gry" left="0" right="0" bottom="50" height="30" align="center" text="basic touch and nontouch functionality enabled" /--> 
   </group>
 </group>
 

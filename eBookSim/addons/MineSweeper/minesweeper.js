@@ -8,18 +8,20 @@
 // History:
 //	2011-04-10 Mark Nord:	initially adapted to FSK for use with Sony PRS
 //	2011-05-15 Mark Nord:	fist try for non-touch reader
-
+//	2011-05-28 Mark Nord:	reached public beta state
+//				ToDo: tick gameclock with hardware-timer for x50 models
 var tmp = function () {
 	var uD;
 	var gridTop = 131;
 	var gridLeft;
-	var newEvent = prsp.compile("param", "return new Event(param)");
 	
 	var isNT = kbook.autoRunRoot.hasNumericButtons;
 	var getSoValue = kbook.autoRunRoot.getSoValue;
 	var setSoValue = kbook.autoRunRoot.setSoValue;
 	var getFileContent = kbook.autoRunRoot.getFileContent;
 	var fnPageScroll = getSoValue(target.helpText, 'scrollPage');
+   	var mouseLeave = getSoValue( target.PERSONAL_BEST_DIALOG.btn_close,'mouseLeave');
+	var mouseEnter = getSoValue( target.PERSONAL_BEST_DIALOG.btn_close,'mouseEnter');
 	
 	var clickMode = 0;
 	var ntMenu;
@@ -40,7 +42,7 @@ var tmp = function () {
       // Variable and document setup stuff:
       //
       
-        var maxX ,maxY, maxNumBombs, maxLegalBombs, l, maxCells, cellArray, clockStartTime, datPath, posX, posY;
+        var maxX ,maxY, maxNumBombs, maxLegalBombs, l, maxCells, cellArray, clockStartTime, datPath, posX, posY, btnPos, custSel;
 
 	// bunch of variables to be saved to a file
 	target.settings = {	
@@ -114,9 +116,6 @@ var tmp = function () {
 	target.helpText.show(false);
 	var displayHelp = false; 
 	
-	// This is not necessary. A simple result = (param == 'true') would do 
-	var parseBoolean = prsp.compile("param", "return Core.system.rootObj.__xs__boolean.parse(param)");
-	
 	// reads values of target.settings.xx form file
 	target.loadSettings = function (){
 	var stream, inpLine;
@@ -128,7 +127,7 @@ var tmp = function () {
       				inpLine = stream.readLine();
       				values = inpLine.split(':');
       				if ((values[1] == 'true') || (values[1] == 'false')) {   					
- 					target.settings[values[0]] = parseBoolean(values[1]);
+ 					target.settings[values[0]] = values[1] == 'true';
       				} else {
       					target.settings[values[0]]=values[1];  
       				}
@@ -136,38 +135,9 @@ var tmp = function () {
       		}	
       		stream.close();
       		} catch (e) {}	
-    // 	target.bubble('tracelog',_Core.debug.dumpToString(target.settings,' ',1)); // debug
 	}         
 
-/*	// reads values of target.settings.xx form file - another approach for educational purpose
-	// fails because gameFormat needs a string literal, but booleans are handeled correct this way
-	target.loadSettings2 = function (){
-	var stream, inpLine, codeLine, tmp;
-	var values = [];
-      	try {
-      		if (FileSystem.getFileInfo(datPath)) {
-      			stream = new Stream.File(datPath);    			
-			codeLine='';
-		      	while (stream.bytesAvailable) {
-      				inpLine = stream.readLine();
-      				values = inpLine.split(':');
-				codeLine = codeLine + 'settings["' +values[0]+ '"] = '+values[1]+'; ';
-     			}
-      		}	
-      		stream.close();
-     	//	target.bubble('tracelog','new Function'); // debug
-      		tmp = new Function("settings",codeLine);
-     	//	target.bubble('tracelog','calling tmp'); // debug
-      		tmp(target.settings);
-     	//	target.bubble('tracelog','delete tmp'); // debug      		
-      		delete tmp;
-      		} catch (e) {}	
-     	//	target.bubble('tracelog','Code= '+codeLine); // debug
-     	//	target.bubble('tracelog',_Core.debug.dumpToString(target.settings,' ',1)); // debug
-	} */
-
-
-	// wites values of target.settings.xx to file         
+	// writes values of target.settings.xx to file         
 	target.saveSettings = function (){         
 	var o, stream;
       	  try {
@@ -270,7 +240,7 @@ var tmp = function () {
 
 		// setup button hint's
 		if (!isNT) {
-			this.btn_hint_prev_next.setValue('Change Mode step/flag')
+			this.btn_hint_prev_next.setValue('PREV/NEXT: Change Mode step/flag')
 			this.btn_hint_home.setValue('Quit');
 		}
 		else {
@@ -307,33 +277,17 @@ var tmp = function () {
                 else {
                 	this['gridCursor'].changeLayout(0,0,uD,0,0,uD);
                 } 
-                 
 		faceClick_first()
-	
-	/*	Can I use standard FSK menus w/o pointing device?	
-		var tracker, show;
-		tracker =getSoValue(menus[0],'tracker');
-		show = getSoValue(tracker,'show');
-		
-		target.bubble('tracelog','vor tracker');
-		target.bubble('tracelog',_Core.debug.dumpToString(show,'',1));
-		show.call(tracker,this.container.container,true);
-		target.bubble('tracelog','nach tracker'); */
-		
-		// buildNTMenu(0);   
 	};
 	
 	// builds a menu lookalike panel for use with non-touch readers
 	var buildNTMenu = function (MenuIdx) {
-	//	target.bubble('tracelog','enter build for MenuIndex '+MenuIdx);
 		var dx,ntItem, x, j, itemWidth, title;
 		var itemHeight=32;
 		var sepHeight=10;
 		var top = 10;
 		var uD;
 		var sep = 0;
-		
-		
  		var menuBar = target.findContent("MENUBAR"); // menuBar had to be defined as id="MENUBAR" in XML!!
 		dx = getSoValue(menuBar,"x");				
 		var menus = getSoValue(menuBar,"menus");
@@ -361,7 +315,8 @@ var tmp = function () {
 	      			if (items[i].isChecked()) target.NT_MENU['ntMenuChk'+i].u = 1;
       				ntMenu[i].isItem = true;  			
       				top = top + 32;
-      			} else {
+      				}
+      			else {
       				ntMenu[i].isItem = false;      			
       				target.NT_MENU['ntMenuSep'+sep].changeLayout(0,width[MenuIdx],uD,top,10,uD); 
       				top = top + 10;
@@ -377,13 +332,10 @@ var tmp = function () {
 			}
 		for (i = sep; i <= 4; i++) {
 			target.NT_MENU['ntMenuSep'+i].changeLayout(0,-0,uD,0,0,uD);
-			
 			} 
 	      	target.NT_MENU['ntMenuSelector'].changeLayout(4,width[MenuIdx]-12,uD,ntMenu[ntMenuItemIndex].top,uD,uD);
 		target.NT_MENU.show(true);
 		target.NT_MENU.changeLayout(3+x-dx,width[MenuIdx],uD,35,top+6,uD);
-		
-	//	target.bubble('tracelog',_Core.debug.dumpToString(ntMenu,'',2));
 	}
 
 	var moveNTMenuSelector = function (MenuIdx) {
@@ -427,14 +379,13 @@ var tmp = function () {
       			}
       		if ((direction == "up") && (ntMenuItemIndex>0)) {
       			ntMenuItemIndex--;
+      			// deal with separator
       			while((!ntMenu[ntMenuItemIndex].isItem) && (ntMenuItemIndex>0)) ntMenuItemIndex--;
-      		//	buildNTMenu(ntMenuIndex); // why can't I just call ntMenuSelector.changeLayout() ??
       			moveNTMenuSelector(ntMenuIndex);
       			}	
       		if ((direction == "down") && (!ntMenu[ntMenuItemIndex].isBottom)) {
       			ntMenuItemIndex++;
       			while(!ntMenu[ntMenuItemIndex].isItem) ntMenuItemIndex++;
-      		//	buildNTMenu(ntMenuIndex); 
       			moveNTMenuSelector(ntMenuIndex);
 			}
 		}
@@ -443,18 +394,22 @@ var tmp = function () {
 	// handles center-button for nt-readers	
 	target.doCenterF = function (){
 	var doHandle, sender;
+	// close HelpTextWindow
+	if (displayHelp) {
+		this.showHelp();
+		return;
+	}
+	// if not in menu step onto
 	if (!ntMenuActive) {
 		var e = {button :1};
 		cellClick(posX,posY,e);
 		ticClock();	
 	  	}	
+	// else handle menu
 	else {
 		sender = ntMenu[ntMenuItemIndex].sender;
-	//	this.bubble('tracelog','sender.doHandle= '+sender.trigger);
 		doHandle = getSoValue(sender,'doHandle');
-	//	this.bubble('tracelog','doHandle= '+doHandle);
 		doHandle.call(sender,target);
-	//	this.bubble('tracelog','nach doHandle.call');
 		ntMenuActive = false;
 		target.NT_MENU.show(false);
 		} 		
@@ -497,12 +452,7 @@ var tmp = function () {
 	}
 	
 	target.exitQuit = function () {
-		var ev, func, menuBar;
 		this.saveSettings();
-		ev = newEvent(2048);
-		menuBar = this.findContent("MENUBAR"); // menuBar had to be defined as id="MENUBAR" in XML!!
-		func = getSoValue(menuBar,"endLoop");
-		func.call(menuBar,ev);
 		kbook.autoRunRoot.exitIf(kbook.model);
 	};
 
@@ -539,13 +489,15 @@ var tmp = function () {
 	 else {
 		clickMode = Math.abs(clickMode-1);
 		msg = (clickMode == 0) ? "MODE: step" : "MODE: flag";
-	//	this.bubble("tracelog","clickMode= "+clickMode); // debug
 		target.Touch.mode.setValue(msg);
-	//	this.bubble("tracelog","clickMode= "+clickMode); // debug
 		}
 	};
 
-
+	target.toggleClockMove = function (sender) {
+		showNumMoves = !showNumMoves;
+		updateClock();	
+	}; 
+	
 	target.showHelp = function (sender) {
 		displayHelp = !displayHelp;
 		this.closeHelpText.enable(displayHelp);
@@ -554,47 +506,140 @@ var tmp = function () {
 		if (displayHelp) {
 		 this.doNext = function () {this.helpTextPgDwn()};
 		 this.doPrevious = function () {this.helpTextPgUp()};
-		 this.btn_hint_prev_next.setValue('Scroll Help');		 
-		} else {
- 		 this.doNext = function () {this.changeClickMode()};
-		 this.doPrevious = function() {this.changeClickMode()};
-		 this.btn_hint_prev_next.setValue('Change Mode step/flag');
+		 if (isNT) {
+		 	this.btn_hint_size.setValue('CENTER: Close Help');}
+			this.btn_hint_prev_next.setValue('PREV/NEXT: Scroll Help');		 
+			}
+		 else {
+ 		 	this.doNext = function () {this.changeClickMode()};
+			 this.doPrevious = function() {this.changeClickMode()};
+			 if (!isNT) {
+				this.btn_hint_prev_next.setValue('PREV/NEXT: Change Mode step/flag')
+				}
+			else {
+				this.btn_hint_prev_next.setValue('PREV/NEXT: flag/mark/clear square')
+				this.btn_hint_size.setValue('CENTER: step');
+			}
 		} 
-	}; 
-
-	target.toggleClockMove = function (sender) {
-		showNumMoves = !showNumMoves;
-		updateClock();	
 	}; 
 	
 	target.helpTextPgDwn = function (){
-	//	this.bubble("tracelog","before PgDwn"); // debug
 		fnPageScroll.call(this.helpText, true, 1);
-	//	this.bubble("tracelog","after PgDwn"); // debug
 	}	
 
 	target.helpTextPgUp = function (){
 		fnPageScroll.call(this.helpText, true, -1);
 	}	
-	
+
         // shows the Personal Best Times Window
         target.showPersBest = function() {
            this.PERSONAL_BEST_DIALOG.bestBeginnerTime.setValue(target.settings.BeginnerBestTime);
            this.PERSONAL_BEST_DIALOG.bestIntermediateTime.setValue(target.settings.IntermediateBestTime);
            this.PERSONAL_BEST_DIALOG.bestExpertTime.setValue(target.settings.ExpertBestTime);
+	   if (isNT) {
+	   	mouseEnter.call(target.PERSONAL_BEST_DIALOG.btn_close);  
+	   	btnPos=0; 
+	   }		
            this.PERSONAL_BEST_DIALOG.show(true);
         }	
 
         target.PERSONAL_BEST_DIALOG.doResetBest = function() {
-	//   target.bubble("tracelog","doRestBest"); // debug
 	   target.settings.BeginnerBestTime = 999;
            target.settings.IntermediateBestTime = 999;
            target.settings.ExpertBestTime = 999;
 		   
 	   // save quickest times to save file
-	   //target.saveSettings();	// this isn't necessary here as settings will be saved on exit
-	
            target.showPersBest();
+	   target.PERSONAL_BEST_DIALOG.moveCursor();
+	}
+
+	target.PERSONAL_BEST_DIALOG.moveCursor = function (direction) {
+	var btn = ["btn_close","resetBest"];
+      		btnPos = Math.abs(btnPos-1);
+		mouseEnter.call(target.PERSONAL_BEST_DIALOG[btn[btnPos]]);	
+		mouseLeave.call(target.PERSONAL_BEST_DIALOG[btn[Math.abs(btnPos-1)]]);
+	}
+
+	target.PERSONAL_BEST_DIALOG.doCenterF = function () {
+	var btn;
+      		btn = (btnPos == 0) ? "btn_close" : "resetBest";
+		target.PERSONAL_BEST_DIALOG[btn].click();	
+	}
+
+        // shows the Custom-Settings Window
+        target.CUSTOM_DIALOG.open = function() {
+	   if (isNT) {
+		target.CUSTOM_DIALOG.cust_Height.enable(true);
+	   	custSel = 0; 
+	   	ntHandleCustDlg();
+	   }		
+           target.CUSTOM_DIALOG.show(true);
+        }
+
+	var ntHandleCustDlg = function () {
+        	if (custSel === 0) {
+        		target.CUSTOM_DIALOG.cust_Height.enable(true);
+        		target.CUSTOM_DIALOG.cust_Width.enable(false);
+        		target.CUSTOM_DIALOG.cust_Bombs.enable(false);
+        		}
+        	if (custSel === 1) {
+        		target.CUSTOM_DIALOG.cust_Height.enable(false);
+        		target.CUSTOM_DIALOG.cust_Width.enable(true);
+        		target.CUSTOM_DIALOG.cust_Bombs.enable(false);
+        		}			
+        	if (custSel === 2) {
+        		target.CUSTOM_DIALOG.cust_Height.enable(false);
+        		target.CUSTOM_DIALOG.cust_Width.enable(false);
+        		target.CUSTOM_DIALOG.cust_Bombs.enable(true);
+        		mouseLeave.call(target.CUSTOM_DIALOG.btn_Ok);	
+        		}
+        	if (custSel === 3) {				
+	      		target.CUSTOM_DIALOG.cust_Height.enable(false);
+        		target.CUSTOM_DIALOG.cust_Width.enable(false);
+        		target.CUSTOM_DIALOG.cust_Bombs.enable(false);
+			mouseLeave.call(target.CUSTOM_DIALOG.btn_Cancel);
+        		mouseEnter.call(target.CUSTOM_DIALOG.btn_Ok);	
+        		}			
+        	if (custSel === 4) {				 		
+        		mouseLeave.call(target.CUSTOM_DIALOG.btn_Ok);
+        		mouseEnter.call(target.CUSTOM_DIALOG.btn_Cancel);	
+        		}								
+	}
+        
+	target.CUSTOM_DIALOG.moveCursor = function (direction) {
+	switch (direction) {
+		case "up" : {
+			if (custSel>0) {
+				custSel --;
+				ntHandleCustDlg();
+				}
+			break
+		}
+		case "down" : {
+			if (custSel<4) {
+				custSel ++;
+				ntHandleCustDlg();
+				}
+			break
+		}
+		case "left" : {
+			if (custSel === 0) target.CUSTOM_DIALOG["cust_Height-"].click();
+			if (custSel === 1) target.CUSTOM_DIALOG["cust_Width-"].click();
+			if (custSel === 2) target.CUSTOM_DIALOG["cust_Bombs-"].click();
+			break
+		}		
+		case "right" : {
+			if (custSel === 0) target.CUSTOM_DIALOG["cust_Height+"].click();
+			if (custSel === 1) target.CUSTOM_DIALOG["cust_Width+"].click();
+			if (custSel === 2) target.CUSTOM_DIALOG["cust_Bombs+"].click();
+			break
+		}
+	  }	
+	}
+	
+	target.CUSTOM_DIALOG.doCenterF = function () {
+        	if (custSel === 3) target.CUSTOM_DIALOG.btn_Ok.click();	
+        	if (custSel === 4) target.CUSTOM_DIALOG.btn_Cancel.click();	
 	}
 
         target.CUSTOM_DIALOG.doPlusMinus = function(sender) {
@@ -605,7 +650,6 @@ var tmp = function () {
 	   cHeight = parseInt(target.getVariable("custom_Height"));
 	   cWidth = parseInt(target.getVariable("custom_Width"));
 	   cBombs = parseInt(target.getVariable("custom_Bombs"));
-	// target.bubble("tracelog","do "+senderID+step); // debug
 	   switch (senderID) {
 	   	case "cust_Height" :
 	   	{  if (cHeight<23-step && is950() && cHeight>7-step) {cHeight = cHeight+step;} 
@@ -629,7 +673,6 @@ var tmp = function () {
       	// menu exist in the scope of DOCUMENT !! 
       	target.container.container.selectLevel = function(sender) {
       		var x = getSoValue(sender,"index");
-      	//	this.bubble('tracelog','sender.index= '+x);
       		switch (x) {
       			case 2:
       			{	target.settings.gameFormat = "Beginner"; 
@@ -649,7 +692,6 @@ var tmp = function () {
       				break;
       				}
       		}
-      	//	this.bubble("tracelog","selectLevel "+this.settings.gameFormat); // debug
       		if (target.settings.gameFormat!="Custom"){
       			target.setVariable("custom_selected",false)
 	      		target.init();
@@ -669,7 +711,6 @@ var tmp = function () {
 
 	target.container.container.changeOption = function(sender) {
 		var x = getSoValue(sender,"index");
-	//	this.bubble('tracelog','sender.index= '+x);
 		switch (x) {
 			case 0:
 			{	target.settings.useFirstClickUseful = !target.settings.useFirstClickUseful; 
