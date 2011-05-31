@@ -25,8 +25,7 @@ var tmp = function () {
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
 	var getSoValue = kbook.autoRunRoot.getSoValue; */
 	var getSoValue, hasNumericButtons, newEvent;
-	//var datPath = target.fiveballsRoot + 'fiveballs.dat';
-	var datPath = '/Data/fiveballs.dat';
+	var datPath;
 	
 	target.help;
 	target.anAus;
@@ -36,7 +35,9 @@ var tmp = function () {
 	target.cNum = 0;
 	
 	target.init = function () {
-	
+		if (kbook.simEnviro) {datPath = target.fiveballsRoot + 'fiveballs.dat';} 
+		else {datPath = '/Data/fiveballs.dat';}
+		
 		if (!kbook || !kbook.autoRunRoot || !kbook.autoRunRoot.getSoValue) {
 			if (kbook.simEnviro) { /*Sim without handover code */
 				getSoValue = _Core.system.getSoValue;
