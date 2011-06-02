@@ -6,32 +6,29 @@
 
         <behavior id="cardSprite">
             <script on="mouseUp" params="event">
-		if (this.hitBounds(event.x, event.y))
 			this.bubble("doCardClick",this);
             </script>
         </behavior>
-		
         <behavior id="freeSprite">
             <script on="mouseUp" params="event">
-		if (this.hitBounds(event.x, event.y))
 			this.bubble("doFreeClick",this);
             </script>
         </behavior>
-		
         <behavior id="openSprite">
             <script on="mouseUp" params="event">
-		if (this.hitBounds(event.x, event.y))
 			this.bubble("doOpenClick",this);
             </script>
         </behavior>	
-		
         <behavior id="selectSprite">
             <script on="mouseUp" params="event">
-		if (this.hitBounds(event.x, event.y))
 			this.bubble("doSelectClick",this);
             </script>
         </behavior>
-		
+		<behavior id="iconSprite">
+		    <script on="mouseUp" params="event">
+				this.bubble("quitGame",this);
+		    </script>
+		</behavior>			
         <style font="Swis721 BT">
             <style id="sumText" size="40" style="bold" color="#000000"/>
             <style id="sometext" size="22" style="bold" color="#000000"/>
@@ -136,7 +133,9 @@
     <group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
         <panel skin="AppMainSkin" left="0" right="0" top="0" bottom="0"/>
         <group id="AUTORUN" width="600" top="70" bottom="30">
-        	<sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="0" v="1" active="false" canFocus="false"/>   
+        	<sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="0" v="1">   
+		   	    <behave like="iconSprite"/>
+		    </sprite>        	
        	<label id="appTitle" skin="title" left="70" right="0" top="-70" height="70" align="left" text="Free Cell"/>
 			<label id="copyright" skin="copyText" left="70" right="0" top="-20" height="20" align="left" text="(C) Ben Chenoweth 2010"/>
           <code>
@@ -155,9 +154,9 @@
 				<function id="doDigit" params="part"> this.digitF(part.key);</function> 
             </code>
 			
-			<button id="BUTTON_RES"		active="true" text="Restart"    left="310" width="100" top="-57" height="45" do="doButtonClick"/>
-			<button id="BUTTON_RAN"		active="true" text="New Deal"   left="420" width="100" top="-57" height="45" do="doButtonClick"/>
-			<button id="BUTTON_EXT"		active="true" text="Quit"    left="530" width="60" top="-57" height="45" do="doButtonClick"/>
+			<button id="BUTTON_RES"		active="true" text="Restart"    left="380" width="100" top="-57" height="45" do="doButtonClick"/>
+			<button id="BUTTON_RAN"		active="true" text="New Deal"   left="490" width="100" top="-57" height="45" do="doButtonClick"/>
+			<!--button id="BUTTON_EXT"		active="true" text="Quit"    left="530" width="60" top="-57" height="45" do="doButtonClick"/-->
 			
 			<sprite skin='freeCell' id='free0' left="2" width="73" top="0" height="96" active="true" canFocus='true' >
 				<behave like="freeSprite"/>

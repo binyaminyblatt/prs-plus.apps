@@ -3,13 +3,16 @@
 */
 
 tmp = function() {
+	var appIcon = (Core.config.compat.NodeKinds.MAHJONG == "undefined") ? "GAME" : "MAHJONG";
 	var Mahjong = {
 		name: "Mahjong",
 		title: "Mahjong",
 		description: "Game",
-		icon: "GAME",
+		icon: appIcon,
 		activate: function () {
 		   try {
+			kbook.autoRunRoot.sandbox._icon =  Core.config.compat.NodeKinds.getIcon(appIcon,0);;
+			kbook.autoRunRoot.sandbox._title = Mahjong.title;		   
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
 			kbook.autoRunRoot.sandbox.getFileContent = Core.io.getFileContent;			
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
@@ -21,7 +24,7 @@ tmp = function() {
 		actions: [{
 			name: "Mahjong",
 			group: "Games",
-			icon: "GAME",
+			icon: appIcon,
 			action: function () {
 				Mahjong.activate();
 			}

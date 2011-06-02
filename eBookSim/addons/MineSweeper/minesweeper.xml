@@ -27,7 +27,12 @@
 				this.bubble("toggleClockMove");
 		</script>
 	</behavior>
-	
+	<behavior id="iconSprite">
+	    <script on="mouseUp" params="event">
+			this.bubble("exitQuit",this);
+	    </script>
+	</behavior>	
+			
 	<style font="Swis721 BT">
 		<style id="swis24gry" size="24" style="" right="15" halign="right" top="5" color="#6D6D6D"/>
 		<style id="swis32blk" size="32" style="" color="#000000"/>
@@ -197,7 +202,9 @@
 <group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
 	<panel skin="AppMainSkin" left="0" right="0" top="0" bottom="0"/>
     <group id="AUTORUN" width="600" top="70" bottom="33">
-	   	<sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="38" v="1" active="false" canFocus="false"/>   
+	   	<sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="38" v="1">   
+	   	    <behave like="iconSprite"/>
+	    </sprite>
 		<label id="appTitle" skin="title" left="70" right="0" top="-70" height="70" align="left" text="MineSweeper"/>
 		<code>
          <function id="doDigit" params="part">
@@ -237,20 +244,6 @@
 		 </function>
       </code>
 		
-		<!--group id="nonTouch" width="600" top="0" bottom="0">
-			<sprite skin="menuMenu1" id="menuMenu0"  left="40" width="150" top="45" height="40" active="false" canFocus="true"/>
-			<sprite skin="menuMenu3" id="menuMenu2"  left="420" width="150" top="45" height="40" active="false"/>
-			<sprite skin="menuMenu2" id="menuMenu1"  left="225" width="150" top="45" height="40" active="false"/>
-
-			<sprite skin="subMenul" id="subMenu0"  left="70" width="120" top="90" height="88" active="false" />
-			<sprite skin="subMenu2" id="subMenu1"  left="255" width="120" top="90" height="88" active="false" />
-			<sprite skin="subMenu3" id="subMenu2"  left="430" width="120" top="90" height="44" active="false" />
-
-			<label id="currentNum" skin="sometext" left="120" right="0" top="114" height="60" align="left" text=""/>
-			<sprite skin="menuCursor" id="menuCursor"  left="206" width="188" top="45" height="45" active="false"/>
-			<sprite skin="subCursor" id="subCursor"  left="70" width="22" top="90" height="22" active="false"/>
-		</group-->
-
 		<group id="Touch" width="600" top="0" bottom="0">
 			<menuBar id="MENUBAR" alignment="left" left="3" width="600" top="3" height="32">
 				<menu title="GAME">

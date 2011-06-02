@@ -14,19 +14,16 @@
 //  2011-05-28 Ben Chenoweth - Added new layout (BigHole).
 
 var tmp = function () {
-/* Core workaround removed 2011-03-22 Mark Nord 
-	var newEvent = prsp.compile("param", "return new Event(param)"); */
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
 	var getSoValue = kbook.autoRunRoot.getSoValue; 
 	var getFileContent = kbook.autoRunRoot.getFileContent;
-//	var getSoValue, hasNumericButtons, newEvent;
 	var displayHelp = false;
 	
 	if (kbook.simEnviro) {datPath = target.mahjongroot + 'mahjong.dat';} 
 	else {datPath = '/Data/mahjong.dat';}
 	
-	target.L0 = 54;
-	target.T0 = 0;
+	target.L0 = 54; 
+	target.T0 = 30;
 	target.curDX = 62;
 	target.curDY = 70;
 	target.posX = 0;
@@ -97,26 +94,6 @@ var tmp = function () {
 		} catch (e) {}
 		
 		this.prepMahJong();
-//		this.helpHelp.changeLayout(0, 600 * this.hH, uD, -55, 800 * this.hH, uD);
-//		if (!kbook || !kbook.autoRunRoot || !kbook.autoRunRoot.getSoValue) {
-//			if (kbook.simEnviro) { /*Sim without handover code */
-//				getSoValue = _Core.system.getSoValue;
-//				hasNumericButtons = _Core.config.compat.hasNumericButtons;
-//			} else { /* PRS-505 */
-//				getSoValue = function (obj, propName) {
-//					return FskCache.mediaMaster.getInstance.call(obj, propName);
-//				};
-//				hasNumericButtons = true;
-//			}
-//			try {
-//				var compile = getSoValue(prsp, "compile");
-//				newEvent = compile("param", "return new Event(param)");
-//			} catch (ignore) {}
-//		} else { /* code is ok with PRS-600 */
-//			getSoValue = kbook.autoRunRoot.getSoValue;
-//			newEvent = prsp.compile("param", "return new Event(param)");
-//			hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
-//		}
 
 		if (!hasNumericButtons) {
 			this.gridCursor.show(false);
@@ -130,7 +107,7 @@ var tmp = function () {
 		} else {
 			this.BUTTON_NEW.show(false);
 			this.BUTTON_DIF.show(false);
-			this.BUTTON_EXT.show(false);
+			//this.BUTTON_EXT.show(false);
 			this.touchButtons1.show(false);
 		}
 		this.numCurrent.show(false);
@@ -197,10 +174,10 @@ var tmp = function () {
 	target.doMenuF = function () {
 		this.menuKlapp = Math.abs(this.menuKlapp - 1);
 		if (this.menuKlapp == 1 & this.hH == 0) {
-			this.menuAll.changeLayout(437, 150, uD, -33, 185, uD);
-			this.menuCur.changeLayout(440, 22, uD, -26, 22, uD);
+			this.menuAll.changeLayout(437, 150, uD, -33+this.T0, 185, uD);
+			this.menuCur.changeLayout(440, 22, uD, -26+this.T0, 22, uD);
 		} else {
-			this.menuAll.changeLayout(437, 150, uD, -233, 185, uD);
+			this.menuAll.changeLayout(437, 150, uD, -253, 185, uD);
 			this.menuCur.changeLayout(440, 22, uD, -226, 22, uD);
 			//this.helpHelp.changeLayout(0, 0, uD, 0, 0, uD);
 			this.helpText.show(false);
@@ -449,7 +426,7 @@ var tmp = function () {
 					}
 					break;
 				}
-				var mI = -26 + this.menuPos * 36;
+				var mI = -26 +this.T0+ this.menuPos * 36;
 				this.menuID = this.menuName[this.menuPos * 1];
 				this.menuCur.changeLayout(440, 22, uD, mI, 22, uD);
 			}
@@ -471,7 +448,7 @@ var tmp = function () {
 		}
 		this.gridCursor.changeLayout(xG - xyLeer * 8 + 7, uD, uD, yG - xyLeer * 7 + 10, uD, uD);
 		this.helpCur.changeLayout(0, 600, uD, yG + 27, 5, uD);
-		this.helpCur2.changeLayout(xG + 23, 5, uD, -37, 680, uD);
+		this.helpCur2.changeLayout(xG + 23, 5, uD, -37+this.T0, 680, uD);
 		this.numRecords.setValue(pX + "," + pY);
 		this.drawMarker(pX, pY);
 	};
@@ -537,7 +514,7 @@ var tmp = function () {
 			this.drawGridCursor(this.posX, this.posY);
 			return;
 		}
-		if (n == "EXT") {
+	/*	if (n == "EXT") {
 			try {
 				if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
 				stream = new Stream.File(datPath, 1);
@@ -546,7 +523,7 @@ var tmp = function () {
 			} catch (e) {}		
 			kbook.autoRunRoot.exitIf(kbook.model);
 			return;
-		}
+		} */
 	};
 
         target.showHelp = function () {

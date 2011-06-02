@@ -7,13 +7,16 @@
 */
 
 tmp = function() {
+	var appIcon = (Core.config.compat.NodeKinds.FIVEROW == "undefined") ? "GAME" : "FIVEROW";
 	var FiveRow = {
 		name: "FiveRow",
 		title: "Five In A Row",
 		description: "Game",
-		icon: "GAME",
+		icon: appIcon,
 		activate: function () {
 		   try {
+			kbook.autoRunRoot.sandbox._icon =  Core.config.compat.NodeKinds.getIcon(appIcon,0);;
+			kbook.autoRunRoot.sandbox._title = FiveRow.title;				   
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
 			} catch (ignore) {}
@@ -24,7 +27,7 @@ tmp = function() {
 		actions: [{
 			name: "FiveInARow",
 			group: "Games",
-			icon: "GAME",
+			icon: appIcon,
 			action: function () {
 				FiveRow.activate();
 			}

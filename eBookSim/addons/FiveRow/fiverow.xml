@@ -6,10 +6,14 @@
 
         <behavior id="gridSprite">
             <script on="mouseUp" params="event">
-				if (this.hitBounds(event.x, event.y))
 					this.bubble("doGridClick",this);
             </script>
         </behavior>
+		<behavior id="iconSprite">
+		    <script on="mouseUp" params="event">
+				this.bubble("doRoot",this);
+		    </script>
+		</behavior>	
 
         <style font="Swis721 BT">
             <style id="blacktext" size="28" style="" color="#000000"/>
@@ -99,8 +103,11 @@
     <group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
         <panel skin="AppMainSkin" left="0" right="0" top="0" bottom="0"/>
         <group id="AUTORUN" width="600" top="70" bottom="30">
-            <label id="appTitle" skin="title" left="10" right="0" top="-70" height="70" align="left" text="Five in a Row"/>
-            <label id="copyright" skin="copyText" left="10" right="0" top="-20" height="20" align="left" text="(C) Ben Chenoweth 2010"/>
+			<sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="46" v="1"> 
+	   	    	<behave like="iconSprite"/>
+		    </sprite>	   	          
+            <label id="appTitle" skin="title" left="70" right="0" top="-70" height="70" align="left" text="Five in a Row"/>
+            <label id="copyright" skin="copyText" left="70" right="0" top="-20" height="20" align="left" text="(C) Ben Chenoweth 2010"/>
 
             <code>
                 <function id="doMenu"> this.doCenterF();</function>
@@ -115,9 +122,9 @@
                 <function id="doDigit" params="part"> this.newGame(part.key);</function>
             </code>
 
-            <button id="BUTTON_ONE"		active="true" text="1 Player"    left="318" width="100" top="-57" height="45" do="doButtonClick"/>
-            <button id="BUTTON_TWO"		active="true" text="2 Players"   left="424" width="100" top="-57" height="45" do="doButtonClick"/>
-            <button id="BUTTON_EXT"		active="true" text="Quit"    left="530" width="60" top="-57" height="45" do="doButtonClick"/>
+            <button id="BUTTON_ONE"		active="true" text="1 Player"    left="388" width="100" top="-57" height="45" do="doButtonClick"/>
+            <button id="BUTTON_TWO"		active="true" text="2 Players"   left="494" width="100" top="-57" height="45" do="doButtonClick"/>
+            <!--button id="BUTTON_EXT"		active="true" text="Quit"    left="530" width="60" top="-57" height="45" do="doButtonClick"/-->
 
             <sprite skin="3Buttons" id="3Buttons0000"	left="25" width="50" top="10" height="50" u="0" active="true" >
                 <behave like="gridSprite"/>
@@ -568,7 +575,7 @@
             <label id="instr1" skin="digits" left="460" right="0" top="-64" height="20" align="left" text="For new game"/>
             <label id="instr2" skin="digits" left="460" right="0" top="-44" height="20" align="left" text="   1: 1 Player"/>
             <label id="instr3" skin="digits" left="460" right="0" top="-24" height="20" align="left" text="   2: 2 Players"/>
-            <label id="instr4" skin="blackdigits" right="10" top="668" width="200" height="20" align="right" text="0: Quit"/>
+            <label id="instr4" skin="blackdigits" right="10" top="668" width="200" height="20" align="right" text=""/>
 
         </group>
     </group>

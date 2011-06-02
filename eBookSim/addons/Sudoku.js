@@ -10,13 +10,14 @@
 //  2011-03-26 Ben Chenoweth - added app icon and title
 
 tmp = function() {
+	var appIcon = (Core.config.compat.NodeKinds.SUDOKU == "undefined") ? "GAME" : "SUDOKU";
 	var Sudoku = {
 		name: "Sudoku",
 		title: "Sudoku",
 		description: "Sudoku Game",
-		icon: "GAME",
+		icon: appIcon,
 		activate: function () {
-			kbook.autoRunRoot.sandbox._icon = Core.config.compat.NodeKinds.getIcon("GAME",0);
+			kbook.autoRunRoot.sandbox._icon =  Core.config.compat.NodeKinds.getIcon(appIcon,0);;
 			kbook.autoRunRoot.sandbox._title = Sudoku.title;		
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
@@ -26,7 +27,7 @@ tmp = function() {
 		actions: [{
 			name: "Sudoku",
 			group: "Games",
-			icon: "GAME",
+			icon: appIcon,
 			action: function () {
 				Sudoku.activate();
 			}

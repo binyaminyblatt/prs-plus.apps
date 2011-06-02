@@ -17,6 +17,7 @@
 			 				Core.system.cloneObj enabled;
 			 2010-10-03		"Compiled" Core and mapped _Core functions  
 			 2010-12-04		505 / x50 Skin, Buttons enabled accordingly, to be set via system-menu
+			 2011-06-02		corrected hold-prev = doFirst; hold-next = doLast
  -->
 	<assets>
 		<import href="../assets/simAssets/simAssets.xml"/>
@@ -201,13 +202,19 @@
 						this.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble(key);
 					}	
 					if	(ev.contextual) {
-						 //this.bubble('tracelog',key.substring(0,2).concat('Hold').concat(key.substring(2)));
-						 if (key =="doRoot") {this.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doMenu");
-						 	this.bubble('tracelog', "doMenu");
-						  } else {
-						    this.bubble('tracelog', key.substring(0,2).concat('Hold').concat(key.substring(2)));
-						    this.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble(key.substring(0,2).concat('Hold').concat(key.substring(2)));
-						 }
+						switch (key) {
+							case "doNext":		this.bubble('tracelog', "doLast");
+												this.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doLast");
+												break;
+							case "doPrevious":	this.bubble('tracelog', "doFirst");
+												this.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doFirst");
+											 	break;
+							case "doRoot":		this.bubble('tracelog', "doMenu");
+												this.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doMenu");									
+											 	break;
+							default:			this.bubble('tracelog', key.substring(0,2).concat('Hold').concat(key.substring(2)));
+											    this.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble(key.substring(0,2).concat('Hold').concat(key.substring(2)));
+						}
 					 }	
 				}	 
 			]]>
@@ -312,7 +319,7 @@
 								}				
 				case "MineSweeper" : {
 								this.bubble("tracelog","MineSweeper ");
-								kbook.autoRunRoot._icon = 38;
+								kbook.autoRunRoot._icon = 50;
 								kbook.autoRunRoot._title = "MineSweeper";				
 								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
 								kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;

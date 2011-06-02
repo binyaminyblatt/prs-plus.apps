@@ -12,6 +12,7 @@
 //  2011-03-20 Beb Chenoweth - Moved all labels out of status bar; moved this changelog from startup script into main script.
 //  2011-03-24 Mark Nord: skins changed over to use common AppAssests
 //  2011-03-25 Ben Chenoweth: made a few small adjustments to AppAssests skins
+//  2011-06-02 Mark Nord: unified UI
 
 var tmp = function () {
 	var firstX = 40;
@@ -20,11 +21,8 @@ var tmp = function () {
 	var curDY = 50;
 	var posX;
 	var posY;
-	/* Core workaround 
-	var newEvent = prsp.compile("param", "return new Event(param)");
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
-	var getSoValue = kbook.autoRunRoot.getSoValue; */
-	var getSoValue, hasNumericButtons, newEvent;
+	var getSoValue = kbook.autoRunRoot.getSoValue; 
 	var datPath;
 	
 	target.help;
@@ -37,30 +35,11 @@ var tmp = function () {
 	target.init = function () {
 		if (kbook.simEnviro) {datPath = target.fiveballsRoot + 'fiveballs.dat';} 
 		else {datPath = '/Data/fiveballs.dat';}
-		
-		if (!kbook || !kbook.autoRunRoot || !kbook.autoRunRoot.getSoValue) {
-			if (kbook.simEnviro) { /*Sim without handover code */
-				getSoValue = _Core.system.getSoValue;
-				hasNumericButtons = _Core.config.compat.hasNumericButtons;
-			} else { /* PRS-505 */
-				getSoValue = function (obj, propName) {
-					return FskCache.mediaMaster.getInstance.call(obj, propName);
-				};
-				hasNumericButtons = true;
-			}
-			try {
-				var compile = getSoValue(prsp, "compile");
-				newEvent = compile("param", "return new Event(param)");
-			} catch (ignore) {}
-		} else { /* code is ok with PRS-600 */
-			getSoValue = kbook.autoRunRoot.getSoValue;
-			newEvent = prsp.compile("param", "return new Event(param)");
-			hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
-		}
-	
+
 		if (!hasNumericButtons) {
 			this.gridCursor.show(false);
-			this.showArray.show(false);
+			this.btn_hint_size.show(false);
+			this.btn_hint_option.show(false);
 			this.backGrd.show(false);
 			this.helpInfo1.show(false);
 			this.helpInfo2.show(false);
@@ -68,11 +47,11 @@ var tmp = function () {
 			//this.Touch.MENUBAR.show(true);
 		} else {
 			this.gridCursor.show(true);
-			this.showArray.show(true);
+			this.btn_hint_home.show(false);
 			this.help = 1;
 			this.showHelp();
 			//this.Touch.MENUBAR.show(false);
-			this.BUTTON_EXT.show(false);
+			//this.BUTTON_EXT.show(false);
 			this.BUTTON_NEW.show(false);
 		}
 		this.anAus = 0;
@@ -109,7 +88,7 @@ var tmp = function () {
 	
 	target.removeB = function () {
 		if (this.anAus == 1) {
-			kbook.autoRunRoot.exitIf(kbook.model);
+			this.exitQuit();
 			return;
 		}
 		var id = "5Balls" + ((9 + posX * 1) % 10) + '' + posY,
@@ -335,7 +314,7 @@ var tmp = function () {
 		this.removeB();
 	};
 	
-	target.ExitQuit = function () {
+	target.exitQuit = function () {
 		if (this.summe > this.cNum) {
 			// TODO should store this as "options" instead
 			//datPath = this.fiveballsRoot + 'fiveballs.dat';
@@ -346,11 +325,6 @@ var tmp = function () {
 				stream.close();
 			} catch (e) {}
 		}
-		var ev, func, menuBar;
-		ev = newEvent(2048);
-		menuBar = this.findContent("MENUBAR");
-		func = getSoValue(menuBar, "endLoop");
-		func.call(menuBar, ev);
 		kbook.autoRunRoot.exitIf(kbook.model);
 		return;
 	};
@@ -368,11 +342,6 @@ var tmp = function () {
 			this.init();
 			return;
 		}
-	}
-	
-	target.doRoot = function (sender) {
-		kbook.autoRunRoot.exitIf(kbook.model);
-		return;
 	}
 };
 tmp();

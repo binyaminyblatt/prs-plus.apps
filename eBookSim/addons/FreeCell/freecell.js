@@ -188,6 +188,8 @@ target.init = function () {
 		tempxcursor=xcursor[cursor];
 		tempycursor=this.get_y_position(cursor);
 		this.gridCursor.changeLayout(tempxcursor,90,uD,tempycursor,100,uD);
+		this.BUTTON_RES.show(false);
+		this.BUTTON_RAN.show(false);
 	} else {
 		this.gridCursor.show(false);
 		this.nonTouch_colHelp.show(false);
@@ -1112,10 +1114,10 @@ target.doButtonClick = function (sender) {
 		this.congratulations.changeLayout(0,0,uD,0,0,uD);
 		return;
 	}
-	if (n == "EXT") {
+/*	if (n == "EXT") {
 		kbook.autoRunRoot.exitIf(kbook.model);
 		return;
-	}
+	} */
 }
 
 target.showHelp = function () {
@@ -1259,8 +1261,8 @@ target.moveCursor = function (dir) {
 				}	
 			} else { 
         			cursor-=8;
-        			if (cursor<0) {
-        				cursor=0;
+        			if (cursor<3) {
+        				cursor=3;
         			}	
 			}
 			break;
@@ -1268,7 +1270,7 @@ target.moveCursor = function (dir) {
 	case "left":
 		{
 			cursor--;
-			if (cursor<0) {
+			if (cursor<3) {
 				cursor=18;
 			}
 			break;
@@ -1277,7 +1279,7 @@ target.moveCursor = function (dir) {
 		{
 			cursor++;
 			if (cursor>18) {
-				cursor=0;
+				cursor=3;
 			}
 			break;
 		}
@@ -1355,7 +1357,7 @@ target.cursorClick = function () {
 
 	// deal with buttons first
 	selectedCard.selected = false;
-	if (cursor==0) {
+/*	if (cursor==0) {
 		l=7;
 		c=0;
 
@@ -1405,7 +1407,7 @@ target.cursorClick = function () {
 	if (cursor==2) {
 		kbook.autoRunRoot.exitIf(kbook.model);
 		return;
-	}
+	} */
 	
 	if ((cursor>2) && (cursor<7)) {
 		//temp=cursor-3;

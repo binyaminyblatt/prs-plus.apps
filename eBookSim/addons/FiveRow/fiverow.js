@@ -152,7 +152,7 @@ var tmp = function () {
 			this.instr1.show(false);
 			this.instr2.show(false);
 			this.instr3.show(false);
-			this.instr4.show(false);
+			this.instr4.setValue("HOME: Quit");
 			//this.Touch.MENUBAR.show(true);
 			
 		} else {
@@ -162,9 +162,9 @@ var tmp = function () {
 			this.instr1.show(true);
 			this.instr2.show(true);
 			this.instr3.show(true);
-			this.instr4.show(true);
+			this.instr4.setValue("0: Quit");
 			//this.Touch.MENUBAR.show(false);
-			this.BUTTON_EXT.show(false);
+			// this.BUTTON_EXT.show(false);
 			this.BUTTON_ONE.show(false);
 			this.BUTTON_TWO.show(false);
 		}
@@ -2028,10 +2028,10 @@ var tmp = function () {
 		var id;
 	    id = getSoValue(sender, "id");
 		n = id.substring(7, 10);
-		if (n == "EXT") {
+/*		if (n == "EXT") {
 			kbook.autoRunRoot.exitIf(kbook.model);
 			return;
-		}
+		} */
 		if (n == "ONE") {
 			this.GameOnePlayer();
 			return;
@@ -2075,20 +2075,6 @@ var tmp = function () {
 			this.drawgrid1Cursor(posX, posY);
 		}
 	}
-	
-	target.ExitQuit = function () {
-	   try	{
-		var ev, func, menuBar;
-		ev = newEvent(2048);
-		menuBar = this.findContent("MENUBAR");
-		func = getSoValue(menuBar,"endLoop");
-		func.call(menuBar,ev);
-		}
-	   catch(ignore){}
-	   finally {
-		kbook.autoRunRoot.exitIf(kbook.model);}
-	}
-	
 	
 	target.doRoot = function (sender) {
 		kbook.autoRunRoot.exitIf(kbook.model);

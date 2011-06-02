@@ -6,16 +6,14 @@
 */
 
 tmp = function() {
-	//var L = Core.lang.getLocalizer("FreeCell");
+	var appIcon = (Core.config.compat.NodeKinds.CARDS == "undefined") ? "GAME" : "CARDS";
 	var FreeCell = {
 		name: "FreeCell",
-		//title: L("TITLE"),		// to be added to language asset
-		//description: L("DESCRIPTION"),	// to be added to language asset
 		title: "Free Cell",
 		description: "Card game",
-		icon: "GAME",			// to be added to Core.config.compat.NodeKinds
+		icon: appIcon,			
 		activate: function () {
-			kbook.autoRunRoot.sandbox._icon = Core.config.compat.NodeKinds.getIcon("GAME",0);
+			kbook.autoRunRoot.sandbox._icon =  Core.config.compat.NodeKinds.getIcon(appIcon,0);
 			kbook.autoRunRoot.sandbox._title = FreeCell.title;
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
@@ -26,7 +24,7 @@ tmp = function() {
 		actions: [{
 			name: "FreeCell",
 			group: "Games",
-			icon: "GAME",
+			icon: appIcon,
 			action: function () {
 				FreeCell.activate();
 			}

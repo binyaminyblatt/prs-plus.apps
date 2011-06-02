@@ -15,7 +15,11 @@
 					this.bubble("doSelectClick",this);
             </script>
         </behavior>
-		
+		<behavior id="iconSprite">
+		    <script on="mouseUp" params="event">
+				this.bubble("doRoot",this);
+		    </script>
+		</behavior>			
         <style font="Swis721 BT">
             <style id="sumText" size="40" style="bold" color="#000000"/>
             <style id="sometext" size="22" style="bold" color="#000000"/>
@@ -109,7 +113,9 @@
     <group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
         <panel skin="AppMainSkin" left="0" right="0" top="0" bottom="0"/>
         <group id="AUTORUN" width="600" top="70" bottom="30">
-        	<sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="0" v="1" active="false" canFocus="false"/>
+        	<sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="0" v="1">
+        	   	<behave like="iconSprite"/>
+		    </sprite>
 			<label id="appTitle" skin="title" left="70" right="0" top="-78" height="70" align="left" text="Draughts"/>
 			<label id="copyright" skin="copyText" left="70" right="0" top="-20" height="20" align="left" text="(C) Ben Chenoweth 2011"/>			
             <code>

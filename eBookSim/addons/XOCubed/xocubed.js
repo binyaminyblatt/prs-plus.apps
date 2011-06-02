@@ -62,35 +62,14 @@ var tmp = function () {
 	  return newObj;
 	}
 	
-	/* Mark Nord - Core workaround 
-	var newEvent = prsp.compile("param", "return new Event(param)");
+
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
-	var getSoValue = kbook.autoRunRoot.getSoValue; */
-	var getSoValue, hasNumericButtons, newEvent;
+	var getSoValue = kbook.autoRunRoot.getSoValue; 
 	
 	//this.bubble("tracelog","id="+id);
 	
 	target.init = function () {
-		/* Mark Nord - temporary Core workaround  for PRS+ v1.1.3 */
-		if(!kbook || !kbook.autoRunRoot || !kbook.autoRunRoot.getSoValue){ 
-				if (kbook.simEnviro) { /*Sim without handover code */
-					getSoValue = _Core.system.getSoValue;
-					hasNumericButtons = _Core.config.compat.hasNumericButtons;
-				} else {/* PRS-505 */
-					getSoValue = function (obj, propName) {
-					return FskCache.mediaMaster.getInstance.call(obj, propName);};
-					hasNumericButtons = true;
-				}
-				try{
-					var compile = getSoValue(prsp,"compile");
-					newEvent = compile("param", "return new Event(param)");
-				} catch(ignore) {}	
-		 }else { /* code is ok with PRS-600 */
-			getSoValue = kbook.autoRunRoot.getSoValue;
-			newEvent = prsp.compile("param", "return new Event(param)");
-			hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
-		}
-	
+
 		if (!hasNumericButtons) {
 			isTouch = true;
 			this.grid1Cursor.show(false);
@@ -103,7 +82,6 @@ var tmp = function () {
 			this.gridnums3.show(false);
 			this.gridnums4.show(false);
 			this.nonTouch4.show(false);
-			this.nonTouch6.show(false);
 		} else {
 			isTouch = false;
 			this.grid1Cursor.show(true);
@@ -111,11 +89,11 @@ var tmp = function () {
 			//this.instr1.show(true);
 			//this.instr2.show(true);
 			//this.instr3.show(true);
-			//this.instr4.show(true);
-			this.BUTTON_EXT.show(false);
+			this.btn_hint_home.show(false);
+			//this.BUTTON_EXT.show(false);
 			this.BUTTON_ONE.show(false);
 			this.BUTTON_TWO.show(false);
-			this.touchButtons1.show(false);
+			//this.touchButtons1.show(false);
 		}
 		// board array needs to be initialised to be one column, row and height larger than the button array (for board-searching purposes)
 		for (var a = 0; a <= maxX; a++) {
@@ -1104,10 +1082,10 @@ var tmp = function () {
 		var id;
 	    id = getSoValue(sender, "id");
 		n = id.substring(7, 10);
-		if (n == "EXT") {
+/*		if (n == "EXT") {
 			kbook.autoRunRoot.exitIf(kbook.model);
 			return;
-		}
+		} */
 		if (n == "ONE") {
 			this.GameOnePlayer();
 			return;
@@ -1355,30 +1333,30 @@ var tmp = function () {
 				return;
 			}
 		case 0:
-			{
-				if (difficulty == "easy") {
+			{	this.doRoot();
+			/*	if (difficulty == "easy") {
 					difficulty="hard";
 					this.nonTouch6.setValue("[0] Difficulty: Hard");
 				} else if (difficulty == "hard") {
 					difficulty="easy";
 					this.nonTouch6.setValue("[0] Difficulty: Easy");
 				}
-				return;
-			}
+				return; */
+			} 
 		}
 	}
 
 	target.doPrev = function () {
-		if (hasNumericButtons) {
+	/*	if (hasNumericButtons) {
 			this.moveCursor("left");
 			return;
-		}
+		} */
 		if (difficulty == "easy") {
 			difficulty="hard";
-			this.touchButtons1.setValue("[Prev] Difficulty: Hard");
+			this.touchButtons1.setValue("[Prev]: Difficulty: Hard");
 		} else if (difficulty == "hard") {
 			difficulty="easy";
-			this.touchButtons1.setValue("[Prev] Difficulty: Easy");
+			this.touchButtons1.setValue("[Prev]: Difficulty: Easy");
 		}
 		return;
 	}

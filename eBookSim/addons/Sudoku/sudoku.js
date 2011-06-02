@@ -288,14 +288,7 @@ var tmp = function () {
 		saveGame();
 	};
 	
-	target.ExitQuit = function () {
-	/*	var ev, func, menuBar;
-		ev = newEvent(2048);
-		menuBar = this.findContent("MENUBAR"); // menuBar had to be defined as id="MENUBAR" in XML!!
-		// this.bubble("tracelog","findContent= "+menuBar);
-		func = getSoValue(menuBar,"endLoop");
-		// this.bubble("tracelog","endLoop= "+func);
-		func.call(menuBar,ev); */
+	target.exitQuit = function () {
 		kbook.autoRunRoot.exitIf(kbook.model);
 	};
 	

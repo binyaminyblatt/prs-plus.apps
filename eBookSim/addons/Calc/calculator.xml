@@ -7,44 +7,18 @@
 	   2010-12-05 Mark Nord - appTitle appIcon configurable form starter, 
 	   						  button->index calculation device-independent
 	   						  gridCursor only shown on PRS-300/505
-	   2011-03-24 Mark Nord - Most Assets move to ../AppAssets/AppAssets.xml						  
+	   2011-03-24 Mark Nord - Most Assets move to ../AppAssets/AppAssets.xml
+	   2011-06-02 Mark Nord - tapping on the icon in the topbar closes the app						  
 	   -->
 
 <document xmlns="http://www.kinoma.com/fskin/1" id="DOCUMENT">
 <assets>
- <import href="../AppAssets/AppAssets.xml"/>
- <!--texture href="calcSkins/CalcMainSkin.png">
-	<cutout id="calcHeader-l" x="0" y="0" width="1" height="70"/>
-	<cutout id="calcHeader-c" x="0" y="0" width="50" height="70"/>
-	<cutout id="calcHeader-r" x="0" y="0" width="1" height="70"/>
-	<cutout id="calcInfo-l" x="0" y="70" width="1" height="100"/>
-	<cutout id="calcInfo-c" x="0" y="70" width="48" height="100"/>
-	<cutout id="calcInfo-r" x="0" y="70" width="1" height="100"/>
-	<cutout id="calcStatus-l" x="0" y="400" width="1" height="33"/>
-	<cutout id="calcStatus-c" x="0" y="400" width="50" height="33"/>
-	<cutout id="calcStatus-r" x="0" y="400" width="1" height="33"/>
-	<cutout id="gCursor" x="110" y="0" width="90" height="100"/>
-	
-	<cutout id="button-l" x="110" y="102" width="16" height="40" lines="60"/>
-	<cutout id="button-c" x="126" y="102" width="20" height="40" lines="60"/>
-	<cutout id="button-r" x="146" y="102" width="16" height="40" lines="60"/>	
-		
-	<cutout id="radio-l" x="170" y="219" width="25" height="30" columns="60"/>
-	<cutout id="radio-c" x="195" y="219" width="15" height="30" columns="60"/>
-	<cutout id="radio-r" x="210" y="219" width="20" height="30" columns="60"/>
-				
-	<cutout id="panel-lt" x="146" y="386" width="9" height="9"/>
-	<cutout id="panel-ct" x="155" y="386" width="30" height="9"/>
-	<cutout id="panel-rt" x="185" y="386" width="9" height="9"/>
-	<cutout id="panel-lm" x="146" y="395" width="9" height="30"/>
-	<cutout id="panel-cm" x="155" y="395" width="30" height="30"/>
-	<cutout id="panel-rm" x="185" y="395" width="9" height="30"/>
-	<cutout id="panel-lb" x="146" y="425" width="9" height="9"/>
-	<cutout id="panel-cb" x="155" y="425" width="30" height="9"/>
-	<cutout id="panel-rb" x="185" y="425" width="9" height="9"/>
- </texture-->
-
-
+ 	<import href="../AppAssets/AppAssets.xml"/>
+	<behavior id="iconSprite">
+	    <script on="mouseUp" params="event">
+			this.bubble("exitApp",this);
+	    </script>
+	</behavior>	    
 	<style font="Swis721 BT">
 	<style id="digits" size="42" style="bold" color="#000000"/>
 	<style id="memory" size="22" style="bold" color="#000000"/>
@@ -53,47 +27,14 @@
 	<style id="label-n" size="14" style="normal" color="#000000" halign="left"/>
 	</style>
 	
-	<!--style id="button-e" size="21" style="bold" halign="center">
-			<style id="button-d" color="#6D6D6D"/>
-			<style id="button-p"/>
-			<style id="button-s" />
-		</style>		
-	<style id="control-e" style="normal" size="14" left="25" halign="left">
-			<style id="control-d" color="#6D6D6D"/>
-			<style id="control-p"/>
-			<style id="control-s"/>
-		</style-->
-
 	<skin id="memory" 
 		styles="memory"/>
 	<skin id="digits" 
 		styles="digits"/>	
 	<skin id="clock" 
 		styles="clock"/>
-	<!--skin id="gridCursor" 
-		cutouts="gCursor"/>	
-	<skin id="radio" 
-			cutouts="radio-l,radio-c,radio-r"
-			styles="control-d,control-e,control-p,control-s"/>
-	<skin id="panel" 
-			cutouts="panel-lt,panel-ct,panel-rt,panel-lm,panel-cm,panel-rm,panel-lb,panel-cb,panel-rb"/>
-	<skin id="button" 
-			cutouts="button-l,button-c,button-r"
-			styles="button-d,button-e,button-p,button-s"/>	
-	<skin id="calcSkin" 
-		cutouts="calcHeader-l,calcHeader-c,calcHeader-r,calcInfo-l,calcInfo-c,calcInfo-r,calcStatus-l,calcStatus-c,calcStatus-r"/-->
 		
 </assets>
-    <!--parts>            
-		<boolean key="0x30" do="doNext"/>
-		<boolean key="0x31" do="doPrevious"/>
-		<boolean key="0x27-hold" do="doHoldCenter"/>
-		<boolean key="0x30-hold" do="doFirst"/>
-		<boolean key="0x31-hold" do="doLast"/>
-		<boolean key="kUp-hold" do="doMark"/>
-		<boolean key="kDown-hold" do="doMark"/>
-	</parts-->	 
-
 	<code>
 		 <function id="runJs" params="path,target">
         try {
@@ -208,7 +149,9 @@
             </function>
 
         </code>
-    <sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="0" v="1" active="false" canFocus="false"/>   
+    <sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="0" v="1">   
+    	<behave like="iconSprite"/>
+    </sprite>
     <label id="appTitle" skin="title" left="70" right="0" top="-70" height="70" align="left" text="Calculator"/>
 	<panel skin="panel" left="38" right="38" top="55" height="42"/>
  	<label id="CalculatorLabel" skin="digits" align="right" visible="true" left="40" right="40" top="55" height="40"></label>
