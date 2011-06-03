@@ -113,7 +113,7 @@
     <group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
         <panel skin="AppMainSkin" left="0" right="0" top="0" bottom="0"/>
         <group id="AUTORUN" width="600" top="70" bottom="30">
-        	<sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="0" v="1">
+        	<sprite id="appIcon" skin="kbookMenuIcon" left="-10" width="70" top="-70" height="70" u="0" v="1">
         	   	<behave like="iconSprite"/>
 		    </sprite>
 			<label id="appTitle" skin="title" left="70" right="0" top="-78" height="70" align="left" text="Draughts"/>
@@ -134,8 +134,8 @@
 				<function id="doDigit" params="part"> this.digitF(part.key);</function> 
             </code>
 			
-			<button id="BUTTON_RES"		active="true" text="New Game"   left="380" width="130" top="10" height="45" do="doButtonClick"/>
-			<button id="BUTTON_EXT"		active="true" text="Quit"    left="520" width="70" top="10" height="45" do="doButtonClick"/>
+			<button id="BUTTON_RES"	active="true" text="New Game"  align="right" right="10" width="130" top="-57" height="45" do="doButtonClick"/>
+			<!--button id="BUTTON_EXT"		active="true" text="Quit"    left="520" width="70" top="10" height="45" do="doButtonClick"/-->
 			
 			<sprite id='nonTouch_colHelp'	skin='colHelp' left='20' width='564' top='17' height='52' active='false' canFocus='false'/>
 			

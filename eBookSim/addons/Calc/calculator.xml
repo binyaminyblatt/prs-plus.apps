@@ -18,7 +18,8 @@
 	    <script on="mouseUp" params="event">
 			this.bubble("exitApp",this);
 	    </script>
-	</behavior>	    
+	</behavior>	   
+	 
 	<style font="Swis721 BT">
 	<style id="digits" size="42" style="bold" color="#000000"/>
 	<style id="memory" size="22" style="bold" color="#000000"/>

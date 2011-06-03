@@ -202,7 +202,7 @@
 <group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
 	<panel skin="AppMainSkin" left="0" right="0" top="0" bottom="0"/>
     <group id="AUTORUN" width="600" top="70" bottom="33">
-	   	<sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="38" v="1">   
+	   	<sprite id="appIcon" skin="kbookMenuIcon" left="-10" width="70" top="-70" height="70" u="38" v="1">   
 	   	    <behave like="iconSprite"/>
 	    </sprite>
 		<label id="appTitle" skin="title" left="70" right="0" top="-70" height="70" align="left" text="MineSweeper"/>

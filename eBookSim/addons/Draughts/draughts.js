@@ -96,7 +96,7 @@ var tmp = function () {
 	
 		if (hasNumericButtons) {
 			this.BUTTON_RES.show(false);
-			this.BUTTON_EXT.show(false);
+			//this.BUTTON_EXT.show(false);
 			this.gridCursor.changeLayout(cursorX, 75, uD, cursorY, 75, uD);
 			this.touchButtons3.show(false);
 			this.touchButtons4.show(false);
