@@ -124,6 +124,8 @@ var tmp = function () {
 	}
 	
 	target.init = function () {
+		this.appIcon.u = kbook.autoRunRoot._icon;
+	
 	/* Mark Nord - temporary Core workaround  for PRS+ v1.1.3 */
 	
 		if(!kbook || !kbook.autoRunRoot || !kbook.autoRunRoot.getSoValue){ 

@@ -17,7 +17,7 @@ tmp = function() {
 		description: "Sudoku Game",
 		icon: appIcon,
 		activate: function () {
-			kbook.autoRunRoot.sandbox._icon =  Core.config.compat.NodeKinds.getIcon(appIcon,0);;
+			kbook.autoRunRoot.sandbox._icon =  Core.config.compat.NodeKinds.getIcon(appIcon,0);
 			kbook.autoRunRoot.sandbox._title = Sudoku.title;		
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;

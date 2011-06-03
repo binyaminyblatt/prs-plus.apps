@@ -11,7 +11,7 @@ tmp = function() {
 		icon: appIcon,
 		activate: function () {
 		   try {
-			kbook.autoRunRoot.sandbox._icon =  Core.config.compat.NodeKinds.getIcon(appIcon,0);;
+			kbook.autoRunRoot.sandbox._icon =  Core.config.compat.NodeKinds.getIcon(appIcon,0);
 			kbook.autoRunRoot.sandbox._title = Mahjong.title;		   
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
 			kbook.autoRunRoot.sandbox.getFileContent = Core.io.getFileContent;			

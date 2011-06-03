@@ -77,6 +77,8 @@ var tmp = function () {
 	target.BAK2 = [];
 
 	target.init = function () {
+		this.appIcon.u = kbook.autoRunRoot._icon;
+		
 		// Load previous layout from save file
 		try {
 			if (FileSystem.getFileInfo(datPath)) {

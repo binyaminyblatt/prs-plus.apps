@@ -4,14 +4,14 @@
 */
 
 tmp = function() {
-	var appIcon = (Core.config.compat.NodeKinds.DRAUGHTHS == "undefined") ? "GAME" : "DRAUGHTS";
+	var appIcon = (Core.config.compat.NodeKinds.DRAUGHTS == "undefined") ? "GAME" : "DRAUGHTS";
 	var Draughts = {
 		name: "Draughts",
 		title: "Draughts",
 		description: "Board game",
 		icon: appIcon,
 		activate: function () {
-			kbook.autoRunRoot.sandbox._icon =  Core.config.compat.NodeKinds.getIcon(appIcon,0);;
+			kbook.autoRunRoot.sandbox._icon =  Core.config.compat.NodeKinds.getIcon(appIcon,0);
 			kbook.autoRunRoot.sandbox._title = Draughts.title;		
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;

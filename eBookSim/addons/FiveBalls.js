@@ -10,11 +10,10 @@ tmp = function() {
 		description: "Game",
 		icon: appIcon,
 		activate: function () {
-			kbook.autoRunRoot.sandbox._icon =  Core.config.compat.NodeKinds.getIcon(appIcon,0);;
+			kbook.autoRunRoot.sandbox._icon =  Core.config.compat.NodeKinds.getIcon(appIcon,0);
 			kbook.autoRunRoot.sandbox._title = FiveBalls.title;				
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
-		
 			kbook.autoRunRoot.path = Core.config.addonsPath + "FiveBalls/fiveballs.xml";
 			kbook.autoRunRoot.enterIf(kbook.model);
 		},

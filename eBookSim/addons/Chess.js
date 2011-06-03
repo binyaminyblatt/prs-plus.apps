@@ -9,7 +9,7 @@ tmp = function() {
 		name: "Chess",
 		title: "Chess",
 		description: "Board game",
-		icon: "CHESS",
+		icon: appIcon,
 		activate: function () {
 			kbook.autoRunRoot.sandbox._icon =  Core.config.compat.NodeKinds.getIcon(appIcon,0);
 			kbook.autoRunRoot.sandbox._title = Chess.title;

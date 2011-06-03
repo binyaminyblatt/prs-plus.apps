@@ -69,6 +69,7 @@ var tmp = function () {
 	//this.bubble("tracelog","id="+id);
 	
 	target.init = function () {
+		this.appIcon.u = kbook.autoRunRoot._icon;
 
 		if (!hasNumericButtons) {
 			isTouch = true;

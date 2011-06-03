@@ -33,6 +33,9 @@ var tmp = function () {
 	target.cNum = 0;
 	
 	target.init = function () {
+		/* set correct appIcon */
+		this.appIcon.u = kbook.autoRunRoot._icon;
+		
 		if (kbook.simEnviro) {datPath = target.fiveballsRoot + 'fiveballs.dat';} 
 		else {datPath = '/Data/fiveballs.dat';}
 
