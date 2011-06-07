@@ -19,6 +19,7 @@
 //	2011-02-06 kartu - Added Core.ui.updateScreen
 //	2011-03-03 kartu - Added "duration" option to showMsg
 //	2011-03-19 kartu - Changed showMsg, duration is now in seconds, changed "sleep" mechanism, shell command is used
+//	2011-04-24 kartu - Changed showMsg to honor EOLs 
 //
 
 try {
@@ -102,7 +103,7 @@ try {
 
 		
 		if (typeof msgs === "string") {
-			msgs = [msgs];
+			msgs = msgs.split("\n");
 		}
 		cnt = msgs.length;
 		if (cnt === undefined || cnt === 0) {

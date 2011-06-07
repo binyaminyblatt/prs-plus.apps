@@ -10,6 +10,7 @@
 //	2010-11-30 kartu - Refactoring Core.stirng => Core.text
 //	2010-11-30 kartu - Fixed nasty double-bug with getFileContent not working properly on 600 plus finally block hijacking control.
 //	2011-03-03 kartu - Added moveFile, deleteFile, getFileSize
+//	2011-04-24 kartu - Added extractFileName, extractExtension, pathExists, getUnusedPath
 
 try {
 	Core.io = {
@@ -157,6 +158,73 @@ try {
 				return info.size;
 			}
 			return null;
+		},
+		
+		// Returns path including trailing "/"
+		extractPath: function (path) {
+			var idx;
+			if (path === undefined) {
+				return undefined;
+			}
+			idx = path.lastIndexOf("/");
+			if (idx > -1) {
+				path = path.substring(0, idx + 1);
+			}
+			return path;
+		},
+		
+		// Extracts filename from absolute path
+		extractFileName: function (path, stripExtension) {
+			var idx;
+			if (path === undefined) {
+				return undefined;
+			}
+			idx = path.lastIndexOf("/");
+			if (idx > -1) {
+				path = path.substring(idx + 1);
+				if (stripExtension) {
+					idx = path.indexOf(".");
+					if (idx > -1) {
+						path = path.substring(0, idx);
+					}
+				}
+			}
+			return path;
+		},
+		
+		// Extracts file extension
+		extractExtension: function (path) {
+			var idx;
+			if (path === undefined) {
+				return undefined;
+			}
+			path = this.extractFileName(path);
+			
+			idx = path.indexOf(".");
+			if (idx > -1) {
+				return path.substring(idx + 1);
+			}
+			return "";
+		},
+		
+		// Checks if file or directory with given name exists
+		pathExists: function (path) {
+			return FileSystem.getFileInfo(path) ? true : false;
+		},
+		
+		getUnusedPath: function (path, fileName) {
+			var n, extension;
+			if (!this.pathExists(path + fileName)) {
+				return path + fileName;
+			}
+			
+			extension = this.extractExtension(fileName);
+			fileName = this.extractFileName(fileName, true);
+			n = 0;
+			while (FileSystem.getFileInfo(path + fileName + "_" + n + "." + extension)) {
+				n++;
+			}
+			return path + fileName + "_" + n + "." + extension;			
 		}
 	};
 } catch (e) {

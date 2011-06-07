@@ -4,6 +4,7 @@
 //
 // History:
 //	2010-07-21 kartu - Initial version
+//	2011-04-24 kartu - Added replaceInArray
 
 Core.utils = {
 	/**
@@ -15,9 +16,10 @@ Core.utils = {
 	* @param funcName - name of the function to call (if provided, targets is a list of objects) 
 	*/
 	callAll: function (targets, obj, args, funcName) {
-		for (var i = 0, n = targets.length; i < n; i++) {
+		var i, n, f;
+		for (i = 0, n = targets.length; i < n; i++) {
 			try {
-				var f = targets[i];
+				f = targets[i];
 				if (funcName !== undefined) {
 					f = f[funcName];
 				}
@@ -34,5 +36,19 @@ Core.utils = {
 			}
 		}
 
+	},
+	
+	/**
+	* Replaces matching values in an array
+	* @param what - value to look for
+	* @param withWhat - value to replace with
+	*/
+	replaceInArray: function (arr, what, withWhat) {
+		var i, n;
+		for (i = 0, n = arr.length; i < n; i++) {
+			if (arr[i] === what) {
+				arr[i] = withWhat;
+			}
+		}
 	}
 };

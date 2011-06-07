@@ -6,19 +6,22 @@
 
 	<behavior id="sprite">
 		<script on="mouseUp" params="event">
+			if (this.hitBounds(event.x, event.y))
 				this.bubble("doNumKey",this);
 		</script>
 	</behavior>
 	<behavior id="gridSprite">
 		<script on="mouseUp" params="event">
+			if (this.hitBounds(event.x, event.y))
 				this.bubble("doGridClick",this);
 			</script>
 	</behavior>
-	<behavior id="iconSprite">
+	<!--behavior id="iconSprite">
 	    <script on="mouseUp" params="event">
-			this.bubble("exitQuit",this);
+			if (this.hitBounds(event.x, event.y))
+				this.bubble("exitQuit",this);
 	    </script>
-	</behavior>	
+	</behavior-->	
 	
 	<style font="Swis721 BT">
 		<style id="sometext" size="16" style="" color="#000000"/>
@@ -215,9 +218,9 @@
 <group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
 	<panel skin="AppMainSkin" left="0" right="0" top="0" bottom="0"/>
     <group id="AUTORUN" width="600" top="70" bottom="33">
-	   	<sprite id="appIcon" skin="kbookMenuIcon" left="-10" width="70" top="-70" height="70" u="44" v="1"> 
-	   	    <behave like="iconSprite"/>
-	    </sprite>	   	  
+	   	<sprite id="appIcon" skin="kbookMenuIcon" left="-10" width="70" top="-70" height="70" u="44" v="1"/> 
+	   	    <!--behave like="iconSprite"/>
+	    </sprite-->	   	  
 		<label id="appTitle" skin="title" left="70" right="0" top="-70" height="70" align="left" text="Sudoku"/>
 		<code>
          <function id="doDigit" params="part">
@@ -586,6 +589,8 @@
 	<sprite skin="allDigit" id="Digit88"  left="481" width="44" top="595" height="44" u="0" v="0" active="true" >
 		<behave like="gridSprite"/>
 	</sprite>
+	
+	<button id="btn_Exit" left="0" top="-70" height="70" width="70" active="true" visible="false" do="doRoot"/>
 
 		<background skin="bckGround" id="bckGround" left="0" right="0" top="0" bottom="0"/>
 

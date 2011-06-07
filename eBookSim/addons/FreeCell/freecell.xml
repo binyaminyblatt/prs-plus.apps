@@ -6,29 +6,34 @@
 
         <behavior id="cardSprite">
             <script on="mouseUp" params="event">
-			this.bubble("doCardClick",this);
+           		if (this.hitBounds(event.x, event.y))
+					this.bubble("doCardClick",this);
             </script>
         </behavior>
         <behavior id="freeSprite">
             <script on="mouseUp" params="event">
-			this.bubble("doFreeClick",this);
+				if (this.hitBounds(event.x, event.y))
+					this.bubble("doFreeClick",this);
             </script>
         </behavior>
         <behavior id="openSprite">
             <script on="mouseUp" params="event">
-			this.bubble("doOpenClick",this);
+				if (this.hitBounds(event.x, event.y))
+					this.bubble("doOpenClick",this);
             </script>
         </behavior>	
         <behavior id="selectSprite">
             <script on="mouseUp" params="event">
-			this.bubble("doSelectClick",this);
+				if (this.hitBounds(event.x, event.y))
+					this.bubble("doSelectClick",this);
             </script>
         </behavior>
-		<behavior id="iconSprite">
+		<!--behavior id="iconSprite">
 		    <script on="mouseUp" params="event">
-				this.bubble("quitGame",this);
+				if (this.hitBounds(event.x, event.y))
+					this.bubble("quitGame",this);
 		    </script>
-		</behavior>			
+		</behavior-->			
         <style font="Swis721 BT">
             <style id="sumText" size="40" style="bold" color="#000000"/>
             <style id="sometext" size="22" style="bold" color="#000000"/>
@@ -133,9 +138,9 @@
     <group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
         <panel skin="AppMainSkin" left="0" right="0" top="0" bottom="0"/>
         <group id="AUTORUN" width="600" top="70" bottom="30">
-        	<sprite id="appIcon" skin="kbookMenuIcon" left="-10" width="70" top="-70" height="70" u="0" v="1">   
-		   	    <behave like="iconSprite"/>
-		    </sprite>        	
+        	<sprite id="appIcon" skin="kbookMenuIcon" left="-10" width="70" top="-70" height="70" u="0" v="1"/>   
+		   	    <!--behave like="iconSprite"/>
+		    </sprite-->        	
        	<label id="appTitle" skin="title" left="70" right="0" top="-70" height="70" align="left" text="Free Cell"/>
 			<label id="copyright" skin="copyText" left="70" right="0" top="-20" height="20" align="left" text="(C) Ben Chenoweth 2010"/>
           <code>
@@ -379,6 +384,7 @@
             <text id='helpText' skin='helpText' left='42' right='42' top='50' bottom='50' active='false' visible='false' />		
             <label id='touchButtons1'   skin='touchText'    left='1' right='0' bottom='3' height='15' align='left' text='Open snapshot       Save snapshot                Quit                        Undo                     Help'/>
 			<label id='nonTouch'   skin='touchText'    left='1' right='0' bottom='3' height='15' align='left' text='PREV to open and NEXT to save snapshot           SIZE to undo           MENU to show/hide help'/>
+			<button id="btn_Exit" left="0" top="-70" height="70" width="70" active="true" visible="false" do="doRoot"/>
         </group>
     </group>
 </document>

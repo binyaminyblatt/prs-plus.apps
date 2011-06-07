@@ -14,11 +14,12 @@
 <document xmlns="http://www.kinoma.com/fskin/1" id="DOCUMENT">
 <assets>
  	<import href="../AppAssets/AppAssets.xml"/>
-	<behavior id="iconSprite">
+	<!--behavior id="iconSprite">
 	    <script on="mouseUp" params="event">
+		if (this.hitBounds(event.x, event.y))
 			this.bubble("exitApp",this);
 	    </script>
-	</behavior>	   
+	</behavior-->	   
 	 
 	<style font="Swis721 BT">
 	<style id="digits" size="42" style="bold" color="#000000"/>
@@ -150,9 +151,9 @@
             </function>
 
         </code>
-    <sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="0" v="1">   
-    	<behave like="iconSprite"/>
-    </sprite>
+    <sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="0" v="1"/>   
+    	<!--behave like="iconSprite"/>
+    </sprite-->
     <label id="appTitle" skin="title" left="70" right="0" top="-70" height="70" align="left" text="Calculator"/>
 	<panel skin="panel" left="38" right="38" top="55" height="42"/>
  	<label id="CalculatorLabel" skin="digits" align="right" visible="true" left="40" right="40" top="55" height="40"></label>
@@ -252,6 +253,7 @@
    	
 	<sprite skin="gridCursor" id="gridCursor"  left="522" width="90" top="605" height="100" u="0" active="false" canFocus="true" visible="false"/>
 
+	<button id="btn_Exit" left="0" top="-70" height="70" width="70" active="true" visible="false" do="doRoot"/>
 	<!--label id="clock1" skin="clock" width="100" right="4" height="30" bottom="-30" align="right" text=""/-->
    </group>
 </group>

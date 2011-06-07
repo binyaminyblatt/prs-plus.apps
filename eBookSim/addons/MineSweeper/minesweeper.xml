@@ -27,11 +27,6 @@
 				this.bubble("toggleClockMove");
 		</script>
 	</behavior>
-	<behavior id="iconSprite">
-	    <script on="mouseUp" params="event">
-			this.bubble("exitQuit",this);
-	    </script>
-	</behavior>	
 			
 	<style font="Swis721 BT">
 		<style id="swis24gry" size="24" style="" right="15" halign="right" top="5" color="#6D6D6D"/>
@@ -202,9 +197,7 @@
 <group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
 	<panel skin="AppMainSkin" left="0" right="0" top="0" bottom="0"/>
     <group id="AUTORUN" width="600" top="70" bottom="33">
-	   	<sprite id="appIcon" skin="kbookMenuIcon" left="-10" width="70" top="-70" height="70" u="38" v="1">   
-	   	    <behave like="iconSprite"/>
-	    </sprite>
+	   	<sprite id="appIcon" skin="kbookMenuIcon" left="-10" width="70" top="-70" height="70" active="false" u="38" v="1"/>   
 		<label id="appTitle" skin="title" left="70" right="0" top="-70" height="70" align="left" text="MineSweeper"/>
 		<code>
          <function id="doDigit" params="part">
@@ -484,6 +477,8 @@
 	<label id='btn_hint_home'      skin='touchText' left='240' width='120' bottom='2' height='15' align='center' text=''/>
 	<label id='btn_hint_size'      skin='touchText' left='360' width='120' bottom='2' height='15' align='center' text=''/>
 	<label id='btn_hint_option'    skin='touchText' left='480' width='129' bottom='2' height='15' align='center' text=''/>
+	
+	<button id="btn_Exit" left="0" top="-70" height="70" width="70" active="true" visible="false" do="doRoot"/>
 	
 	<!-- Panel used as Menu for non-touch readers; items are positioned dynamically -->
 	<panel id="NT_MENU" skin="mpanel" top="35" left="3" width="300" height="350" visible="false">

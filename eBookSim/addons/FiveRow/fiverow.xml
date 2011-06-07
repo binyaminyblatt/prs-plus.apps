@@ -6,14 +6,16 @@
 
         <behavior id="gridSprite">
             <script on="mouseUp" params="event">
+           		if (this.hitBounds(event.x, event.y))
 					this.bubble("doGridClick",this);
             </script>
         </behavior>
-		<behavior id="iconSprite">
+		<!--behavior id="iconSprite">
 		    <script on="mouseUp" params="event">
-				this.bubble("doRoot",this);
+				if (this.hitBounds(event.x, event.y))
+					this.bubble("doRoot",this);
 		    </script>
-		</behavior>	
+		</behavior-->	
 
         <style font="Swis721 BT">
             <style id="blacktext" size="28" style="" color="#000000"/>
@@ -103,9 +105,9 @@
     <group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
         <panel skin="AppMainSkin" left="0" right="0" top="0" bottom="0"/>
         <group id="AUTORUN" width="600" top="70" bottom="30">
-			<sprite id="appIcon" skin="kbookMenuIcon" left="-10" width="70" top="-70" height="70" u="46" v="1"> 
-	   	    	<behave like="iconSprite"/>
-		    </sprite>	   	          
+			<sprite id="appIcon" skin="kbookMenuIcon" left="-10" width="70" top="-70" height="70" u="46" v="1"/> 
+	   	    	<!--behave like="iconSprite"/>
+		    </sprite-->	   	          
             <label id="appTitle" skin="title" left="70" right="0" top="-70" height="70" align="left" text="Five in a Row"/>
             <label id="copyright" skin="copyText" left="70" right="0" top="-20" height="20" align="left" text="(C) Ben Chenoweth 2010"/>
 
@@ -577,6 +579,7 @@
             <label id="instr3" skin="digits" left="460" right="0" top="-24" height="20" align="left" text="   2: 2 Players"/>
             <label id="instr4" skin="blackdigits" right="10" top="668" width="200" height="20" align="right" text=""/>
 
+			<button id="btn_Exit" left="0" top="-70" height="70" width="70" active="true" visible="false" do="doRoot"/>
         </group>
     </group>
 </document>
