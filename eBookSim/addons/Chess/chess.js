@@ -23,6 +23,7 @@
 //  2011-03-25 Ben Chenoweth - Skins changed over to use common AppAssests.
 //  2011-03-27 Ben Chenoweth - Fixed labels for PRS-950.
 //  2011-04-03 Ben Chenoweth - Moved all labels around slightly; switched Prev and Next function for Touch.
+//  2011-06-07 Ben Chenoweth - Added Save/Load.
 
 var tmp = function () {
 	var sMovesList;
@@ -94,13 +95,18 @@ var tmp = function () {
 	var currundo;
 	var undodepth;	
 	
+	// Save/Load
+	var datPath;
+	
 	target.init = function () {
 		/* set translated appTitle and appIcon */
 		this.appTitle.setValue(kbook.autoRunRoot._title);
 		this.appIcon.u = kbook.autoRunRoot._icon;
+		
+		if (kbook.simEnviro) {datPath = target.chessRoot + 'chess.dat';} 
+		else {datPath = '/Data/chess.dat';}
 	
 		/* temporary Core workaround  for PRS+ v1.1.3 */
-	
 		if (!kbook || !kbook.autoRunRoot || !kbook.autoRunRoot.getSoValue) {
 			if (kbook.simEnviro) { /*Sim without handover code */
 				getSoValue = _Core.system.getSoValue;
@@ -126,11 +132,12 @@ var tmp = function () {
 		this.selection1.changeLayout(0, 0, uD, 0, 0, uD);
 		this.selection2.changeLayout(0, 0, uD, 0, 0, uD);
 		this.selection3.changeLayout(0, 0, uD, 0, 0, uD);
-	
+		this.checkStatus.setValue("");
 	
 		if (hasNumericButtons) {
 			this.BUTTON_RES.show(false);
-			//this.BUTTON_EXT.show(false);
+			this.BUTTON_SAV.show(false);
+			this.BUTTON_LOA.show(false);
 			this.gridCursor.changeLayout(cursorX, 75, uD, cursorY, 75, uD);
 			this.touchButtons2.show(false);
 			this.touchButtons3.show(false);
@@ -145,6 +152,8 @@ var tmp = function () {
 			this.nonTouch4.show(false);
 			this.nonTouch5.show(false);
 			this.nonTouch6.show(false);
+			this.nonTouch7.show(false);
+			this.nonTouch8.show(false);
 			this.nonTouch_colHelp.show(false);
 		}
 	
@@ -198,6 +207,7 @@ var tmp = function () {
 			//this.bubble("tracelog","iPosition="+iPosition+", etc.aBoard="+etc.aBoard[iPosition - 1]);
 		}
 		sMovesList = "";
+		this.checkStatus.setValue("");
 	};
 	
 	target.writePieces = function () {
@@ -273,7 +283,7 @@ var tmp = function () {
 			destx = nSquareId % 10 - 2;
 			desty = (nSquareId - nSquareId % 10) / 10 - 2;
 			//this.bubble("tracelog","x="+x+", y="+y+", destx="+destx+", desty="+desty);
-			if (target.isValidMove(x, y, destx, desty)) {
+			if (this.isValidMove(x, y, destx, desty)) {
 				nScndFocus = nSquareId;
 				fourBtsLastPc = etc.aBoard[nFrstFocus] & 15;
 	
@@ -380,7 +390,7 @@ var tmp = function () {
 			destx = nSquareId % 10 - 2;
 			desty = (nSquareId - nSquareId % 10) / 10 - 2;
 			//this.bubble("tracelog","x="+x+", y="+y+", destx="+destx+", desty="+desty);
-			if (target.isValidMove(x, y, destx, desty)) {
+			if (this.isValidMove(x, y, destx, desty)) {
 				nScndFocus = nSquareId;
 				fourBtsLastPc = etc.aBoard[nFrstFocus] - 16;
 	
@@ -504,14 +514,15 @@ var tmp = function () {
 		//this.bubble("tracelog","isValidMove");
 		startSq = nPosY * 10 + nPosX + 22;
 		nPiece = etc.aBoard[startSq];
-		//this.bubble("tracelog","startSq="+startSq+", nPiece="+nPiece);
 		if (nPiece === 0) {
 			return (true);
 		}
 		endSq = nTargetY * 10 + nTargetX + 22;
 		nTarget = etc.aBoard[endSq];
+		//this.bubble("tracelog","startSq="+startSq+", nPiece="+nPiece);
 		//this.bubble("tracelog","endSq="+endSq+", nTarget="+nTarget);
 		nPieceType = nPiece & 7;
+		//this.bubble("tracelog","nPiece="+nPiece+", nPieceType="+nPieceType);
 		flagPcColor = nPiece & 8;
 		bHasMoved = Boolean(nPiece & 16 ^ 16);
 		flagTgColor = nTarget & 8;
@@ -521,7 +532,6 @@ var tmp = function () {
 		switch (nPieceType) {
 		case 1:
 			// pawn
-			//this.bubble("tracelog","moving pawn");
 			if (((nDiffY | 7) - 3) >> 2 !== nWay) {
 				return (false);
 			}
@@ -557,33 +567,6 @@ var tmp = function () {
 				return (false);
 			}
 			break;
-		case 3:
-			// knight
-			if (((nDiffY + 1 | 2) - 2 | (nDiffX + 2 | 4) - 2) !== 2 && ((nDiffY + 2 | 4) - 2 | (nDiffX + 1 | 2) - 2) !== 2) {
-				return (false);
-			}
-			if (nTarget > 0 && flagTgColor === flagPcColor) {
-				return (false);
-			}
-			break;
-		case 6:
-			// queen
-			if (nTargetY !== nPosY && nTargetX !== nPosX && Math.abs(nDiffX) !== Math.abs(nDiffY)) {
-				return (false);
-			}
-			break;
-		case 5:
-			// rook
-			if (nTargetY !== nPosY && nTargetX !== nPosX) {
-				return (false);
-			}
-			break;
-		case 4:
-			// bishop
-			if (Math.abs(nDiffX) !== Math.abs(nDiffY)) {
-				return (false);
-			}
-			break;
 		case 2:
 			// king
 			var ourRook;
@@ -605,8 +588,38 @@ var tmp = function () {
 			}
 			//this.bubble("tracelog","valid move for king");
 			break;
+		case 3:
+			// knight
+			if (((nDiffY + 1 | 2) - 2 | (nDiffX + 2 | 4) - 2) !== 2 && ((nDiffY + 2 | 4) - 2 | (nDiffX + 1 | 2) - 2) !== 2) {
+				return (false);
+			}
+			if (nTarget > 0 && flagTgColor === flagPcColor) {
+				return (false);
+			}
+			break;
+		case 4:
+			// bishop
+			if (Math.abs(nDiffX) !== Math.abs(nDiffY)) {
+				return (false);
+			}
+			break;
+		case 5:
+			// rook
+			if (nTargetY !== nPosY && nTargetX !== nPosX) {
+				return (false);
+			}
+			break;
+		case 6:
+			// queen
+			if (nTargetY !== nPosY && nTargetX !== nPosX && Math.abs(nDiffX) !== Math.abs(nDiffY)) {
+				return (false);
+			}
+			break;
 		}
+		
+		// additional checks
 		if (nPieceType === 5 || nPieceType === 6) {
+			// check to see if all squares between start and end are clear for rook or queen
 			if (nTargetY === nPosY) {
 				if (nPosX < nTargetX) {
 					for (var iOrthogX = nPosX + 1; iOrthogX < nTargetX; iOrthogX++) {
@@ -641,7 +654,9 @@ var tmp = function () {
 				return (false);
 			}
 		}
+		
 		if (nPieceType === 4 || nPieceType === 6) {
+			// check to see if all squares between start and end are clear for bishop or queen
 			if (nTargetY > nPosY) {
 				var iObliqueY = nPosY + 1;
 				if (nPosX < nTargetX) {
@@ -681,14 +696,30 @@ var tmp = function () {
 			if (nTarget > 0 && flagTgColor === flagPcColor) {
 				return (false);
 			}
-		} /* If the king takes the piece that currently has him in check, need to see if that still has him in check  */
-		if (nTarget + 6 & 7) {
+		}
+		
+		if (nPieceType==2) {
+			// if king moves (possibly taking the piece that currently has him in check), will he still be in check?
 			var bKingInCheck = false;
-			var oKing = nPieceType === 2 ? endSq : kings[flagPcColor >> 3];
-			//this.bubble("tracelog","oKing="+oKing+", endSq="+endSq);
 			etc.aBoard[startSq] = 0;
 			etc.aBoard[endSq] = nPiece;
+			if (this.isThreatened(endSq % 10 - 2, (endSq - endSq % 10) / 10 - 2, flagPcColor ^ 8)) {
+				bKingInCheck = true;
+			}
+			etc.aBoard[startSq] = nPiece;
+			etc.aBoard[endSq] = nTarget;
+			if (bKingInCheck) {
+				return (false);
+			}
+		} else {
+			// if piece other than king moves, will king still be in check?
+			//this.bubble("tracelog","in here");
+			var oKing = kings[flagPcColor >> 3];
+			etc.aBoard[startSq] = 0;
+			etc.aBoard[endSq] = nPiece;
+			//this.bubble("tracelog","Move piece of color "+flagPcColor+" from "+startSq+" to "+endSq+" with king at "+oKing);
 			if (this.isThreatened(oKing % 10 - 2, (oKing - oKing % 10) / 10 - 2, flagPcColor ^ 8)) {
+				//this.bubble("tracelog","King in check");
 				bKingInCheck = true;
 			}
 			etc.aBoard[startSq] = nPiece;
@@ -728,6 +759,12 @@ var tmp = function () {
 	}
 	
 	target.doMark = function (sender) {
+		this.loadGame();
+		return;
+	}
+	
+	target.doHoldMark = function (sender) {
+		this.saveGame();
 		return;
 	}
 	
@@ -823,13 +860,22 @@ var tmp = function () {
 	}
 	
 	target.getInCheckPieces = function () {
-		var iExamX, iExamY, iExamPc, bNoMoreMoves = true,
-			myKing = kings[flagWhoMoved >> 3 ^ 1];
+		var iExamX, iExamY, iExamPc, bNoMoreMoves = true;
+		var myKing = kings[flagWhoMoved >> 3 ^ 1];
 	
 		bCheck = this.isThreatened(myKing % 10 - 2, (myKing - myKing % 10) / 10 - 2, flagWhoMoved);
-		//if (bCheck) { this.bubble("tracelog","Check!"); }
+		if (bCheck) {
+			if (flagWhoMoved==0) {
+				this.checkStatus.setValue("White king is in check!");
+			} else {
+				this.checkStatus.setValue("Black king is in check!");
+			}
+		} else {
+			this.checkStatus.setValue("");
+		}
 	
 		for (var iExamSq = 22; iExamSq <= 99; iExamSq++) {
+			// search the board
 			if (iExamSq % 10 < 2) {
 				continue;
 			}
@@ -839,9 +885,11 @@ var tmp = function () {
 			//iExamX = iExamSq % 10 - 2;
 			//iExamY = (iExamSq - iExamSq % 10) / 10 - 2;
 			iExamPc = etc.aBoard[iExamSq];
-			if (bNoMoreMoves && iExamPc > 0 && (iExamPc & 8 ^ 8) === flagWhoMoved) {
+			if ((bNoMoreMoves && iExamPc > 0) && ((iExamPc & 8 ^ 8) === flagWhoMoved)) {
+				// found a piece of the side whose king is in check
 				//this.bubble("tracelog","Piece "+iExamPc+" found at="+iExamSq);
 				for (var iWaySq = 22; iWaySq <= 99; iWaySq++) {
+					// search the board looking for a valid move that will get them out of check
 					if (iWaySq % 10 < 2) {
 						continue;
 					}
@@ -849,20 +897,22 @@ var tmp = function () {
 					iTempX = (iWaySq - 2) % 10;
 					iTempY = Math.floor((iWaySq - 22) / 10);
 					if (this.isValidMove(iExamX, iExamY, iTempX, iTempY)) {
+						//this.bubble("tracelog","Apparently, this is a valid move.  Piece at X="+iExamX+", Y="+iExamY+", to X="+iTempX+", Y="+iTempY);
 						bNoMoreMoves = false;
 						break;
 					}
 				}
 			}
 		}
+		//this.bubble("tracelog","bNoMoreMoves="+bNoMoreMoves+", bCheck="+bCheck);
 		if (bNoMoreMoves) {
 			if (bCheck) {
 				var sWinner = etc.bBlackSide ? "Black" : "White";
-				this.messageStatus.setValue("Checkmate! " + sWinner + " wins.");
+				this.checkStatus.setValue("Checkmate! " + sWinner + " wins.");
 				bGameNotOver = false;
 				sMovesList = sMovesList.rethis(); // this line is necessary to make it work!  (Is it because it causes the thread to exit unexpectedly?)
 			} else {
-				this.messageStatus.setValue("Stalemate!");
+				this.checkStatus.setValue("Stalemate!");
 				bGameNotOver = false;
 				sMovesList = sMovesList.rethis(); // this line is necessary to make it work!  (Is it because it causes the thread to exit unexpectedly?)
 			}
@@ -937,6 +987,107 @@ var tmp = function () {
 			kbook.autoRunRoot.exitIf(kbook.model);
 			return;
 		}
+		if (n == "LOA") {
+			this.loadGame();
+			return;
+		}
+		if (n == "SAV") {
+			this.saveGame();
+			return;
+		}
+	}
+
+	target.saveGame = function () {
+		try {
+			if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
+			stream = new Stream.File(datPath, 1);
+			// save board to file
+			for (t=22; t<=99; t++)
+			{
+				if (t % 10 > 1) {
+					stream.writeLine(etc.aBoard[t]);
+				}
+			}
+			stream.writeLine(etc.bBlackSide);
+			stream.writeLine(moveno);
+			stream.close();
+		} catch (e) {}	
+	}
+	
+	target.loadGame = function () {
+		try {
+			if (FileSystem.getFileInfo(datPath)) {
+				var stream = new Stream.File(datPath);
+
+				// load board from save file
+				for (t=22; t<=99; t++)
+				{
+					if (t % 10 > 1) {
+						tempnum = stream.readLine();
+						etc.aBoard[t] = Math.floor(tempnum); // convert string to integer
+						if (etc.aBoard[t] == 18) kings[0] = t;
+						if (etc.aBoard[t] == 26) kings[1] = t;
+					}
+				}
+				 tempboolean = stream.readLine();
+				 if (tempboolean=="true") {
+					etc.bBlackSide = true;
+					flagWhoMoved = 0;
+					this.messageStatus.setValue("Black's turn");
+				} else {
+					etc.bBlackSide = false;
+					flagWhoMoved = 8;
+					this.messageStatus.setValue("White's turn");
+				}
+				moveno = stream.readLine();
+
+				// update board
+				this.writePieces();
+
+				// reset undo
+				currundo=0;
+				this.updateUndo();
+				
+				// update AI board
+				z = 0;
+				for (y = 20; y < 100; y += 10) {
+					for (x = 1; x < 9; x++) {
+						z = etc.aBoard[y + x + 1];
+						if (z == 25) z = 1;
+						if (z == 29) z = 2;
+						if (z == 27) z = 3;
+						if (z == 28) z = 4;
+						if (z == 30) z = 5;
+						if (z == 26) z = 6;
+						if (z == 17) z = 9;
+						if (z == 21) z = 10;
+						if (z == 19) z = 11;
+						if (z == 20) z = 12;
+						if (z == 22) z = 13;
+						if (z == 18) z = 14;
+						newy = 110 - y;
+						board[newy + x] = z;
+						// update the position of the kings in the special king array
+						if (z == 6) kp[0] = newy + x;
+						if (z == 14) kp[1] = newy + x;
+					}
+				}
+				this.prepare(); // get stuff ready for next move
+			
+				// remove what moved highlights
+				this['selection1'].changeLayout(0, 0, uD, 0, 0, uD);
+				this['selection2'].changeLayout(0, 0, uD, 0, 0, uD);
+				this['selection3'].changeLayout(0, 0, uD, 0, 0, uD);
+
+				// check for checkmate/stalemate
+				flagWhoMoved ^= 8;
+				etc.bBlackSide = !etc.bBlackSide;
+				this.getInCheckPieces();
+				flagWhoMoved ^= 8;
+				etc.bBlackSide = !etc.bBlackSide;
+			}
+			stream.close();
+		} catch (e) {}	
 	}
 	
 	target.moveCursor = function (dir) {
@@ -1206,6 +1357,7 @@ var tmp = function () {
 				etc.bBlackSide = !etc.bBlackSide;
 			}
 	
+			// black needs to do an automove if game not over and in automode
 			if ((bGameNotOver) && (automode) && (etc.bBlackSide)) {
 				FskUI.Window.update.call(kbook.model.container.getWindow());
 				this.doSize();
@@ -1214,7 +1366,7 @@ var tmp = function () {
 			//this.bubble("tracelog","kp="+kp);
 			//this.bubble("tracelog","kings="+kings);
 		} else {
-			// check for checkmate / stalemate
+			// couldn't find a move, so check for checkmate / stalemate
 			this.getInCheckPieces();
 			if (bGameNotOver) {
 				flagWhoMoved ^= 8;
@@ -1460,6 +1612,7 @@ var tmp = function () {
 		}
 		if (s == 21 + bmx * 70 || s == 28 + bmx * 70) castle[bmx] &= (x < 5) + 1; //castle flags (blank on any move from rook points)
 		if (a == 6) {
+			this.bubble("tracelog","King moved to "+e);
 			kp[bmx] = e; //king position for fancy weighting 
 			if (gap * gap == 4) { //castling - move rook too
 				//if (!this.check(s,8-bmove,dir,gap>>1))return false
