@@ -24,7 +24,7 @@
 //  2011-03-27 Ben Chenoweth - Fixed labels for PRS-950.
 //  2011-04-03 Ben Chenoweth - Moved all labels around slightly; switched Prev and Next function for Touch.
 //  2011-06-07 Ben Chenoweth - Added Save/Load; 'in check' message.
-//  2011-06-08 Ben Chenoweth - Fixed a checking for checkmate bug
+//  2011-06-08 Ben Chenoweth - Fixed a checking for checkmate bug; changed the touch labels slightly.
 
 var tmp = function () {
 	var sMovesList;
@@ -140,11 +140,13 @@ var tmp = function () {
 			this.BUTTON_SAV.show(false);
 			this.BUTTON_LOA.show(false);
 			this.gridCursor.changeLayout(cursorX, 75, uD, cursorY, 75, uD);
+			this.touchButtons0.show(false);
+			this.touchButtons1.show(false);			
 			this.touchButtons2.show(false);
 			this.touchButtons3.show(false);
 			this.touchButtons4.show(false);
 			this.sometext1.show(false);
-			this.touchButtons1.show(false);
+			this.sometext2.show(false);
 		} else {
 			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);
 			this.nonTouch.show(false);
@@ -1314,23 +1316,23 @@ var tmp = function () {
 		}
 		if (level == 1) {
 			if (automode) {
-				this.touchButtons1.setValue("[Prev] AI speed: Fast (Auto ON)");
+				this.touchButtons1.setValue("Fast (Auto ON)");
 			} else {
-				this.touchButtons1.setValue("[Prev] AI speed: Fast (Auto OFF)");
+				this.touchButtons1.setValue("Fast (Auto OFF)");
 			}
 		}
 		if (level == 2) {
 			if (automode) {
-				this.touchButtons1.setValue("[Prev] AI speed: Medium (Auto ON)");
+				this.touchButtons1.setValue("Medium (Auto ON)");
 			} else {
-				this.touchButtons1.setValue("[Prev] AI speed: Medium (Auto OFF)");
+				this.touchButtons1.setValue("Medium (Auto OFF)");
 			}
 		}
 		if (level == 3) {
 			if (automode) {
-				this.touchButtons1.setValue("[Prev] AI speed: Slow (Auto ON)");
+				this.touchButtons1.setValue("Slow (Auto ON)");
 			} else {
-				this.touchButtons1.setValue("[Prev] AI speed: Slow (Auto OFF)");
+				this.touchButtons1.setValue("Slow (Auto OFF)");
 			}
 		}
 		return;
@@ -1346,16 +1348,16 @@ var tmp = function () {
 			etc.nPromotion = 0;
 		}
 		if (etc.nPromotion == 0) {
-			this.sometext1.setValue("[Next] Pawn promotion to: Queen");
+			this.sometext2.setValue("Queen");
 		}
 		if (etc.nPromotion == 1) {
-			this.sometext1.setValue("[Next] Pawn promotion to: Rook");
+			this.sometext2.setValue("Rook");
 		}
 		if (etc.nPromotion == 2) {
-			this.sometext1.setValue("[Next] Pawn promotion to: Bishop");
+			this.sometext2.setValue("Bishop");
 		}
 		if (etc.nPromotion == 3) {
-			this.sometext1.setValue("[Next] Pawn promotion to: Knight");
+			this.sometext2.setValue("Knight");
 		}
 		return;
 	}
