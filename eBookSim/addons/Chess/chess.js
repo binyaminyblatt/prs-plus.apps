@@ -1612,7 +1612,6 @@ var tmp = function () {
 		}
 		if (s == 21 + bmx * 70 || s == 28 + bmx * 70) castle[bmx] &= (x < 5) + 1; //castle flags (blank on any move from rook points)
 		if (a == 6) {
-			this.bubble("tracelog","King moved to "+e);
 			kp[bmx] = e; //king position for fancy weighting 
 			if (gap * gap == 4) { //castling - move rook too
 				//if (!this.check(s,8-bmove,dir,gap>>1))return false
