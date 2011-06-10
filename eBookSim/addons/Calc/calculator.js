@@ -247,7 +247,7 @@ var tmp = function () {
 				digits = 0;
 				isItThere = false;
 			}
-			if (n==0 && decimal==0){
+			if (n==0 && digits==0 && decimal==0){
 				update();
 				return;
 			}
