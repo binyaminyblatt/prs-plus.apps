@@ -25,6 +25,7 @@
 //  2011-04-03 Ben Chenoweth - Moved all labels around slightly; switched Prev and Next function for Touch.
 //  2011-06-07 Ben Chenoweth - Added Save/Load; 'in check' message.
 //  2011-06-08 Ben Chenoweth - Fixed a checking for checkmate bug; changed the touch labels slightly.
+//  2011-06-10 Ben Chenoweth - Added success/fail message on save; further checking for checkmate/stalemate fixes.
 
 var tmp = function () {
 	var sMovesList;
@@ -286,7 +287,7 @@ var tmp = function () {
 			destx = nSquareId % 10 - 2;
 			desty = (nSquareId - nSquareId % 10) / 10 - 2;
 			//this.bubble("tracelog","x="+x+", y="+y+", destx="+destx+", desty="+desty);
-			if (this.isValidMove(x, y, destx, desty, false)) {
+			if (this.isValidMove(x, y, destx, desty, false, -1, true)) {
 				nScndFocus = nSquareId;
 				fourBtsLastPc = etc.aBoard[nFrstFocus] & 15;
 	
@@ -393,7 +394,7 @@ var tmp = function () {
 			destx = nSquareId % 10 - 2;
 			desty = (nSquareId - nSquareId % 10) / 10 - 2;
 			//this.bubble("tracelog","x="+x+", y="+y+", destx="+destx+", desty="+desty);
-			if (this.isValidMove(x, y, destx, desty, false)) {
+			if (this.isValidMove(x, y, destx, desty, false, -1, true)) {
 				nScndFocus = nSquareId;
 				fourBtsLastPc = etc.aBoard[nFrstFocus] - 16;
 	
@@ -512,9 +513,9 @@ var tmp = function () {
 		return;
 	}
 	
-	target.isValidMove = function (nPosX, nPosY, nTargetX, nTargetY, inCheck) {
+	target.isValidMove = function (nPosX, nPosY, nTargetX, nTargetY, inCheck, colorPcInCheck, firstMove) {
 		var startSq, nPiece, endSq, nTarget, nPieceType, flagPcColor, flagTgColor, nWay, nDiffX, nDiffY;
-		//this.bubble("tracelog","isValidMove");
+		//this.bubble("tracelog","isValidMove?");
 		startSq = nPosY * 10 + nPosX + 22;
 		nPiece = etc.aBoard[startSq];
 		if (nPiece === 0) {
@@ -536,47 +537,47 @@ var tmp = function () {
 		case 1:
 			// pawn
 			if (((nDiffY | 7) - 3) >> 2 !== nWay) {
-				//this.bubble("tracelog","Invalid move");
+				//this.bubble("tracelog","Invalid move for pawn");
 				return (false);
 			}
 			if (nDiffX === 0) {
 				if ((nDiffY + 1 | 2) !== 2 && (nDiffY + 2 | 4) !== 4) {
-					//this.bubble("tracelog","Invalid move");
+					//this.bubble("tracelog","Invalid move for pawn");
 					return (false);
 				}
 				if (nTarget > 0) {
-					//this.bubble("tracelog","Invalid move");
+					//this.bubble("tracelog","Invalid move for pawn");
 					return (false);
 				}
 				if (nTargetY === nPosY + (2 * nWay)) {
 					if (bHasMoved) {
-						//this.bubble("tracelog","Invalid move");
+						//this.bubble("tracelog","Invalid move for pawn");
 						return (false);
 					}
 					if (etc.lookAt(nTargetX, nTargetY - nWay) > 0) {
-						//this.bubble("tracelog","Invalid move");
+						//this.bubble("tracelog","Invalid move for pawn");
 						return (false);
 					}
 				}
 				if ((nDiffY == -2) && (nPosY != 6)) {
-					//this.bubble("tracelog","Invalid move");
+					//this.bubble("tracelog","Invalid move for pawn");
 					return (false);
 				}
 				if ((nDiffY == 2) && (nPosY != 1)) {
-					//this.bubble("tracelog","Invalid move");
+					//this.bubble("tracelog","Invalid move for pawn");
 					return (false);
 				}
 			} else if ((nDiffX + 1 | 2) === 2) {
 				if (nDiffY !== nWay) {
-					//this.bubble("tracelog","Invalid move");
+					//this.bubble("tracelog","Invalid move for pawn");
 					return (false);
 				}
 				if ((nTarget < 1 || flagTgColor === flagPcColor) && ( /* not en passant: */ nPosY !== 7 + nWay >> 1)) {
-					//this.bubble("tracelog","Invalid move");
+					//this.bubble("tracelog","Invalid move for pawn");
 					return (false);
 				}
 			} else {
-				//this.bubble("tracelog","Invalid move");
+				//this.bubble("tracelog","Invalid move for pawn");
 				return (false);
 			}
 			break;
@@ -585,55 +586,54 @@ var tmp = function () {
 			var ourRook;
 			if ((nDiffY === 0 || (nDiffY + 1 | 2) === 2) && (nDiffX === 0 || (nDiffX + 1 | 2) === 2)) {
 				if (nTarget > 0 && flagTgColor === flagPcColor) {
-					//this.bubble("tracelog","Invalid move");
+					//this.bubble("tracelog","Invalid move for king");
 					return (false);
 				}
 			} else if (ourRook = etc.lookAt(30 - nDiffX >> 2 & 7, nTargetY), (nDiffX + 2 | 4) === 4 && nDiffY === 0 && !bCheck && !bHasMoved && ourRook > 0 && Boolean(ourRook & 16)) { // castling
 				for (var passX = nDiffX * 3 + 14 >> 2; passX < nDiffX * 3 + 22 >> 2; passX++) {
 					if (etc.lookAt(passX, nTargetY) > 0 || this.isThreatened(passX, nTargetY, nTargetY / 7 << 3 ^ 1)) {
-						//this.bubble("tracelog","Invalid move");
+						//this.bubble("tracelog","Invalid move for king");
 						return (false);
 					}
 				}
 				if (nDiffX + 2 === 0 && etc.aBoard[nTargetY * 10 + 1 + 22] > 0) {
-					//this.bubble("tracelog","Invalid move");
+					//this.bubble("tracelog","Invalid move for king");
 					return (false);
 				}
 			} else {
-				//this.bubble("tracelog","Invalid move");
+				//this.bubble("tracelog","Invalid move for king");
 				return (false);
 			}
-			//this.bubble("tracelog","valid move for king");
 			break;
 		case 3:
 			// knight
 			if (((nDiffY + 1 | 2) - 2 | (nDiffX + 2 | 4) - 2) !== 2 && ((nDiffY + 2 | 4) - 2 | (nDiffX + 1 | 2) - 2) !== 2) {
-				//this.bubble("tracelog","Invalid move");
+				//this.bubble("tracelog","Invalid move for knight");
 				return (false);
 			}
 			if (nTarget > 0 && flagTgColor === flagPcColor) {
-				//this.bubble("tracelog","Invalid move");
+				//this.bubble("tracelog","Invalid move for knight");
 				return (false);
 			}
 			break;
 		case 4:
 			// bishop
 			if (Math.abs(nDiffX) !== Math.abs(nDiffY)) {
-				//this.bubble("tracelog","Invalid move");
+				//this.bubble("tracelog","Invalid move for bishop");
 				return (false);
 			}
 			break;
 		case 5:
 			// rook
 			if (nTargetY !== nPosY && nTargetX !== nPosX) {
-				//this.bubble("tracelog","Invalid move");
+				//this.bubble("tracelog","Invalid move for rook");
 				return (false);
 			}
 			break;
 		case 6:
 			// queen
 			if (nTargetY !== nPosY && nTargetX !== nPosX && Math.abs(nDiffX) !== Math.abs(nDiffY)) {
-				//this.bubble("tracelog","Invalid move");
+				//this.bubble("tracelog","Invalid move for queen");
 				return (false);
 			}
 			break;
@@ -646,14 +646,14 @@ var tmp = function () {
 				if (nPosX < nTargetX) {
 					for (var iOrthogX = nPosX + 1; iOrthogX < nTargetX; iOrthogX++) {
 						if (etc.lookAt(iOrthogX, nTargetY) > 0) {
-							//this.bubble("tracelog","Invalid move");
+							//this.bubble("tracelog","Invalid move for rook or queen");
 							return (false);
 						}
 					}
 				} else {
 					for (var iOrthogX = nPosX - 1; iOrthogX > nTargetX; iOrthogX--) {
 						if (etc.lookAt(iOrthogX, nTargetY) > 0) {
-							//this.bubble("tracelog","Invalid move");
+							//this.bubble("tracelog","Invalid move for rook or queen");
 							return (false);
 						}
 					}
@@ -663,21 +663,21 @@ var tmp = function () {
 				if (nPosY < nTargetY) {
 					for (var iOrthogY = nPosY + 1; iOrthogY < nTargetY; iOrthogY++) {
 						if (etc.lookAt(nTargetX, iOrthogY) > 0) {
-							//this.bubble("tracelog","Invalid move");
+							//this.bubble("tracelog","Invalid move for rook or queen");
 							return (false);
 						}
 					}
 				} else {
 					for (var iOrthogY = nPosY - 1; iOrthogY > nTargetY; iOrthogY--) {
 						if (etc.lookAt(nTargetX, iOrthogY) > 0) {
-							//this.bubble("tracelog","Invalid move");
+							//this.bubble("tracelog","Invalid move for rook or queen");
 							return (false);
 						}
 					}
 				}
 			}
 			if (nTarget > 0 && flagTgColor === flagPcColor) {
-				//this.bubble("tracelog","Invalid move");
+				//this.bubble("tracelog","Invalid move for rook or queen");
 				return (false);
 			}
 		}
@@ -689,7 +689,7 @@ var tmp = function () {
 				if (nPosX < nTargetX) {
 					for (var iObliqueX = nPosX + 1; iObliqueX < nTargetX; iObliqueX++) {
 						if (etc.lookAt(iObliqueX, iObliqueY) > 0) {
-							//this.bubble("tracelog","Invalid move");
+							//this.bubble("tracelog","Invalid move for bishop or queen");
 							return (false);
 						}
 						iObliqueY++;
@@ -697,7 +697,7 @@ var tmp = function () {
 				} else {
 					for (var iObliqueX = nPosX - 1; iObliqueX > nTargetX; iObliqueX--) {
 						if (etc.lookAt(iObliqueX, iObliqueY) > 0) {
-							//this.bubble("tracelog","Invalid move");
+							//this.bubble("tracelog","Invalid move for bishop or queen");
 							return (false);
 						}
 						iObliqueY++;
@@ -709,7 +709,7 @@ var tmp = function () {
 				if (nPosX < nTargetX) {
 					for (var iObliqueX = nPosX + 1; iObliqueX < nTargetX; iObliqueX++) {
 						if (etc.lookAt(iObliqueX, iObliqueY) > 0) {
-							//this.bubble("tracelog","Invalid move");
+							//this.bubble("tracelog","Invalid move for bishop or queen");
 							return (false);
 						}
 						iObliqueY--;
@@ -717,7 +717,7 @@ var tmp = function () {
 				} else {
 					for (var iObliqueX = nPosX - 1; iObliqueX > nTargetX; iObliqueX--) {
 						if (etc.lookAt(iObliqueX, iObliqueY) > 0) {
-							//this.bubble("tracelog","Invalid move");
+							//this.bubble("tracelog","Invalid move for bishop or queen");
 							return (false);
 						}
 						iObliqueY--;
@@ -725,7 +725,7 @@ var tmp = function () {
 				}
 			}
 			if (nTarget > 0 && flagTgColor === flagPcColor) {
-				//this.bubble("tracelog","Invalid move");
+				//this.bubble("tracelog","Invalid move for bishop or queen");
 				return (false);
 			}
 		}
@@ -741,29 +741,40 @@ var tmp = function () {
 			etc.aBoard[startSq] = nPiece;
 			etc.aBoard[endSq] = nTarget;
 			if (bKingInCheck) {
-				//this.bubble("tracelog","Invalid move");
+				//this.bubble("tracelog","Invalid move for king");
 				return (false);
 			}
 		} else {
 			// if piece other than king moves, will king still be in check?
-			//this.bubble("tracelog","in here");
-			if (inCheck) {
+			//this.bubble("tracelog","inCheck="+inCheck+", flagPcColor="+flagPcColor+", colorPcInCheck="+colorPcInCheck);
+			if ((inCheck) && (flagPcColor != colorPcInCheck)) {
 				// no need to do this if opponent's piece is already in check
-				//this.bubble("tracelog","Invalid move");
+				//this.bubble("tracelog","Invalid move, because opponent's piece is already in check");
 				return (false);
 			}
 			var oKing = kings[flagPcColor >> 3];
 			etc.aBoard[startSq] = 0;
 			etc.aBoard[endSq] = nPiece;
 			//this.bubble("tracelog","Move piece of color "+flagPcColor+" from "+startSq+" to "+endSq+" with king at "+oKing);
-			if (this.isThreatened(oKing % 10 - 2, (oKing - oKing % 10) / 10 - 2, flagPcColor ^ 8)) {
-				//this.bubble("tracelog","King still in check");
-				bKingInCheck = true;
+			if ((inCheck) && (flagPcColor == colorPcInCheck)) {
+				// if already in check and trying to find a move to get out of check
+				if (this.isThreatened(oKing % 10 - 2, (oKing - oKing % 10) / 10 - 2, flagPcColor ^ 8)) {
+					//this.bubble("tracelog","King will (still) be in check");
+					bKingInCheck = true;
+				}
+			} else {
+				if (firstMove) {
+					// see if moving this piece will place you in check
+					if (this.isThreatened(oKing % 10 - 2, (oKing - oKing % 10) / 10 - 2, flagPcColor ^ 8)) {
+						//this.bubble("tracelog","King will be in check");
+						bKingInCheck = true;
+					}
+				}
 			}
 			etc.aBoard[startSq] = nPiece;
 			etc.aBoard[endSq] = nTarget;
 			if (bKingInCheck) {
-				//this.bubble("tracelog","Invalid move");
+				//this.bubble("tracelog","Invalid move because king is still (or will be) in check");
 				return (false);
 			}
 		}
@@ -772,12 +783,12 @@ var tmp = function () {
 	}
 	
 	target.isThreatened = function (nPieceX, nPieceY, flagFromColor) {
-		//this.bubble("tracelog","isThreatened: X="+nPieceX+", Y="+nPieceY+", Color="+flagFromColor);
+		//this.bubble("tracelog","isThreatened?: X="+nPieceX+", Y="+nPieceY+", By color="+flagFromColor);
 		var iMenacing, bIsThrtnd = false;
 		for (var iMenaceY = 0; iMenaceY < 8; iMenaceY++) {
 			for (var iMenaceX = 0; iMenaceX < 8; iMenaceX++) {
 				iMenacing = etc.aBoard[iMenaceY * 10 + iMenaceX + 22];
-				if (iMenacing > 0 && (iMenacing & 8) === flagFromColor && this.isValidMove(iMenaceX, iMenaceY, nPieceX, nPieceY, false)) {
+				if (iMenacing > 0 && (iMenacing & 8) === flagFromColor && this.isValidMove(iMenaceX, iMenaceY, nPieceX, nPieceY, false, -1, false)) {
 					bIsThrtnd = true;
 					//this.bubble("tracelog","Piece is threatened by piece at X="+iMenaceX+", Y="+iMenaceY);
 					break;
@@ -846,8 +857,12 @@ var tmp = function () {
 		{
 			if (automode) {
 				etc.aBoard[t]=undoboard[currundo-3][t];
+				if (etc.aBoard[t] == 18) kings[0] = t;
+				if (etc.aBoard[t] == 26) kings[1] = t;				
 			} else {
 				etc.aBoard[t]=undoboard[currundo-2][t];
+				if (etc.aBoard[t] == 18) kings[0] = t;
+				if (etc.aBoard[t] == 26) kings[1] = t;								
 			}
 		}
 		
@@ -921,9 +936,8 @@ var tmp = function () {
 			}
 		} else {
 			this.checkStatus.setValue("");
-			return;
 		}
-		//this.bubble("tracelog","Piece in check: now need to see if we can move a piece to get out of check");
+		var pcInCheckColor = flagWhoMoved ^ 8;
 		for (var iExamSq = 22; iExamSq <= 99; iExamSq++) {
 			// search the board
 			if (iExamSq % 10 < 2) {
@@ -937,7 +951,7 @@ var tmp = function () {
 			iExamPc = etc.aBoard[iExamSq];
 			if ((bNoMoreMoves && iExamPc > 0) && ((iExamPc & 8 ^ 8) === flagWhoMoved)) {
 				// found a piece of the side whose king is in check
-				//this.bubble("tracelog","Piece "+iExamPc+" found at="+iExamSq+" of color "+flagWhoMoved);
+				//this.bubble("tracelog","Piece "+iExamPc+" found at="+iExamSq+" of color "+pcInCheckColor);
 				for (var iWaySq = 22; iWaySq <= 99; iWaySq++) {
 					// search the board looking for a valid move that will get them out of check
 					if (iWaySq % 10 < 2) {
@@ -946,7 +960,7 @@ var tmp = function () {
 					//this.bubble("tracelog","iWaySq="+iWaySq);
 					iTempX = (iWaySq - 2) % 10;
 					iTempY = Math.floor((iWaySq - 22) / 10);
-					if (this.isValidMove(iExamX, iExamY, iTempX, iTempY, true)) {
+					if (this.isValidMove(iExamX, iExamY, iTempX, iTempY, bCheck, pcInCheckColor, false)) {
 						//this.bubble("tracelog","Apparently, this is a valid move.  Piece at X="+iExamX+", Y="+iExamY+", to X="+iTempX+", Y="+iTempY);
 						bNoMoreMoves = false;
 						break;
@@ -960,11 +974,9 @@ var tmp = function () {
 				var sWinner = etc.bBlackSide ? "Black" : "White";
 				this.checkStatus.setValue("Checkmate! " + sWinner + " wins.");
 				bGameNotOver = false;
-				sMovesList = sMovesList.rethis(); // this line is necessary to make it work!  (Is it because it causes the thread to exit unexpectedly?)
 			} else {
 				this.checkStatus.setValue("Stalemate!");
 				bGameNotOver = false;
-				sMovesList = sMovesList.rethis(); // this line is necessary to make it work!  (Is it because it causes the thread to exit unexpectedly?)
 			}
 		} else {
 			bGameNotOver = true;
@@ -1061,7 +1073,8 @@ var tmp = function () {
 			stream.writeLine(etc.bBlackSide);
 			stream.writeLine(moveno);
 			stream.close();
-		} catch (e) {}	
+			this.checkStatus.setValue("Game saved successfully");
+		} catch (e) { this.checkStatus.setValue("Game save failed"); }	
 	}
 	
 	target.loadGame = function () {
@@ -1090,6 +1103,7 @@ var tmp = function () {
 					this.messageStatus.setValue("White's turn");
 				}
 				moveno = stream.readLine();
+				stream.close();
 
 				// update board
 				this.writePieces();
@@ -1136,7 +1150,6 @@ var tmp = function () {
 				flagWhoMoved ^= 8;
 				etc.bBlackSide = !etc.bBlackSide;
 			}
-			stream.close();
 		} catch (e) {}	
 	}
 	

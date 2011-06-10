@@ -385,7 +385,7 @@
 			<sprite id='piece31' skin='piece' width='75' height='75' u='0' active='false'/>		
 			
           <label id='messageStatus' skin='klWeis' left='250' right='0' top='-50' height='60' align='left' text="White's turn"/>
-          <label id='checkStatus' skin='sometext' left='130' right='0' top='0' height='60' align='left' text="White king is in check!"/>	  
+          <label id='checkStatus' skin='sometext' left='110' right='0' top='0' height='60' align='left' text="White king is in check!"/>	  
 			<sprite id='congratulations'	skin='congrats' left='94' width='411' top='250' height='142' active='false' canFocus='false'/>
 			<sprite id="gridCursor" skin="selectSquare" left="0" width="75" top="520" height="75" u="0" active="false" canFocus="true"/>
 			<label id='sometext1' skin='touchText' left='125' right='0' bottom='16' height='15' align='left' text='Promote pawn to:'/>
