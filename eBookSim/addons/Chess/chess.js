@@ -26,6 +26,7 @@
 //  2011-06-07 Ben Chenoweth - Added Save/Load; 'in check' message.
 //  2011-06-08 Ben Chenoweth - Fixed a checking for checkmate bug; changed the touch labels slightly.
 //  2011-06-10 Ben Chenoweth - Added success/fail message on save; further checking for checkmate/stalemate fixes.
+//  2011-06-11 Ben Chenoweth - Added pop-up puzzle panel!
 
 var tmp = function () {
 	var sMovesList;
@@ -51,10 +52,14 @@ var tmp = function () {
 	var cursorY = 520;
 	
 	/* Core workaround 
-	var newEvent = prsp.compile("param", "return new Event(param)");
+	var newEvent = prsp.compile("param", "return new Event(param)"); */
+	var newEvent;
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
-	var getSoValue = kbook.autoRunRoot.getSoValue; */
-	var getSoValue, hasNumericButtons, newEvent;
+	var isNT = kbook.autoRunRoot.hasNumericButtons;
+	var getSoValue = kbook.autoRunRoot.getSoValue;
+	var setSoValue = kbook.autoRunRoot.setSoValue;	
+	var mouseLeave = getSoValue( target.PUZZLE_DIALOG.btn_Cancel,'mouseLeave');
+	var mouseEnter = getSoValue( target.PUZZLE_DIALOG.btn_Cancel,'mouseEnter');
 	
 	// variables for AI
 	var bmove = 0; // the moving player 0=white 8=black
@@ -100,6 +105,14 @@ var tmp = function () {
 	// Save/Load
 	var datPath;
 	
+	// Puzzles
+	var puzPath;
+	var puzDatPath;
+	var maxMateIn2 = 30;
+	var maxMateIn3 = 30;
+	var maxMateIn4 = 15;
+	var puzzDlgOpen = false;
+	
 	target.init = function () {
 		/* set translated appTitle and appIcon */
 		this.appTitle.setValue(kbook.autoRunRoot._title);
@@ -107,26 +120,25 @@ var tmp = function () {
 		
 		if (kbook.simEnviro) {datPath = target.chessRoot + 'chess.dat';} 
 		else {datPath = '/Data/chess.dat';}
-	
-		/* temporary Core workaround  for PRS+ v1.1.3 */
-		if (!kbook || !kbook.autoRunRoot || !kbook.autoRunRoot.getSoValue) {
-			if (kbook.simEnviro) { /*Sim without handover code */
-				getSoValue = _Core.system.getSoValue;
-				hasNumericButtons = _Core.config.compat.hasNumericButtons;
-			} else { /* PRS-505 */
-				getSoValue = function (obj, propName) {
-					return FskCache.mediaMaster.getInstance.call(obj, propName);
-				};
-				hasNumericButtons = true;
+		puzPath = target.chessRoot + 'puzzles/';
+		if (kbook.simEnviro) {puzDatPath = target.chessRoot + 'chess2.dat';} 
+		else {puzDatPath = '/Data/chess2.dat';}
+
+		// load current puzzle numbers (if they exist)
+		try {
+			if (FileSystem.getFileInfo(puzDatPath)) {
+				var stream = new Stream.File(puzDatPath);
+				var tempnum = stream.readLine();
+				var cMateIn2 = Math.floor(tempnum); // convert string to integer
+				tempnum = stream.readLine();
+				var cMateIn3 = Math.floor(tempnum); // convert string to integer
+				tempnum = stream.readLine();
+				var cMateIn4 = Math.floor(tempnum); // convert string to integer
+				stream.close();
+				target.setVariable("checkmate_2",cMateIn2);
+				target.setVariable("checkmate_3",cMateIn3);
+				target.setVariable("checkmate_4",cMateIn4);			
 			}
-			try {
-				var compile = getSoValue(prsp, "compile");
-				newEvent = compile("param", "return new Event(param)");
-			} catch (ignore) {}
-		} else { /* code is ok with PRS-600 */
-			getSoValue = kbook.autoRunRoot.getSoValue;
-			// newEvent = prsp.compile("param", "return new Event(param)"); // no menu no need for newEvent
-			hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
 		}
 	
 		// hide unwanted graphics
@@ -135,11 +147,14 @@ var tmp = function () {
 		this.selection2.changeLayout(0, 0, uD, 0, 0, uD);
 		this.selection3.changeLayout(0, 0, uD, 0, 0, uD);
 		this.checkStatus.setValue("");
+		this.puzzleName.setValue("");
+		this.puzzleSource.setValue("");
 	
 		if (hasNumericButtons) {
 			this.BUTTON_RES.show(false);
 			this.BUTTON_SAV.show(false);
 			this.BUTTON_LOA.show(false);
+			this.BUTTON_PUZ.show(false);
 			this.gridCursor.changeLayout(cursorX, 75, uD, cursorY, 75, uD);
 			this.touchButtons0.show(false);
 			this.touchButtons1.show(false);			
@@ -158,6 +173,7 @@ var tmp = function () {
 			this.nonTouch6.show(false);
 			this.nonTouch7.show(false);
 			this.nonTouch8.show(false);
+			this.nonTouch9.show(false);
 			this.nonTouch_colHelp.show(false);
 		}
 	
@@ -212,6 +228,8 @@ var tmp = function () {
 		}
 		sMovesList = "";
 		this.checkStatus.setValue("");
+		this.puzzleName.setValue("");
+		this.puzzleSource.setValue("");
 	};
 	
 	target.writePieces = function () {
@@ -812,7 +830,7 @@ var tmp = function () {
 	}
 	
 	target.doMark = function (sender) {
-		this.loadGame();
+		this.loadGame(datPath, false);
 		return;
 	}
 	
@@ -1050,11 +1068,15 @@ var tmp = function () {
 			return;
 		}
 		if (n == "LOA") {
-			this.loadGame();
+			this.loadGame(datPath, false);
 			return;
 		}
 		if (n == "SAV") {
 			this.saveGame();
+			return;
+		}
+		if (n == "PUZ") {
+			this.PUZZLE_DIALOG.open();
 			return;
 		}
 	}
@@ -1077,10 +1099,10 @@ var tmp = function () {
 		} catch (e) { this.checkStatus.setValue("Game save failed"); }	
 	}
 	
-	target.loadGame = function () {
+	target.loadGame = function (filePath, isPuzzle) {
 		try {
-			if (FileSystem.getFileInfo(datPath)) {
-				var stream = new Stream.File(datPath);
+			if (FileSystem.getFileInfo(filePath)) {
+				var stream = new Stream.File(filePath);
 
 				// load board from save file
 				for (t=22; t<=99; t++)
@@ -1103,6 +1125,19 @@ var tmp = function () {
 					this.messageStatus.setValue("White's turn");
 				}
 				moveno = stream.readLine();
+				
+				if (isPuzzle) {
+					// load extra information
+					tempstring = stream.readLine(); //blank line
+					var puzzleName = stream.readLine();
+					var puzzleSource = stream.readLine();
+					this.puzzleName.setValue(puzzleName);
+					this.puzzleSource.setValue(puzzleSource);					
+				} else {
+					this.puzzleName.setValue("");
+					this.puzzleSource.setValue("");
+				}
+				
 				stream.close();
 
 				// update board
@@ -1154,6 +1189,10 @@ var tmp = function () {
 	}
 	
 	target.moveCursor = function (dir) {
+		if (puzzDlgOpen) {
+			this.PUZZLE_DIALOG.moveCursor(dir);
+			return;
+		}
 		switch (dir) {
 		case "down":
 			{
@@ -1193,6 +1232,10 @@ var tmp = function () {
 	
 	target.cursorClick = function () {
 		var x, y, iPosition, sMove;
+		if (puzzDlgOpen) {
+			this.PUZZLE_DIALOG.doCenterF();
+			return;
+		}
 		x = cursorX / 75; // find column
 		y = (cursorY - 70) / 75; // find row
 		iPosition = (y + 2) * 10 + 2 + x;
@@ -1313,6 +1356,11 @@ var tmp = function () {
 	
 	target.doHold0 = function () {
 		kbook.autoRunRoot.exitIf(kbook.model);
+		return;
+	}
+
+	target.doHold1 = function () {
+		this.PUZZLE_DIALOG.open();
 		return;
 	}
 	
@@ -1887,6 +1935,187 @@ var tmp = function () {
 		for (z = 0; z < p.length; z++) {
 			if (p[z][1] = s) p[z][1] = e;
 		}
+	}
+	
+	// Puzzle pop-up panel stuff
+    target.PUZZLE_DIALOG.open = function() {
+	   if (isNT) {
+		target.PUZZLE_DIALOG.checkmateIn_2.enable(true);
+	   	custSel = 0; 
+	   	ntHandlePuzzDlg();
+	   }
+	   puzzDlgOpen = true;
+       target.PUZZLE_DIALOG.show(true);
+    }
+	
+	var ntHandlePuzzDlg = function () {
+		if (custSel === 0) {
+			target.PUZZLE_DIALOG.checkmateIn_2.enable(true);
+			target.PUZZLE_DIALOG.checkmateIn_3.enable(false);
+			target.PUZZLE_DIALOG.checkmateIn_4.enable(false);
+			mouseLeave.call(target.PUZZLE_DIALOG.btn_Ok);
+		}
+		if (custSel === 1) {
+			target.PUZZLE_DIALOG.checkmateIn_2.enable(false);
+			target.PUZZLE_DIALOG.checkmateIn_3.enable(true);
+			target.PUZZLE_DIALOG.checkmateIn_4.enable(false);
+			mouseLeave.call(target.PUZZLE_DIALOG.btn_Ok);
+		}			
+		if (custSel === 2) {
+			target.PUZZLE_DIALOG.checkmateIn_2.enable(false);
+			target.PUZZLE_DIALOG.checkmateIn_3.enable(false);
+			target.PUZZLE_DIALOG.checkmateIn_4.enable(true);
+			mouseLeave.call(target.PUZZLE_DIALOG.btn_Ok);	
+		}
+		if (custSel === 3) {				
+			target.PUZZLE_DIALOG.checkmateIn_2.enable(false);
+			target.PUZZLE_DIALOG.checkmateIn_3.enable(false);
+			target.PUZZLE_DIALOG.checkmateIn_4.enable(false);
+			mouseLeave.call(target.PUZZLE_DIALOG.btn_Cancel);
+			mouseEnter.call(target.PUZZLE_DIALOG.btn_Ok);	
+		}			
+		if (custSel === 4) {				 		
+			mouseLeave.call(target.PUZZLE_DIALOG.btn_Ok);
+			mouseEnter.call(target.PUZZLE_DIALOG.btn_Cancel);	
+		}								
+	}
+
+	target.PUZZLE_DIALOG.moveCursor = function (direction) {
+	switch (direction) {
+		case "up" : {
+			if (custSel>0) {
+				custSel --;
+				ntHandlePuzzDlg();
+				}
+			break
+		}
+		case "down" : {
+			if (custSel<4) {
+				custSel ++;
+				ntHandlePuzzDlg();
+				}
+			break
+		}
+		case "left" : {
+			if (custSel === 0) target.PUZZLE_DIALOG["checkmateIn_2-"].click();
+			if (custSel === 1) target.PUZZLE_DIALOG["checkmateIn_3-"].click();
+			if (custSel === 2) target.PUZZLE_DIALOG["checkmateIn_4-"].click();
+			break
+		}		
+		case "right" : {
+			if (custSel === 0) target.PUZZLE_DIALOG["checkmateIn_2+"].click();
+			if (custSel === 1) target.PUZZLE_DIALOG["checkmateIn_3+"].click();
+			if (custSel === 2) target.PUZZLE_DIALOG["checkmateIn_4+"].click();
+			break
+		}
+	  }	
+	}
+	
+	target.PUZZLE_DIALOG.doCenterF = function () {
+		if (custSel === 0) target.setVariable("puzzle_selected","2");
+		if (custSel === 1) target.setVariable("puzzle_selected","3");
+		if (custSel === 2) target.setVariable("puzzle_selected","4");
+		if (custSel === 3) target.PUZZLE_DIALOG.btn_Ok.click();	
+		if (custSel === 4) target.PUZZLE_DIALOG.btn_Cancel.click();	
+	}
+	
+	target.PUZZLE_DIALOG.doPlusMinus = function(sender) {
+	   var senderID, cMateIn2;
+	   senderID = getSoValue(sender,"id");
+	   step = ( senderID.lastIndexOf("+") != -1) ? 1 : -1;
+	   senderID = senderID.slice(0,senderID.length-1);
+	   cMateIn2 = parseInt(target.getVariable("checkmate_2"));
+	   cMateIn3 = parseInt(target.getVariable("checkmate_3"));
+	   cMateIn4 = parseInt(target.getVariable("checkmate_4"));
+	   this.bubble("tracelog","senderID="+senderID+", step="+step+", cMateIn2="+cMateIn2+", cMateIn3="+cMateIn3+", cMateIn4="+cMateIn4);
+	   switch (senderID) {
+			case "checkmateIn_2" :
+			{
+				if (cMateIn2<=maxMateIn2-step && cMateIn2>0-step) {
+					cMateIn2 = cMateIn2+step;
+				}
+				this.container.setVariable("checkmate_2",cMateIn2);
+				break;
+			}
+			case "checkmateIn_3" :
+			{
+				if (cMateIn3<=maxMateIn3-step && cMateIn3>0-step) {
+					cMateIn3 = cMateIn3+step;
+				}
+				this.container.setVariable("checkmate_3",cMateIn3);
+				break;
+			}
+			case "checkmateIn_4" :
+			{
+				if (cMateIn4<=maxMateIn4-step && cMateIn4>0-step) {
+					cMateIn4 = cMateIn4+step;
+				}
+				this.container.setVariable("checkmate_4",cMateIn4);
+				break;
+			}
+	   }	 
+	}
+	
+	target.PUZZLE_DIALOG.setPuzzleType = function (t) {
+		/*target.bubble("tracelog",t);
+		if ( t == "2" || t == "3" || t == "4" )
+		{
+			target.setVariable("puzzle_selected",t);
+		} 
+		else {
+			t = target.getVariable("puzzle_selected");
+		}*/
+		return;
+	}
+	
+	target.closeDlg = function () {
+		puzzDlgOpen = false;
+		return;
+	}
+	
+	target.loadPuzzle = function () {
+		puzzDlgOpen = false;
+		var t = target.getVariable("puzzle_selected");
+		//target.bubble("tracelog",t);
+		var cMateIn2 = parseInt(target.getVariable("checkmate_2"));
+		var cMateIn3 = parseInt(target.getVariable("checkmate_3"));
+		var cMateIn4 = parseInt(target.getVariable("checkmate_4"));
+		
+		if (t == "2") {
+			if (cMateIn2<10) {
+				fileToLoad = puzPath+"mate_in_two_moves_0"+cMateIn2+".dat"
+			} else {
+				fileToLoad = puzPath+"mate_in_two_moves_"+cMateIn2+".dat"
+			}
+		}
+		if (t == "3") {
+			if (cMateIn3<10) {
+				fileToLoad = puzPath+"mate_in_three_moves_0"+cMateIn3+".dat"
+			} else {
+				fileToLoad = puzPath+"mate_in_three_moves_"+cMateIn3+".dat"
+			}
+		}
+		if (t == "4") {
+			if (cMateIn4<10) {
+				fileToLoad = puzPath+"mate_in_four_moves_0"+cMateIn4+".dat"
+			} else {
+				fileToLoad = puzPath+"mate_in_four_moves_"+cMateIn4+".dat"
+			}
+		}
+		
+		// save current puzzle numbers to puzDatPath
+		try {
+			if (FileSystem.getFileInfo(puzDatPath)) FileSystem.deleteFile(puzDatPath);
+			stream = new Stream.File(puzDatPath, 1);
+			stream.writeLine(cMateIn2);
+			stream.writeLine(cMateIn3);
+			stream.writeLine(cMateIn4);
+			stream.close();
+		} catch (e) { }	
+		
+		//this.bubble("tracelog","load puzzle "+fileToLoad);
+		this.loadGame(fileToLoad, true);
+		return;
 	};
 };
 tmp();
