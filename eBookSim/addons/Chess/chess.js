@@ -26,7 +26,7 @@
 //  2011-06-07 Ben Chenoweth - Added Save/Load; 'in check' message.
 //  2011-06-08 Ben Chenoweth - Fixed a checking for checkmate bug; changed the touch labels slightly.
 //  2011-06-10 Ben Chenoweth - Added success/fail message on save; further checking for checkmate/stalemate fixes.
-//  2011-06-11 Ben Chenoweth - Added pop-up puzzle panel!
+//  2011-06-11 Ben Chenoweth - Added pop-up puzzle panel! 30 checkmate in 2 moves; 30 checkmate in 3 moves; 15 checkmate in 4 moves.
 
 var tmp = function () {
 	var sMovesList;
@@ -139,7 +139,7 @@ var tmp = function () {
 				target.setVariable("checkmate_3",cMateIn3);
 				target.setVariable("checkmate_4",cMateIn4);			
 			}
-		}
+		}  catch (e) {}
 	
 		// hide unwanted graphics
 		this.congratulations.changeLayout(0, 0, uD, 0, 0, uD);
