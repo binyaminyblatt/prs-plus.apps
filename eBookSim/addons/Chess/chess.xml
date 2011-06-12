@@ -180,7 +180,7 @@
 			
 		     <label id='puzzleName' skin='puzzleText' left='10' right='0' top='50' height='20' align='left' text="Adolf Anderssen vs. G Lepge, Leipzig, 1855"/>
 		     <label id='puzzleSource' skin='puzzleText' left='300' right='10' top='50' height='20' align='right' text="Source: http://www.wtharvey.com/m8n3.html"/>
-			 
+			 <label id='puzzleMoves' skin='versText' left='300' right='180' top='-70' height='70' align='right' text="0"/>
 					  
             <sprite skin='whitesquare' id='square0' left="0" width="75" top="70" height="75" active="true" canFocus='true' >
                 <behave like="squareSprite"/>

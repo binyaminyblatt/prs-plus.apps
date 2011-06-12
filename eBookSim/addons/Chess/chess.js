@@ -14,7 +14,7 @@
 //	2011-01-30 Ben Chenoweth - Fixed the discovering if in checkmate / stalemate issue
 //	2011-01-31 Ben Chenoweth - Changed the default AI level to "Medium"
 //	2011-02-06 Ben Chenoweth - HOME button now quits game.  There is now an Auto Mode (on by default).  NEXT cycles AI Speed and Auto Mode on/off.
-//		1-level undo implemeted (OPTIONS on touch, MENU on non-touch).  Some slight changes made to labels (touch version).
+//		1-level undo implemented (OPTIONS on touch, MENU on non-touch).  Some slight changes made to labels (touch version).
 //	2011-02-28 Ben Chenoweth - Changed buttons for non-touch (since 300 does not have NEXT and PREV buttons)
 //	2011-03-01 kartu - Reformatted
 // 		Moved into a function, to allow variable name optimizations
@@ -27,6 +27,7 @@
 //  2011-06-08 Ben Chenoweth - Fixed a checking for checkmate bug; changed the touch labels slightly.
 //  2011-06-10 Ben Chenoweth - Added success/fail message on save; further checking for checkmate/stalemate fixes.
 //  2011-06-11 Ben Chenoweth - Added pop-up puzzle panel! 30 checkmate in 2 moves; 30 checkmate in 3 moves; 15 checkmate in 4 moves.
+//  2011-06-12 Ben Chenoweth - Added (white) move counter during puzzles.
 
 var tmp = function () {
 	var sMovesList;
@@ -112,6 +113,8 @@ var tmp = function () {
 	var maxMateIn3 = 30;
 	var maxMateIn4 = 15;
 	var puzzDlgOpen = false;
+	var doingPuzzle = false;
+	var puzzleMoves;
 	
 	target.init = function () {
 		/* set translated appTitle and appIcon */
@@ -149,6 +152,7 @@ var tmp = function () {
 		this.checkStatus.setValue("");
 		this.puzzleName.setValue("");
 		this.puzzleSource.setValue("");
+		this.puzzleMoves.setValue("");
 	
 		if (hasNumericButtons) {
 			this.BUTTON_RES.show(false);
@@ -230,6 +234,8 @@ var tmp = function () {
 		this.checkStatus.setValue("");
 		this.puzzleName.setValue("");
 		this.puzzleSource.setValue("");
+		this.puzzleMoves.setValue("");
+		doingPuzzle = false;
 	};
 	
 	target.writePieces = function () {
@@ -391,6 +397,11 @@ var tmp = function () {
 				//this.bubble("tracelog","kings="+kings);			
 				this.prepare(); // get stuff ready for next move
 				moveno++;
+				if (doingPuzzle) {
+					// update number of moves for puzzle
+					puzzleMoves=Math.floor((moveno+1)/2);
+					this.puzzleMoves.setValue(puzzleMoves);
+				}
 	
 				if (automode) {
 					FskUI.Window.update.call(kbook.model.container.getWindow());
@@ -500,6 +511,11 @@ var tmp = function () {
 				//this.bubble("tracelog","kings="+kings);
 				this.prepare(); // get stuff ready for next move
 				moveno++;
+				if (doingPuzzle) {
+					// update number of moves for puzzle
+					puzzleMoves=Math.floor((moveno+1)/2);
+					this.puzzleMoves.setValue(puzzleMoves);
+				}
 			}
 		}
 		return;
@@ -925,7 +941,16 @@ var tmp = function () {
 			}
 		}
 		this.prepare(); // get stuff ready for next move
-		moveno = moveno - 2;
+		if (automode) {
+			moveno = moveno - 2;
+		} else {
+			moveno = moveno - 1;
+		}
+		if (doingPuzzle) {
+			// update number of moves for puzzle
+			puzzleMoves=Math.floor((moveno+1)/2);
+			this.puzzleMoves.setValue(puzzleMoves);
+		}
 	
 		// remove what moved highlights
 		this['selection1'].changeLayout(0, 0, uD, 0, 0, uD);
@@ -1132,10 +1157,15 @@ var tmp = function () {
 					var puzzleName = stream.readLine();
 					var puzzleSource = stream.readLine();
 					this.puzzleName.setValue(puzzleName);
-					this.puzzleSource.setValue(puzzleSource);					
+					this.puzzleSource.setValue(puzzleSource);
+					puzzleMoves=0;
+					doingPuzzle = true;
+					this.puzzleMoves.setValue(puzzleMoves);
 				} else {
 					this.puzzleName.setValue("");
 					this.puzzleSource.setValue("");
+					this.puzzleMoves.setValue("");
+					doingPuzzle = false;
 				}
 				
 				stream.close();
@@ -1734,6 +1764,11 @@ var tmp = function () {
 		this.shift(s, e);
 		this.prepare(); // get stuff ready for next move
 		moveno++;
+		if (doingPuzzle) {
+			// update number of moves for puzzle
+			puzzleMoves=Math.floor((moveno+1)/2);
+			this.puzzleMoves.setValue(puzzleMoves);
+		}		
 	
 		// the move is done 
 		//so give the other side a turn.
