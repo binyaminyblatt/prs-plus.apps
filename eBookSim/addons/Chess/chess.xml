@@ -43,26 +43,9 @@
 		
         <texture href="chessSkins/chessPieces.png">
             <cutout id="pieces" x="0" y="0" width="75" height="75" columns="75"/>
+			<cutout id="null32h" x="0" y="0" width="1" height="32" lines="0"/>
         </texture>
-		
-		<!--For puzzle pop-up-->
-		<texture href="chessSkins/panel.png">
-			<cutout id="frame-tl" x="315" y="32" width="21" height="21"/>
-			<cutout id="frame-tc" x="336" y="32" width="5" height="21"/>
-			<cutout id="frame-tr" x="342" y="32" width="21" height="21"/> 	
-			<cutout id="frame-jl" x="315" y="52" width="21" height="21"/>
-			<cutout id="frame-jc" x="336" y="52" width="5" height="21"/>
-			<cutout id="frame-jr" x="342" y="52" width="21" height="21"/> 	
-			<cutout id="frame-ml" x="315" y="72" width="21" height="5"/>	
-			<cutout id="frame-mc" x="336" y="72" width="5" height="5"/>
-			<cutout id="frame-mr" x="342" y="72" width="21" height="5"/>
-			<cutout id="frame-bl" x="315" y="80" width="21" height="21"/>
-			<cutout id="frame-bc" x="336" y="80" width="5" height="21"/>
-			<cutout id="frame-br" x="342" y="80" width="21" height="21"/>
-			
-			<cutout id="null" x="370" y="32" width="1" height="1" lines="1"/>
-			<cutout id="null32h" x="370" y="32" width="1" height="32" lines="1"/>
-		</texture>
+
 		
         <skin id="klWeis" 		styles="klWeis"/>
         <skin id="sumText" 		styles="sumText"/>
