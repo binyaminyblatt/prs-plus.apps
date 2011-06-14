@@ -471,17 +471,17 @@
 			<radio id="MATE_4" variable="puzzle_selected" on="4" active="true" text=" " left="1" width="55" top="153" height="30" do="setPuzzleType"/>  
 	
 			<label skin="swis24blk" active="false" text="Checkmate in 2 moves: " left="40" width="280" top="67" align="left" height="32"/>
-			<text id="checkmateIn_2" skin="customText" active="false" variable="checkmate_2" left="360" width="50" top="67" height="41"/>
+			<text id="checkmateIn_2" skin="customText" active="false" variable="checkmate_2" left="360" width="62" top="67" height="41"/>
 			<button id="checkmateIn_2-" skin="nullButton" left="310" top="67" width="50" heigth="28" text="-" do="doPlusMinus"/>
 			<button id="checkmateIn_2+" skin="nullButton" left="410" top="67" width="50" heigth="28" text="+" do="doPlusMinus"/>
 					
 			<label skin="swis24blk" active="false" text="Checkmate in 3 moves:" left="40" width="280" top="107" align="left" height="32"/>
-			<text id="checkmateIn_3" skin="customText" active="false" variable="checkmate_3" left="360" width="50" top="107" height="41"/>
+			<text id="checkmateIn_3" skin="customText" active="false" variable="checkmate_3" left="360" width="62" top="107" height="41"/>
 			<button id="checkmateIn_3-" skin="nullButton" left="310" top="107" width="50" heigth="28" text="-" do="doPlusMinus"/>
 			<button id="checkmateIn_3+" skin="nullButton" left="410" top="107" width="50" heigth="28" text="+" do="doPlusMinus"/>
 					
 			<label skin="swis24blk" active="false" text="Checkmate in 4 moves:" left="40" width="280" top="147" align="left" height="32"/>
-			<text id="checkmateIn_4" skin="customText" active="false" variable="checkmate_4" left="360" width="50" top="147" height="41"/>
+			<text id="checkmateIn_4" skin="customText" active="false" variable="checkmate_4" left="360" width="62" top="147" height="41"/>
 			<button id="checkmateIn_4-" skin="nullButton" left="310" top="147" width="50" heigth="28" text="-" do="doPlusMinus"/>
 			<button id="checkmateIn_4+" skin="nullButton" left="410" top="147" width="50" heigth="28" text="+" do="doPlusMinus"/>
 			
