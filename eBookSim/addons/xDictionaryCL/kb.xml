@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.kinoma.com/fskin/1" id="DOCUMENT">
+	<assets>
+		<style font="Courier10 BT">
+			<style id="sometext" size="20" color="#000000"/>
+		</style>
+		<skin id="sometext" styles="sometext"/>
+		<style font="Courier10 BT">
+			<style id="sometext" size="40" style="bold" color="#000000"/>
+		</style>
+		<style font="Swis721 BT">
+			<style id="statusLine" size="22" style="" color="#000000"/>
+		</style>
+		<skin id="sometext" styles="sometext"/>
+		<skin id="statusLine" styles="statusLine"/>
+		<texture href="skins/skinMain505.png">
+			<cutout id="dizioHeader-l" x="0" y="0" width="0" height="0"/>
+			<cutout id="dizioHeader-c" x="0" y="0" width="599" height="70"/>
+			<cutout id="dizioHeader-r" x="0" y="0" width="0" height="0"/>
+			<cutout id="dizioInfo-l" x="0" y="0" width="0" height="0"/>
+			<cutout id="dizioInfo-c" x="0" y="71" width="599" height="596"/>
+			<cutout id="dizioInfo-r" x="0" y="0" width="0" height="0"/>
+			<cutout id="dizioStatus-l" x="0" y="0" width="0" height="0"/>
+			<cutout id="dizioStatus-c" x="0" y="766" width="599" height="33"/>
+			<cutout id="dizioStatus-r" x="0" y="0" width="0" height="0"/>
+		</texture>
+		<skin id="kbTestSkin" cutouts=
+			"dizioHeader-l,dizioHeader-c,dizioHeader-r,dizioInfo-l,dizioInfo-c,dizioInfo-r,dizioStatus-l,dizioStatus-c,dizioStatus-r"/>
+	</assets>
+	<code>
+		<function id="trace" params="message">
+			try {
+			if(kbook==undefined){
+			this.bubble("tracelog",message);		// patch for use in simulator
+			}else{
+			kbook.autoRunRoot.dictionaryParams.log.trace(message);
+			}
+			} catch (ignore) {
+			}
+		</function>
+		<function id="runJs" params="path,target">
+			try {
+			var f = new Stream.File(path);
+			var fn = new Function("target,params", f.toString(), path, 1);
+			if(kbook.autoRunRoot.path==undefined){
+				fn(target);
+			}else{
+				fn(target, kbook.autoRunRoot.xdictionaryParams);		
+			}
+			delete fn;
+			} catch(e) {
+			this.trace("error running script "+path+": "+e.toString()+"\n");
+			}
+		</function>
+		<function id="loadScript">
+			try {
+			if (!this.hasOwnProperty('_scriptLoaded')) {
+			this._scriptLoaded = false;
+			}
+			if (!this._scriptLoaded)  {
+			var path;
+			if(kbook.autoRunRoot.path==undefined){
+			path = this.getBaseURI().slice(7);
+			}else{
+			path = kbook.autoRunRoot.path;
+			}
+			var index = path.lastIndexOf('/');
+			if (index > 0) {
+			path = path.substring(0, index + 1);
+			}
+			this.driveroot = path.substring(0,2);
+			var target = this.AUTORUN_GROUP.AUTORUN;
+			target.driveroot = this.driveroot;
+			if(VirtualKeyboard==undefined){	//testing enviro path
+			this.trace('load VirtualKeyboard');
+			this.runJs(path+"VirtualKeyboard.js",target);
+			this.trace('load VirtualKeyboard - done!');
+			}
+			
+			this.runJs(path+"kb.js",target);
+			}
+			this._scriptLoaded = true;
+			} catch (e) {
+			this.trace("Error in loadScript: " + e);
+			}
+		</function>
+		<function id="modelChanged">
+			try {
+			arguments.callee.grammar.call(this);
+			var state = this.getVariable("STATE");
+			var target;
+			if (this.state != state) {
+			this.focus(true)
+			this.AUTORUN_GROUP.show(false)
+			switch(state) {
+			case "AUTORUN":
+			this.loadScript();
+			this.AUTORUN_GROUP.show(true);
+			target = this.AUTORUN_GROUP.AUTORUN;
+			break;
+			}
+			this.state = state;
+			if (target.isEnabled())
+			target.focus(true)
+			}
+
+			//very tepmorary solution for log/trace in simulator etc.
+			traceThis=this;
+			myTrace = function(msg){
+			traceThis.trace(msg);
+			};
+
+			VirtualKeyboard.Activate(this.AUTORUN_GROUP.AUTORUN,this.AUTORUN_GROUP.AUTORUN.kbd);
+			} catch (e) {
+			this.trace("Error in modelChanged: " + e);
+			}
+		</function>
+	</code>
+
+	<clock/>
+	<group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
+		<panel skin="kbTestSkin" left="0" right="0" top="0" bottom="0"/>
+		<!--<sprite skin="hard-reset" left="0" width="70" top="0" height="70" active="false"/>-->
+		<label skin="title" left="70" right="0" top="0" height="70" align="center" text="KB Test"/>
+		<group id="AUTORUN" width="600" top="70" bottom="30">
+			<code>
+				<function id="doDigit" params="part">
+					this['pressDigit'](part.key);
+				</function>
+				<function id="doMenu">
+					this.exitApp();
+				</function>
+				<function id="doCenter">
+					this.centerKey();
+				</function>
+				<function id="doMark">
+					this.clearInput();
+					this.clearLines();
+					this.bubble("tracelog",'kb:doMark');		// patch for use in simulator
+				</function>
+				<function id="doLeft">
+					this.bubble("tracelog", 'doLeft=ucanct');
+					VirtualKeyboard.Deactivate();
+				</function>
+				<function id="doRight">
+					this.bubble("tracelog", 'doRight=act');
+					VirtualKeyboard.Activate(this,this.kbd);
+				</function>
+				<!-- keyboard driver input processing -->
+				<function id="doKbdInput" params="input">
+					this.inputLine.setValue(input);
+				</function>
+				<function id="doKbdProgress" params="key,keyTranslated,input">
+					this.statusLine.setValue('key='+key+';trans='+keyTranslated+';'+input);
+				</function>
+				<function id="doKbdCancel">
+					VirtualKeyboard.Deactivate();
+					//done on kbd level: this.kbd.show(false);
+				</function>
+
+			</code>
+
+			<label id="inputLine" skin="sometext" left="30" right="150" top="75" height="60" align="left" text="il"/>
+			<label id="statusLine" skin="statusLine" left="15" right="160" top="210" height="40" align="left" text="status-line"/>
+
+			<!--<view id="kbd" href="kbBig/vkbd.xml" left="0" right="0" height="305" bottom="0" visible="false"/>-->
+			<view id="kbd" href="kbSmall/vkbd.xml" left="0" right="0" height="305" bottom="0" visible="false"/>
+			<!-- I do not know why this shit must be here - but buttons does not work without it:( -->
+			<sprite left="-100" width="44" top="15" height="44" u="0" active="false" canFocus="true"/>
+		</group>
+	</group>
+</document>
+

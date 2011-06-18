@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.kinoma.com/fskin/1" id="kbdDoc">
+	<assets>
+		<style font="Dutch801 Rm BT">
+		</style>
+		<style font="Courier10 95BT">
+			<style id="kbdInput" size="30" style="bold" color="#000000"/>
+			<style id="kbdTitle" size="20" style="bold" color="#000000"/>
+		</style>
+		<style font="Swis721 BT">
+			<style id="kbdButton" size="18" style="bold" color="#000000"/>
+			<style id="kbdStatus" size="20" style="" color="#000000"/>
+		</style>
+		<skin id="kbdTitle" styles="kbdTitle"/>
+		<skin id="kbdInput" styles="kbdInput"/>
+		<skin id="kbdStatus" styles="kbdStatus"/>
+
+		<texture href="skins/kbAssets.png">
+			<cutout id="kbdButton-l" x="0" y="0" width="7" height="20"/>
+			<cutout id="kbdButton-c" x="7" y="0" width="1" height="20"/>
+			<cutout id="kbdButton-r" x="17" y="0" width="7" height="20"/>
+		</texture>
+		<skin id="kbdButton"
+			cutouts="kbdButton-l,kbdButton-c,kbdButton-r"
+			styles="kbdButton,kbdButton,kbdButton,kbdButton"/>
+	</assets>
+	<code>
+		<function id="kbdShow" params="bShow">
+			this.show(bShow);
+		</function>
+		<function id="kbdActivate" params="from,bActivate">
+			this.KBD_GROUP.KBD.kbdActivateImpl(from,bActivate);
+		</function>
+		<function id="trace" params="message">
+			try {
+			this.bubble("tracelog",'vkbd:'+message);		// patch for use in simulator
+			} catch (ignore) {
+			}
+		</function>
+		<function id="runJs" params="path,target">
+			this.bubble("tracelog",'vkbd:runJs('+path+','+target+')');		// patch for use in simulator
+			try {
+			var f = new Stream.File(path);
+			var fn = new Function("target,params", f.toString(), path, 1);
+			if(kbook.autoRunRoot.path==undefined){
+				fn(target);
+			}else{
+				fn(target, kbook.autoRunRoot.dictionaryParams);
+			}
+			delete fn;
+			} catch(e) {
+			this.trace("error running script "+path+": "+e.toString()+"\n");
+			}
+		</function>
+		<function id="loadScript">
+			this.bubble("tracelog",'vkbd:loadScript');		// patch for use in simulator
+			try {
+			if (!this.hasOwnProperty('_scriptLoaded')) {
+			this.bubble("tracelog",'vkbd:loadScript,nd');		// patch for use in simulator
+			this._scriptLoaded = false;
+			}
+			if (!this._scriptLoaded)  {
+			if(kbook.autoRunRoot.path==undefined){
+				path = this.getBaseURI().slice(7);
+			}else{
+				path = kbook.autoRunRoot.path;
+			}
+			var index = path.lastIndexOf('/');
+			if (index > 0) {
+			path = path.substring(0, index + 1);
+			}
+			this.driveroot = path.substring(0,2);
+			var target = this.KBD_GROUP.KBD;
+			target.driveroot = this.driveroot;
+			this.runJs(path+"vkbd.js",target);
+			}
+			this._scriptLoaded = true;
+			} catch (e) {
+			this.trace("Error in loadScript: " + e);
+			}
+		</function>
+		<function id="modelChanged">
+			this.bubble("tracelog",'vkbd:modelChanged');		// patch for use in simulator
+
+			try {
+			arguments.callee.grammar.call(this);
+			var state = this.getVariable("STATE");
+			this.bubble("tracelog",'vkbd:modelChanged='+state);		// patch for use in simulator
+			var target;
+			if (this.state != state) {
+			this.focus(true)
+			this.KBD_GROUP.show(false)
+			switch(state) {
+			case "AUTORUN":
+			this.loadScript();
+			this.KBD_GROUP.show(true);
+			target = this.KBD_GROUP.KBD;
+			break;
+			}
+			this.state = state;
+			if (target.isEnabled())
+			target.focus(true)
+			}<!---->
+			} catch (e) {
+			this.trace("Error in modelChanged: " + e);
+			}
+
+		</function>
+	</code>
+
+	<clock/>
+	<group id="KBD_GROUP" left="0" right="0" top="0" bottom="0" visible="true">
+		<label skin="kbdTitle" left="70" right="0" top="0" height="25" align="center" text="Keyboard by m-land"/>
+		<group id="KBD" width="600" top="25" bottom="0">
+			<code>
+				<!--<function id="doCenter">
+					this.stat.setValue('xxxx');
+					this.bubble("tracelog",'vkbd:doCenter');		// patch for use in simulator
+				</function>-->
+			</code>
+
+			<label id="input" skin="kbdInput" left="10" right="10" top="0" height="30" align="left" text=""/>
+			<label id="stat" skin="kbdStatus" left="10" right="10" top="30" height="20" align="left" text="stat"/>
+			
+			<view id="line1" href="vkbdline.xml" left="0" right="0" top="50" height="20"/>
+			<view id="line2" href="vkbdline.xml" left="0" right="0" top="71" height="20"/>
+			<view id="line3" href="vkbdline.xml" left="0" right="0" top="92" height="20"/>
+			<view id="line4" href="vkbdline.xml" left="0" right="0" top="113" height="20"/>
+			<view id="line5" href="vkbdline.xml" left="0" right="0" top="134" height="20"/>
+			<view id="line6" href="vkbdline.xml" left="0" right="0" top="155" height="20"/>
+			<view id="line7" href="vkbdline.xml" left="0" right="0" top="176" height="20"/>
+			<view id="line8" href="vkbdline.xml" left="0" right="0" top="197" height="20"/>
+			<view id="line9" href="vkbdline.xml" left="0" right="0" top="218" height="20"/>
+			<view id="line0" href="vkbdline.xml" left="0" right="0" top="239" height="20"/>
+
+		</group>
+	</group>
+</document>
+
