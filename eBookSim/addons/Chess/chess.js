@@ -28,6 +28,7 @@
 //  2011-06-10 Ben Chenoweth - Added success/fail message on save; further checking for checkmate/stalemate fixes.
 //  2011-06-11 Ben Chenoweth - Added pop-up puzzle panel! 30 checkmate in 2 moves; 30 checkmate in 3 moves; 15 checkmate in 4 moves.
 //  2011-06-12 Ben Chenoweth - Added (white) move counter during puzzles.
+//  2011-06-14 Ben Chenoweth - Added more puzzles: total of 90 checkmate in 2 moves; 180 checkmate in 3 moves; 45 checkmate in 4 moves.
 
 var tmp = function () {
 	var sMovesList;
@@ -109,9 +110,9 @@ var tmp = function () {
 	// Puzzles
 	var puzPath;
 	var puzDatPath;
-	var maxMateIn2 = 30;
-	var maxMateIn3 = 30;
-	var maxMateIn4 = 15;
+	var maxMateIn2 = 90;
+	var maxMateIn3 = 180;
+	var maxMateIn4 = 45;
 	var puzzDlgOpen = false;
 	var doingPuzzle = false;
 	var puzzleMoves;
@@ -1215,7 +1216,7 @@ var tmp = function () {
 				flagWhoMoved ^= 8;
 				etc.bBlackSide = !etc.bBlackSide;
 			}
-		} catch (e) {}	
+		} catch (e) { this.checkStatus.setValue("Game load failed"); }	
 	}
 	
 	target.moveCursor = function (dir) {
