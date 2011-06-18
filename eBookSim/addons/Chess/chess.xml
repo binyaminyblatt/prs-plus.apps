@@ -455,13 +455,13 @@
 					this.show(false);
 					this.container.closeDlg();
 				</function>
-				<function id="doLeft">		this.moveCursor("left"); </function>
-				<function id="doPrevious">	this.moveCursor("left"); </function>
-				<function id="doRight">		this.moveCursor("right"); </function>
-				<function id="doNext">		this.moveCursor("right"); </function> 
-				<function id="doUp">      	this.moveCursor("up");    </function>
-				<function id="doDown">		this.moveCursor("down");  </function>	        
-				<function id="doCenter">	this.cursorClick();  </function>	        
+				<function id="doLeft">		this.container.moveCursor("left"); </function>
+				<function id="doPrevious">	this.container.moveCursor("left"); </function>
+				<function id="doRight">		this.container.moveCursor("right"); </function>
+				<function id="doNext">		this.container.moveCursor("right"); </function> 
+				<function id="doUp">      	this.container.moveCursor("up");    </function>
+				<function id="doDown">		this.container.moveCursor("down");  </function>	        
+				<function id="doCenter">	this.container.cursorClick();  </function>	        
 			</code>
 			<background skin="dlg_background" left="0" right="0" top="0" bottom="0"/>
 			<label skin="swis32blk" active="false" text="Chess Puzzles" align="center" left="28" right="28" top="20" height="38"/>
