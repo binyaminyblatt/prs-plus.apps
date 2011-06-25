@@ -19,6 +19,8 @@ var tmp = function () {
 	var getSoValue = kbook.autoRunRoot.getSoValue;
 	var setSoValue = kbook.autoRunRoot.setSoValue;
 	var getFileContent = kbook.autoRunRoot.getFileContent;
+	var datPath = kbook.autoRunRoot.gamesSavePath+'MineSweeper/';
+	
 	var fnPageScroll = getSoValue(target.helpText, 'scrollPage');
    	var mouseLeave = getSoValue( target.PERSONAL_BEST_DIALOG.btn_close,'mouseLeave');
 	var mouseEnter = getSoValue( target.PERSONAL_BEST_DIALOG.btn_close,'mouseEnter');
@@ -42,7 +44,7 @@ var tmp = function () {
       // Variable and document setup stuff:
       //
       
-        var maxX ,maxY, maxNumBombs, maxLegalBombs, l, maxCells, cellArray, clockStartTime, datPath, posX, posY, btnPos, custSel;
+        var maxX ,maxY, maxNumBombs, maxLegalBombs, l, maxCells, cellArray, clockStartTime, datPath, msPath, posX, posY, btnPos, custSel;
 
 	// bunch of variables to be saved to a file
 	target.settings = {	
@@ -61,9 +63,10 @@ var tmp = function () {
 	};			   
 	
 	
-	if (kbook.simEnviro) {datPath = target.mineSweeperRoot + 'minesweeper.dat';} 
-	else {datPath = '/Data/minesweeper.dat';}
-            
+/*	if (kbook.simEnviro) {datPath = target.mineSweeperRoot + 'minesweeper.dat';} 
+	else {datPath = '/Data/minesweeper.dat';} */
+	msPath = datPath+'minesweeper.dat';
+	FileSystem.ensureDirectory(datPath);             
         // Set global constants   
         
         var topImages = 19;                       // 7 on game menu, 8 on opt menu, 3 bomb #s, smile face, 3 time #s
@@ -121,8 +124,8 @@ var tmp = function () {
 	var stream, inpLine;
 	var values = [];
       	try {
-      		if (FileSystem.getFileInfo(datPath)) {
-      			stream = new Stream.File(datPath);    			
+      		if (FileSystem.getFileInfo(msPath)) {
+      			stream = new Stream.File(msPath);    			
 		      	while (stream.bytesAvailable) {
       				inpLine = stream.readLine();
       				values = inpLine.split(':');
@@ -141,8 +144,8 @@ var tmp = function () {
 	target.saveSettings = function (){         
 	var o, stream;
       	  try {
-      		if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
-      		stream = new Stream.File(datPath, 1);
+      		if (FileSystem.getFileInfo(msPath)) FileSystem.deleteFile(msPath);
+      		stream = new Stream.File(msPath, 1);
       		for (o in target.settings) {
       			stream.writeLine(o+':'+target.settings[o]);
       		}

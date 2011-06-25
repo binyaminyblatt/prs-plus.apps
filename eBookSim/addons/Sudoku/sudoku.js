@@ -62,6 +62,7 @@ var tmp = function () {
 	
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
 	var getSoValue = kbook.autoRunRoot.getSoValue;
+	var datPath = kbook.autoRunRoot.gamesSavePath+'Sudoku/';
 	
 	var lastSprite = "Digit00";
 	
@@ -555,8 +556,10 @@ var tmp = function () {
 	var saveGame = function () {
 	
 		var res = true;
-		if (kbook.simEnviro){	var sudokuPath = target.sudokuRoot + 'game';}
-		else {	var sudokuPath = '/Data/sudoku.dat';}
+		/*if (kbook.simEnviro){	var sudokuPath = target.sudokuRoot + 'game';}
+		else {	var sudokuPath = '/Data/sudoku.dat';} */
+		var sudokuPath = datPath+'sudoku.dat';
+		FileSystem.ensureDirectory(datPath); 
 		var fixStr = "";
 		var custStr = "";
 	
@@ -592,8 +595,9 @@ var tmp = function () {
 	
 	var loadGame = function () {
 		var res = true;
-		if (kbook.simEnviro){	var sudokuPath = target.sudokuRoot + 'game';}
-		else {	var sudokuPath = '/Data/sudoku.dat';}
+		/*if (kbook.simEnviro){	var sudokuPath = target.sudokuRoot + 'game';}
+		else {	var sudokuPath = '/Data/sudoku.dat';} */
+		var sudokuPath = datPath+'sudoku.dat';
 		var fixStr = "";
 		var custStr = "";
 	

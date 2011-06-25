@@ -16,6 +16,7 @@ tmp = function() {
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
 			kbook.autoRunRoot.sandbox.getFileContent = Core.io.getFileContent;			
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
+			kbook.autoRunRoot.sandbox.gamesSavePath = Core.config.userGamesSavePath;						
 			} catch (ignore) {}
 			
 			kbook.autoRunRoot.path = Core.config.addonsPath + "Mahjong/mahjong.xml";

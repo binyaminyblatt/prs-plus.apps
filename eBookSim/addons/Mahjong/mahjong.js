@@ -18,9 +18,10 @@ var tmp = function () {
 	var getSoValue = kbook.autoRunRoot.getSoValue; 
 	var getFileContent = kbook.autoRunRoot.getFileContent;
 	var displayHelp = false;
-	
-	if (kbook.simEnviro) {datPath = target.mahjongroot + 'mahjong.dat';} 
-	else {datPath = '/Data/mahjong.dat';}
+
+	var datPath0 = kbook.autoRunRoot.gamesSavePath+'Mahjong/';
+	FileSystem.ensureDirectory(datPath0);  
+	var datPath  = datPath0 + 'mahjong.dat';
 	
 	target.L0 = 54; 
 	target.T0 = 30;

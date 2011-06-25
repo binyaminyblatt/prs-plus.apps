@@ -14,6 +14,7 @@ tmp = function() {
 			kbook.autoRunRoot.sandbox._title = FiveBalls.title;				
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
+			kbook.autoRunRoot.sandbox.gamesSavePath = Core.config.userGamesSavePath;						
 			kbook.autoRunRoot.path = Core.config.addonsPath + "FiveBalls/fiveballs.xml";
 			kbook.autoRunRoot.enterIf(kbook.model);
 		},

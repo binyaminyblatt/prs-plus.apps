@@ -225,12 +225,16 @@
 			<![CDATA[
 			/* define Starter.js exports to sandbox like this: kbook.autoRunRoot.sandbox.Titel = "anything"; in Sim omit sandbox */
 			//this.bubble("tracelog","setView "+app);	
+
+			/* exports for all apps*/
+			kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
+			kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
+			kbook.autoRunRoot.gamesSavePath = _Core.config.userGamesSavePath;			
+
 				switch (app) {		
 				 case "Calc" : {
 								kbook.autoRunRoot._icon = 39;
 								kbook.autoRunRoot._title = "Taschenrechner";
-								kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
-								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
 								this.bubble("tracelog","setURI");
 								this.EINK.VIEW.setURI("../addons/Calc/calculator.xml");
 								break;
@@ -238,7 +242,6 @@
 				 case "Dict" : {
 								//kbook.autoRunRoot.exec = _Core.shell.exec;
 								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
-								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
 								kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;
 								kbook.autoRunRoot.maxSmartZoom = 20; 	//DictionaryCL.options.maxSmartZoom;
 								kbook.autoRunRoot.resultSize = 25; 		//DictionaryCL.options.resultSize;
@@ -249,8 +252,6 @@
 				 case "Fiveballs" : {
 								kbook.autoRunRoot._icon = 47;
 								kbook.autoRunRoot._title = "FiveBalls";				
-								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;				 
-								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
 				 				kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
 								this.EINK.VIEW.setURI("../addons/Fiveballs/fiveballs.xml");				
 								break;
@@ -258,8 +259,6 @@
 				 case "Mahjong" : {
 								kbook.autoRunRoot._icon = 45;
 								kbook.autoRunRoot._title = "MahJonG";		
-								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
-				 				kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
 								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
 								this.EINK.VIEW.setURI("../addons/Mahjong/mahjong.xml");				
 								break;
@@ -267,8 +266,6 @@
 				 case "Sudoku" : {
 								kbook.autoRunRoot._icon = 44;
 								kbook.autoRunRoot._title = "Sudoku";				
-								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
-				 				kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
 				 				kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
 								this.EINK.VIEW.setURI("../addons/Sudoku/sudoku.xml");				
 								break;
@@ -280,41 +277,28 @@
 				 case "Chess" : {
 								kbook.autoRunRoot._icon = 42;
 								kbook.autoRunRoot._title = "Schach";				
-								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
-							 	kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
 								this.EINK.VIEW.setURI("../addons/Chess/chess.xml");				
 								break;
 								}
 				 case "Dame" : {kbook.autoRunRoot._icon = 48;
 								kbook.autoRunRoot._title = "Dame";				
-								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
-				 				kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
 								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
 								this.EINK.VIEW.setURI("../addons/Draughts/draughts.xml");				
 								break;
 								}
 				 case "TestApp" : {
-								/*var params = {hasNumericButtons : true,
-											  Core : _Core};				 
-							 	kbook.autoRunRoot.params = params; */
-							 	kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
 								this.EINK.VIEW.setURI("../addons/TestApp/TestApp.xml");				
 								break;
 								}											
 				 case "Fiverow" : {
  							    kbook.autoRunRoot._icon = 46; 
 								kbook.autoRunRoot._title = "Fünfgewinnt";				
-								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
-								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
-				 				kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
 								this.EINK.VIEW.setURI("../addons/Fiverow/fiverow.xml");				
 								break;
 								}				
 				case "Freecell" : {
 								kbook.autoRunRoot._icon = 43;
 								kbook.autoRunRoot._title = "Free Cell";				
-								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
-				 				kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
 								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
 								this.EINK.VIEW.setURI("../addons/Freecell/freecell.xml");				
 								break;
@@ -323,9 +307,7 @@
 								this.bubble("tracelog","MineSweeper ");
 								kbook.autoRunRoot._icon = 50;
 								kbook.autoRunRoot._title = "MineSweeper";				
-								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
 								kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;
-				 			  kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
 								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
 								this.EINK.VIEW.setURI("../addons/MineSweeper/minesweeper.xml");				
 								break;
@@ -334,8 +316,6 @@
 								this.bubble("tracelog","Spider ");
 								kbook.autoRunRoot._icon = 43;
 								kbook.autoRunRoot._title = "SpiderSoilitaire";				
-								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
-								kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
 								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
 								this.EINK.VIEW.setURI("../addons/SpiderSolitaire/spider.xml");				
 								break;
@@ -343,9 +323,6 @@
 				 case "XOCubed" : {
  							 kbook.autoRunRoot._icon = 46; 
 								kbook.autoRunRoot._title = "XO-Cubed";				
-								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
-								kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
-				 			  kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
 								this.EINK.VIEW.setURI("../addons/XOCubed/xocubed.xml");				
 								break;
 								}	
@@ -367,7 +344,7 @@
 			</function>
 			
 			<function id="doHelp">
-				this.bubble("tracelog","doHelp calling this.HELP_DIALOG.open() ");
+		//		this.bubble("tracelog","doHelp calling this.HELP_DIALOG.open() ");
 				this.HELP_DIALOG.open();
 			</function>
 		
@@ -664,9 +641,9 @@
 			</function>
 		</code>
 		<background skin="background" left="0" right="0" top="0" bottom="0"/>
-		<label skin="simpleText" text="About PRS-505-Sim" left="11" right="11" top="1" height="21"/>
+		<label skin="simpleText" text="About PRS-Sim" left="11" right="11" top="1" height="21"/>
 		<panel skin="panel-titleBarLine" left="0" right="0" top="22" height="2"/> 
-		<label skin="simpleText" active="false" text="PRS-505-Simulator" align="center" left="28" right="28" top="40" height="28"/>
+		<label skin="simpleText" active="false" text="Sony-PRS-Simulator" align="center" left="28" right="28" top="40" height="28"/>
 		<label skin="simpleText" active="false" text="FSK Test-Environment for Autorun Applications under MS-Windows" align="center" left="28" right="28" top="80" height="28"/>
 		<label skin="simpleText" active="false" text="derived from eBookUpdaterMain.xml" align="center" left="28" right="28" top="120" height="28"/>
 		<label skin="simpleText" active="false" text="2010 by Mark Nord" left="28" right="28" top="140" align="center" height="28"/>

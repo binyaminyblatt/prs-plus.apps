@@ -7,18 +7,30 @@
 //	2010-04-17 kartu - Moved global vars into local functions context
 //	2010-07-09 kartu - Renamed file so that it is loaded before other modules
 //	2010-11-21 kartu - Moved libfsk to resources/prsp subfolder
+//	2011-04-25 kartu - Updated mount/umount to support x50/600 models
 
 try {
 	// dummy function, to avoid introducing global vars
 	tmp = function() {
 		Core.shell = {};
 		
+		// In 505 SD/MS start with r5c807 in 600/650/950 (probably others) sdms
+		var CARD_DEVICE = "/dev/sdmscard/";
+		switch (Core.config.model) {
+			case "505":
+				CARD_DEVICE += "r5c807";
+				break;
+			default:
+				CARD_DEVICE += "sdms";
+				break;
+		}
+		
 		// CONSTANTS
 		var MOUNT_PATH = "/opt/mnt";
 		var MS_MOUNT_PATH = MOUNT_PATH + "/ms";
 		var SD_MOUNT_PATH = MOUNT_PATH + "/sd";
-		var CMD_MOUNT_SD = "mount -t vfat -o utf8 -o shortname=mixed /dev/sdmscard/r5c807a1 " + SD_MOUNT_PATH;
-		var CMD_MOUNT_MS = "mount -t vfat -o utf8 -o shortname=mixed /dev/sdmscard/r5c807b1 " + MS_MOUNT_PATH;
+		var CMD_MOUNT_SD = "mount -t vfat -o utf8 -o shortname=mixed " + CARD_DEVICE + "a1 " + SD_MOUNT_PATH;
+		var CMD_MOUNT_MS = "mount -t vfat -o utf8 -o shortname=mixed " + CARD_DEVICE + "b1 " + MS_MOUNT_PATH;
 		var CMD_UMOUNT_SD = "umount " + SD_MOUNT_PATH;
 		var CMD_UMOUNT_MS = "umount " + MS_MOUNT_PATH;
 		var SCRIPT_HEADER = "#!/bin/sh\n"+
@@ -58,28 +70,32 @@ try {
 		
 			var result = Core.io.getFileContent(RESULT_FILE, "222");
 			if(result !== "0") {
-				throw "Failed to execute " + cmd + "\n" + result;
+				throw "Failed to execute " + cmd + ", exit code: " + result;
 			}
 		};
 		
 		// Mounts SD or MS card
 		// Arguments:
-		//	card - "MS" or "SD"
+		//	card - MS or SD
 		Core.shell.mount = function (card) {
 			if (card === this.MS) {
+				log.trace("mounting MS");
 				this.exec(CMD_MOUNT_MS);
 			} else if (card === this.SD) {
+				log.trace("mounting SD");
 				this.exec(CMD_MOUNT_SD);
 			}
 		};
 		
 		// Mounts SD or MS card
 		// Arguments:
-		//	card - "MS" or "SD"
+		//	card - MS or SD
 		Core.shell.umount = function (card) {
 			if (card === this.MS) {
+				log.trace("Umounting MS");
 				this.exec(CMD_UMOUNT_MS);
 			} else if (card === this.SD) {
+				log.trace("Umounting SD");
 				this.exec(CMD_UMOUNT_SD);
 			}
 		};
