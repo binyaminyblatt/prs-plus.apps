@@ -116,17 +116,19 @@ var tmp = function () {
 	var puzzDlgOpen = false;
 	var doingPuzzle = false;
 	var puzzleMoves;
+	var datPath;
+	var datPath0 = kbook.autoRunRoot.gamesSavePath+'Chess/';
+
 	
 	target.init = function () {
 		/* set translated appTitle and appIcon */
 		this.appTitle.setValue(kbook.autoRunRoot._title);
 		this.appIcon.u = kbook.autoRunRoot._icon;
-		
-		if (kbook.simEnviro) {datPath = target.chessRoot + 'chess.dat';} 
-		else {datPath = '/Data/chess.dat';}
+
+		FileSystem.ensureDirectory(datPath0);  		
+		datPath = datPath0+'chess.dat';
 		puzPath = target.chessRoot + 'puzzles/';
-		if (kbook.simEnviro) {puzDatPath = target.chessRoot + 'chess2.dat';} 
-		else {puzDatPath = '/Data/chess2.dat';}
+		puzDatPath = datPath0+'chess2.dat';
 
 		// load current puzzle numbers (if they exist)
 		try {

@@ -19,6 +19,7 @@ tmp = function() {
 			kbook.autoRunRoot.sandbox.setSoValue = Core.system.setSoValue;
 			kbook.autoRunRoot.sandbox.getFileContent = Core.io.getFileContent;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
+			kbook.autoRunRoot.sandbox.gamesSavePath = Core.config.userGamesSavePath;			
 			} catch (ignore) {}
 			
 			kbook.autoRunRoot.path = Core.config.addonsPath + "MineSweeper/minesweeper.xml";

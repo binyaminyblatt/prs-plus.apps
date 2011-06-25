@@ -20,13 +20,26 @@
 //	2011-03-03 kartu - Added "duration" option to showMsg
 //	2011-03-19 kartu - Changed showMsg, duration is now in seconds, changed "sleep" mechanism, shell command is used
 //	2011-04-24 kartu - Changed showMsg to honor EOLs 
+//	2011-06-18 kartu - Fixed "update() wasn't called by container mode"
 //
 
 try {
+	var doSetNodeIcon = function (node, icon) {
+		if (typeof icon === "number") {
+			node.kind = icon;
+		} else {
+			node.kind = Core.config.compat.NodeKinds.getIcon(icon);
+			node.homekind = Core.config.compat.NodeKinds.getIcon(icon, "home");
+			node.homelargekind = Core.config.compat.NodeKinds.getIcon(icon, "homeLarge");				
+		}
+	};
+
 	var doCreateContainerNode = function(arg, prototype) {
 		var obj = xs.newInstanceOf(prototype);
 		obj.onEnter = "onEnterDefault";
 		obj.onSelect = "onSelectDefault";
+		// Fix for "update()" otherwise code fails not finding "children" field
+		obj.children = {};
 		
 		if (typeof arg !== "undefined") {
 			if (arg.hasOwnProperty("parent")) {obj.parent = arg.parent;}
@@ -46,13 +59,7 @@ try {
 			} else {
 				obj._mycomment = "";
 			}
-			if (typeof arg.icon === "number") {
-				obj.kind = arg.icon;
-			} else {
-				obj.kind = Core.config.compat.NodeKinds.getIcon(arg.icon);
-				obj.homekind = Core.config.compat.NodeKinds.getIcon(arg.icon, "home");
-				obj.homelargekind = Core.config.compat.NodeKinds.getIcon(arg.icon, "homeLarge");				
-			}
+			doSetNodeIcon(obj, arg.icon);
 			if (arg.hasOwnProperty("separator")) {obj.separator = arg.separator;}
 			if (arg.hasOwnProperty("construct")) {obj.construct = arg.construct;}
 			if (arg.hasOwnProperty("destruct")) {obj.destruct = arg.destruct;}
@@ -62,6 +69,7 @@ try {
 
 		return obj;
 	};
+
 	Core.ui = {
 		// Creates "container" node, that displayes nodes in this.nodes[] array
 		// Arguments:
@@ -82,6 +90,10 @@ try {
 				return doCreateContainerNode(arg, FskCache.tree.containerNode);
 			}
 		}
+	};
+
+	Core.ui.setNodeIcon = function (node, icon) {
+		return doSetNodeIcon(node, icon);
 	};
 
 	// Forces screen update

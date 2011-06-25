@@ -23,7 +23,8 @@ var tmp = function () {
 	var posY;
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
 	var getSoValue = kbook.autoRunRoot.getSoValue; 
-	var datPath;
+	var datpath;
+	var datPath0 = kbook.autoRunRoot.gamesSavePath+'FiveBalls/';
 	
 	target.help;
 	target.anAus;
@@ -35,9 +36,9 @@ var tmp = function () {
 	target.init = function () {
 		/* set correct appIcon */
 		this.appIcon.u = kbook.autoRunRoot._icon;
-		
-		if (kbook.simEnviro) {datPath = target.fiveballsRoot + 'fiveballs.dat';} 
-		else {datPath = '/Data/fiveballs.dat';}
+
+		FileSystem.ensureDirectory(datPath0);  		
+		datPath = datPath0+'fiveballs.dat';
 
 		if (!hasNumericButtons) {
 			this.gridCursor.show(false);

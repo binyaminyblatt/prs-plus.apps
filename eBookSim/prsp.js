@@ -23,9 +23,10 @@
 			corePath: root + "core/" ,
 			addonRoot: root + "addons/",
 			settingsPath: root + "settings/",
-			publicPath: root + "/database/system/PRSPlus/", 
-			userCSSPath: root + "/database/system/PRSPlus/epub", 
-			userDictionaryPath: root + "/database/system/PRSPlus/dictionary", 
+			publicPath: root + "database/system/PRSPlus/", 
+			userCSSPath: root + "database/system/PRSPlus/epub/", 
+			userDictionaryPath: root + "database/system/PRSPlus/dictionary/", 
+			userGamesSavePath :  root + "GamesSave/", 
 			coreFile: root + "core/",
 			addonsFile: root + "addons/addons.js",
 			compat:{hasNumericButtons:true}
