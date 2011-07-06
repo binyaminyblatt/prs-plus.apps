@@ -19,6 +19,7 @@
  2011-03-29 Ben Chenoweth: small fix for non-Touch: better handles unselecting card
  2011-04-01 Ben Chenoweth: Reinstated better shuffling routine that got lost in transition to repository
  2011-04-03 Ben Chenoweth: Moved all labels around slightly
+ 2011-07-06 Ben Chenoweth: Added ability to click on congratulations message to make it disappear
 */
 
 
@@ -1464,4 +1465,9 @@ target.cursorClick = function () {
 		return;
 	}
 	return;
+}
+
+target.hideCongratulations = function () {
+	// hide congratulations sprite
+	this.congratulations.changeLayout(0,0,uD,0,0,uD);	
 }
