@@ -28,6 +28,12 @@
 					this.bubble("doSelectClick",this);
             </script>
         </behavior>
+        <behavior id="congratSprite">
+            <script on="mouseUp" params="event">
+           		if (this.hitBounds(event.x, event.y))
+					this.bubble("hideCongratulations",this);
+            </script>
+        </behavior>			
 		<!--behavior id="iconSprite">
 		    <script on="mouseUp" params="event">
 				if (this.hitBounds(event.x, event.y))
@@ -375,7 +381,9 @@
 
             <label id='sometext1' skin='versText' left='400' right='0' top='635' height='60' align='left' text='#'/>
 
-			<sprite id='congratulations'	skin='congrats' left='94' width='411' top='250' height='142' active='false' canFocus='false'/>
+			<sprite id='congratulations'	skin='congrats' left='94' width='411' top='250' height='142' >
+				<behave like="congratSprite"/>
+            </sprite>
 			<sprite id='SnapShotIndicator' skin='camera' left='15' width='50' top='645' height='35' visible='true' active='false' canFocus='false'/>
 			<sprite id='gridCursor' skin='gridCursor' left='522' width='90' top='605' height='100' u='0' active='false' canFocus='true'/>
 			<label id="instr4" skin="quitinstr" right="10" top="600" width="200" height="20" align="right" text="9: New Deal"/>

@@ -12,6 +12,7 @@
 //  2011-03-26 Ben Chenoweth - Added congratulations upon completion
 //  2011-05-15 Ben Chenoweth - Added remember last layout; reordered existing layouts and added new layout (Aztec); hid test layout.
 //  2011-05-28 Ben Chenoweth - Added new layout (BigHole).
+//  2011-07-06 Ben Chenoweth - Added ability to click on congratulations message to make it disappear.
 
 var tmp = function () {
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
@@ -308,6 +309,8 @@ var tmp = function () {
 				this.menuPos = 0;
 				break;
 			case "neu":
+				// hide congratulations sprite
+				this.congratulations.changeLayout(0,0,uD,0,0,uD);			
 				this.menuKlapp = 1;
 				this.doMenuF();
 				this.prepMahJong();
@@ -315,6 +318,8 @@ var tmp = function () {
 				this.drawGridCursor(this.posX, this.posY);
 				break;
 			case "schwier":
+				// hide congratulations sprite
+				this.congratulations.changeLayout(0,0,uD,0,0,uD);			
 				this.weg = Math.abs(this.weg - 1);
 				this.menuKlapp = 1;
 				this.doMenuF();
@@ -374,6 +379,8 @@ var tmp = function () {
 				break;
 			case "left":
 				if (!hasNumericButtons) {
+					// hide congratulations sprite
+					this.congratulations.changeLayout(0,0,uD,0,0,uD);
 					linKrex = -1;
 					this.planNr = (this.plaName.length + this.planNr + linKrex) % this.plaName.length;
 					bilder = this.plaName[this.planNr];
@@ -390,6 +397,8 @@ var tmp = function () {
 				break;
 			case "right":
 				if (!hasNumericButtons) {
+					// hide congratulations sprite
+					this.congratulations.changeLayout(0,0,uD,0,0,uD);				
 					this.planNr = (this.plaName.length + this.planNr + linKrex) % this.plaName.length;
 					bilder = this.plaName[this.planNr];
 					this.Des = this[bilder + '_Plan'];
@@ -416,6 +425,8 @@ var tmp = function () {
 				case "left":
 				case "right":
 					if (this.menuPos == 0) {
+						// hide congratulations sprite
+						this.congratulations.changeLayout(0,0,uD,0,0,uD);					
 						if (direction == "left") linKrex = -1;
 						this.planNr = (this.plaName.length + this.planNr + linKrex) % this.plaName.length;
 						bilder = this.plaName[this.planNr];
@@ -501,6 +512,8 @@ var tmp = function () {
 		id = getSoValue(sender, "id");
 		n = id.substring(7, 10);
 		if (n == "NEW") {
+			// hide congratulations sprite
+			this.congratulations.changeLayout(0,0,uD,0,0,uD);
 			this.menuKlapp = 1;
 			this.doMenuF();
 			this.prepMahJong();
@@ -509,6 +522,8 @@ var tmp = function () {
 			return;
 		}
 		if (n == "DIF") {
+			// hide congratulations sprite
+			this.congratulations.changeLayout(0,0,uD,0,0,uD);		
 			this.weg = Math.abs(this.weg - 1);
 			this.menuKlapp = 1;
 			this.doMenuF();
@@ -544,6 +559,11 @@ var tmp = function () {
 		kbook.autoRunRoot.exitIf(kbook.model);
 		return;
 	};
+	
+	target.hideCongratulations = function () {
+		// hide congratulations sprite
+		this.congratulations.changeLayout(0,0,uD,0,0,uD);	
+	}
 };
 tmp();
 tmp = undefined;
