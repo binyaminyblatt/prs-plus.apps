@@ -5,6 +5,7 @@
 //
 // Initial version: 2011-07-14
 // Changelog:
+// 2011-07-15 Ben Chenoweth - Fixed start-up script; resized "Today" button.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -105,7 +106,7 @@ var tmp = function () {
 			this.nonTouch6.show(false);
 		}
 		return;
-	};
+	}
 
 	target.dateChanged = function() {
 		if (monthNum == 0) {
