@@ -84,7 +84,7 @@
 								break;
 							}	
 					case 2 : {
-								this.bubble("setView","Dame");
+								this.bubble("setView","Calendar");
 								break;
 							}	
 					case 3 : {
@@ -135,9 +135,9 @@
 		<button id="1" bottom="630" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
 
    		<panel skin="piMenuRow" left="0" bottom="560" right="0" height="70" />
-	    <sprite skin="kbookMenuIcon" left="0" width="70" bottom="560" height="70" u="48" v="0" active="false" canFocus="false"/>   
+	    <sprite skin="kbookMenuIcon" left="0" width="70" bottom="560" height="70" u="22" v="0" active="false" canFocus="false"/>   
 		<label skin="piRowNum" bottom="560" right="0" width="35" height="70" align="center" text="2" />
-		<label skin="piRow" bottom="560" right="0" left="70" height="70" text="Dame" />   		
+		<label skin="piRow" bottom="560" right="0" left="70" height="70" text="Calendar" />   		
 		<button id="2" bottom="560" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
 		
    		<panel skin="piMenuRow" left="0" bottom="490" right="0" height="70" />
