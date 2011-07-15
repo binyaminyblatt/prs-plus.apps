@@ -479,7 +479,7 @@ var tmp = function () {
 	
 	target.doRoot = function (sender) {
 		// save events to file
-		/*try {
+		try {
 			if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
 			stream = new Stream.File(datPath, 1);
 			for (var i = 0; i < events.length; i++) {
@@ -490,7 +490,7 @@ var tmp = function () {
 				stream.writeLine(events[i][4]);
 			}		
 			stream.close();
-		} catch (e) {}		*/
+		} catch (e) {}
 		kbook.autoRunRoot.exitIf(kbook.model);
 		return;
 	}
