@@ -332,7 +332,14 @@
 								this.bubble("tracelog","Menu2 ");
 								this.MAIN.EINK.VIEW.setURI("SimMenu2.xml");	
 								break;
-								}	
+								}
+				 case "Calendar" : {
+								kbook.autoRunRoot._icon = 22;
+								kbook.autoRunRoot._title = "Calendar";				
+								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
+								this.EINK.VIEW.setURI("../addons/Calendar/calendar.xml");				
+								break;
+								}									
 				}
 			]]>	
     		</function>		

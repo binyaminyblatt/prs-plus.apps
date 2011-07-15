@@ -99,11 +99,11 @@
 								this.bubble("setView","Freecell");
 								break;
 							}	
-					/* yours here		*/	
 					case 6 : {
-								//this.bubble("setView","Chess");
+								this.bubble("setView","Dame");
 								break;
 							}	
+					/* yours here		*/	
 					case 7 : {
 								//this.bubble("setView","Dict");
 								break;
@@ -160,13 +160,13 @@
 		<label skin="piRow" bottom="350" right="0" left="70" height="70" text="FreeCell" />   		
 		<button id="5" bottom="350" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
 
-		<!--panel skin="piMenuRow" left="0" bottom="280" right="0" height="70" />
-		<sprite skin="kbookMenuIcon" left="0" width="70" bottom="280" height="70" u="42" v="0" active="false" canFocus="false"/>   
+		<panel skin="piMenuRow" left="0" bottom="280" right="0" height="70" />
+		<sprite skin="kbookMenuIcon" left="0" width="70" bottom="280" height="70" u="48" v="0" active="false" canFocus="false"/>   
 		<label skin="piRowNum" bottom="280" right="0" width="35" height="70" align="center" text="6" />
-		<label skin="piRow" bottom="280" right="0" left="70" height="70" text="Chess" />   		
+		<label skin="piRow" bottom="280" right="0" left="70" height="70" text="Dame" />   		
 		<button id="6" bottom="280" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
 
-		<panel skin="piMenuRow" left="0" bottom="210" right="0" height="70" />
+		<!--panel skin="piMenuRow" left="0" bottom="210" right="0" height="70" />
 		<sprite skin="kbookMenuIcon" left="0" width="70" bottom="210" height="70" u="40" v="0" active="false" canFocus="false"/>   
 		<label skin="piRowNum" bottom="210" right="0" width="35" height="70" align="center" text="7" />
 		<label skin="piRow" bottom="210" right="0" left="70" height="70" text="TestApp" />   		
