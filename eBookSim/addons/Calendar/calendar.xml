@@ -140,7 +140,7 @@
 				<function id="doFirst">	this.doFirst();</function>
             </code>
 			
-			<button id="BUTTON_TDY"		active="true" text="Today"  align="right" right="10" width="130" top="-57" height="45" do="doButtonClick"/>
+			<button id="BUTTON_TDY"		active="true" text="Today"  align="right" right="10" width="90" top="-57" height="45" do="doButtonClick"/>
 			<button id="BUTTON_PYR"		active="true" text="- Year"    left="10" width="90" top="10" height="45" do="doButtonClick"/>
 			<button id="BUTTON_PMN"		active="true" text="- Month"    left="110" width="90" top="10" height="45" do="doButtonClick"/>
 			<button id="BUTTON_NMN"		active="true" text="+ Month"    left="400" width="90" top="10" height="45" do="doButtonClick"/>
