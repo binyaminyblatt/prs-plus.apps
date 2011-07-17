@@ -7,10 +7,12 @@
 // Changelog:
 // 2011-07-15 Ben Chenoweth - Fixed start-up script; resized "Today" button.
 // 2011-07-17 Ben Chenoweth - Improved layout and event icons; added "Anniversary"; increased event font size; changed event file-format; non-Touch cursor now moves.
+// 2011-07-17 Ben Chenoweth - Added settings popup panel; 'Week starts with' option (Sunday or Monday).
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
 	var wordMonth = new Array("January","February","March","April","May","June","July","August","September","October","November","December");
+	var wordDays = new Array("Sun","Mon","Tue","Wed","Thu","Fri","Sat");
 	var today = new Date();							// Date object to store the current date
 	var todaysDay = today.getDay() + 1;					// Stores the current day number 1-7
 	var todaysDate = today.getDate();					// Stores the current numeric date within the month
@@ -27,14 +29,67 @@ var tmp = function () {
 	var easterday = 0;
 	var events = [];
 	
-	var selectionDate;
-	
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
 	var getSoValue = kbook.autoRunRoot.getSoValue; 	
 	var getFileContent = kbook.autoRunRoot.getFileContent;
 	var datPath0 = kbook.autoRunRoot.gamesSavePath+'Calendar/';
 	FileSystem.ensureDirectory(datPath0);  
-	var datPath  = datPath0 + 'calendar.dat';	
+	var datPath  = datPath0 + 'calendar.dat';
+	var settingsPath = datPath0 + 'settings.dat';
+	var selectionDate;
+	var settingsDlgOpen = false;
+	var weekBeginsWith = "Sun";
+	var custSel;
+	var mouseLeave = getSoValue( target.SETTINGS_DIALOG.btn_Cancel,'mouseLeave');
+	var mouseEnter = getSoValue( target.SETTINGS_DIALOG.btn_Cancel,'mouseEnter');	
+	
+	// variables to be saved to a file
+	target.settings = {	
+		WeekBeginsWith : "Sun"
+	};        
+
+	// reads values of target.settings.xx from file
+	target.loadSettings = function () {
+		var stream, inpLine;
+		var values = [];
+      	try {
+      		if (FileSystem.getFileInfo(settingsPath)) {
+      			stream = new Stream.File(settingsPath);    			
+		      	while (stream.bytesAvailable) {
+      				inpLine = stream.readLine();
+      				values = inpLine.split(':');
+      				if ((values[1] == 'true') || (values[1] == 'false')) {   					
+ 					target.settings[values[0]] = values[1] == 'true';
+      				} else {
+      					target.settings[values[0]]=values[1];  
+      				}
+      			}
+      		}	
+      		stream.close();
+      	} catch (e) {}	
+	}         
+
+	// writes values of target.settings.xx to file         
+	target.saveSettings = function () { 
+		var o, stream;
+      	try {
+      		if (FileSystem.getFileInfo(settingsPath)) FileSystem.deleteFile(settingsPath);
+      		stream = new Stream.File(settingsPath, 1);
+      		for (o in target.settings) {
+      			stream.writeLine(o+':'+target.settings[o]);
+      		}
+      		stream.close();
+      	} catch (e) { }         
+    } 
+
+	// Load settings from save file once at startup
+	target.loadSettings();
+	
+	// assign model-variables
+	with (target.settings) {
+		weekBeginsWith = WeekBeginsWith;
+		target.setVariable("week_begins",WeekBeginsWith);
+	}	
 	
 	target.init = function () {
 		var i;
@@ -70,6 +125,25 @@ var tmp = function () {
 		this.selection1.changeLayout(0, 0, uD, 0, 0, uD);
 
 		//this.bubble("tracelog","Today: "+today);
+		
+		if (weekBeginsWith=="Mon") {
+			this.labelSun.setValue("Mon");
+			this.labelMon.setValue("Tue");
+			this.labelTue.setValue("Wed");
+			this.labelWed.setValue("Thu");
+			this.labelThu.setValue("Fri");
+			this.labelFri.setValue("Sat");
+			this.labelSat.setValue("Sun");
+		} else {
+			this.labelSun.setValue("Sun");
+			this.labelMon.setValue("Mon");
+			this.labelTue.setValue("Tue");
+			this.labelWed.setValue("Wed");
+			this.labelThu.setValue("Thu");
+			this.labelFri.setValue("Fri");
+			this.labelSat.setValue("Sat");
+		}
+		
 		selectionDate=todaysDate;
 		this.dateChanged();
 		
@@ -77,7 +151,7 @@ var tmp = function () {
 			this.touchButtons0.show(false);
 			this.touchButtons1.show(false);			
 			//this.touchButtons2.show(false);
-			//this.touchButtons3.show(false);
+			this.touchButtons3.show(false);
 			this.touchButtons4.show(false);
 			this.BUTTON_TDY.show(false);
 			this.BUTTON_PYR.show(false);
@@ -92,6 +166,7 @@ var tmp = function () {
 			this.nonTouch4.show(false);
 			this.nonTouch5.show(false);
 			this.nonTouch6.show(false);
+			this.nonTouch7.show(false);
 		}
 		return;
 	}
@@ -113,7 +188,7 @@ var tmp = function () {
 		numbDays = lastDate.getDate();
 		firstDate = new Date(yearNum, monthNum-1, 1);
 		firstDay = firstDate.getDay() + 1;
-		
+
 		// hide events
 		this.eventsText.setValue("");
 		
@@ -128,7 +203,12 @@ var tmp = function () {
 			var y = -1;
 			for (var i = 1; i <= 6; i++) {
 				for (var j = 1; j <= 7; j++) {
-					daycounter = (thisDate - firstDay)+1;
+					if (weekBeginsWith=="Sun") {
+						daycounter = (thisDate - firstDay)+1;
+					} else {
+						daycounter = (thisDate - firstDay)+2;
+						if (firstDay==1) daycounter -= 7;
+					}
 					if (selectionDate==daycounter) {
 						x=j;
 						y=i; 
@@ -197,11 +277,15 @@ var tmp = function () {
 		
 		//hide today marker
 		this.selection1.changeLayout(0, 0, uD, 0, 0, uD);
-		
 		for (var i = 1; i <= 6; i++) {
 			for (var x = 1; x <= 7; x++) {
-				daycounter = (thisDate - firstDay)+1;
-				//this.bubble("tracelog","daycounter="+daycounter);
+				
+				if (weekBeginsWith=="Sun") {
+					daycounter = (thisDate - firstDay)+1;
+				} else {
+					daycounter = (thisDate - firstDay)+2;
+					if (firstDay==1) daycounter -= 7;
+				}
 				thisDate++;
 				if ((daycounter > numbDays) || (daycounter < 1)) {
 					// square not used by current month
@@ -444,7 +528,12 @@ var tmp = function () {
 		thisDate == 1;
 		for (var i = 1; i <= 6; i++) {
 			for (var j = 1; j <= 7; j++) {
-				daycounter = (thisDate - firstDay)+1;
+				if (weekBeginsWith=="Sun") {
+					daycounter = (thisDate - firstDay)+1;
+				} else {
+					daycounter = (thisDate - firstDay)+2;
+					if (firstDay==1) daycounter -= 7;
+				}
 				if ((x==j) && (y==i)) selectionDate=daycounter;
 				thisDate++;
 			}
@@ -490,10 +579,6 @@ var tmp = function () {
 		return;
 	}
 
-	target.doOption = function (sender) {
-		return;
-	}
-	
 	target.doRoot = function (sender) {
 		var event;
 		// save events to file
@@ -529,7 +614,19 @@ var tmp = function () {
 		return;
 	}
 
+	target.doCenterF = function () {
+		if (settingsDlgOpen) {
+			this.SETTINGS_DIALOG.doCenterF();
+			return;
+		}
+		return;
+	}
+	
 	target.moveCursor = function (dir) {
+		if (settingsDlgOpen) {
+			this.SETTINGS_DIALOG_moveCursor(dir);
+			return;
+		}	
 		switch (dir) {
 		case "down":
 			{
@@ -592,6 +689,125 @@ var tmp = function () {
 		monthNum=todaysMonth;
 		yearNum=todaysYear;
 		this.dateChanged();			
+		return;
+	}
+	
+	// Settings pop-up panel stuff
+    target.doOption = function(sender) {
+		target.SETTINGS_DIALOG.week_starts.setValue("Week starts on:");	
+		if (weekBeginsWith=="Sun") {
+			target.setVariable("week_begins","1");
+		} else {
+			target.setVariable("week_begins","2");
+		}
+		if (hasNumericButtons) {
+			custSel = 0;
+			this.ntHandleSettingsDlg();
+		}
+		settingsDlgOpen = true;
+		target.SETTINGS_DIALOG.show(true);
+		return;
+    }
+	
+	target.closeDlg = function () {
+		settingsDlgOpen = false;
+		return;
+	}
+
+	target.changeSettings = function () {
+		settingsDlgOpen = false;
+		var t = target.getVariable("week_begins");
+		//target.bubble("tracelog","t="+t);
+		
+		if (t == "1") {
+			weekBeginsWith="Sun";
+		}
+		if (t == "2") {
+			weekBeginsWith="Mon";
+		}
+		
+		// save current settings to settingsDatPath
+		target.settings.WeekBeginsWith = weekBeginsWith;
+		this.saveSettings();
+		
+		// change calendar
+		if (weekBeginsWith=="Mon") {
+			this.labelSun.setValue("Mon");
+			this.labelMon.setValue("Tue");
+			this.labelTue.setValue("Wed");
+			this.labelWed.setValue("Thu");
+			this.labelThu.setValue("Fri");
+			this.labelFri.setValue("Sat");
+			this.labelSat.setValue("Sun");
+		} else {
+			this.labelSun.setValue("Sun");
+			this.labelMon.setValue("Mon");
+			this.labelTue.setValue("Tue");
+			this.labelWed.setValue("Wed");
+			this.labelThu.setValue("Thu");
+			this.labelFri.setValue("Fri");
+			this.labelSat.setValue("Sat");
+		}
+		this.dateChanged();
+		return;
+	}
+	
+	target.ntHandleSettingsDlg = function () {
+		if (custSel === 0) {
+			target.SETTINGS_DIALOG.week_starts.enable(true);
+			mouseLeave.call(target.SETTINGS_DIALOG.btn_Ok);
+		}
+		if (custSel === 1) {
+			target.SETTINGS_DIALOG.week_starts.enable(false);	
+			mouseLeave.call(target.SETTINGS_DIALOG.btn_Cancel);
+			mouseEnter.call(target.SETTINGS_DIALOG.btn_Ok);
+		}		
+		if (custSel === 2) {				 		
+			mouseLeave.call(target.SETTINGS_DIALOG.btn_Ok);
+			mouseEnter.call(target.SETTINGS_DIALOG.btn_Cancel);	
+		}
+		return;
+	}
+
+	target.SETTINGS_DIALOG_moveCursor = function (direction) {
+	switch (direction) {
+		case "up" : {
+			if (custSel>0) {
+				custSel--;
+				this.ntHandleSettingsDlg();
+			}
+			break
+		}
+		case "down" : {
+			if (custSel<2) {
+				custSel++;
+				this.ntHandleSettingsDlg();
+			}
+			break
+		}
+		case "left" : {
+			if (custSel==0) {
+				target.setVariable("week_begins","1");
+			}
+			break
+		}		
+		case "right" : {
+			if (custSel==0) {
+				target.setVariable("week_begins","2");
+			}
+			break
+		}
+		return;
+	  }	
+	}
+	
+	target.SETTINGS_DIALOG.doCenterF = function () {
+		if (custSel === 1) target.SETTINGS_DIALOG.btn_Ok.click();	
+		if (custSel === 2) target.SETTINGS_DIALOG.btn_Cancel.click();
+		return;
+	}
+
+	target.SETTINGS.settingsType = function (t) {
 		return;
 	}
 	

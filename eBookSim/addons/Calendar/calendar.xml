@@ -27,15 +27,23 @@
             <style id="digits" size="22" style="bold" color="#666666"/>
             <style id="klWeis" size="18" style="bold" color="#FFFFFF" align="center"/>
             <style id="touchText" size="12" style="bold" color="#000000"/>
-			<style id="copyText" size="11" style="" color="#BBBBBB"/>				
+			<style id="copyText" size="11" style="" color="#BBBBBB"/>
+
+			<!--For settings pop-up-->
+			<style id="swis24gry" size="24" style="" right="15" halign="right" top="5" color="#6D6D6D"/>
+			<style id="swis32blk" size="32" style="" color="#000000"/>
+			<style id="swis24blk" size="24" style="" halign="right" top="5" color="#000000"/>
+			<style id="swis16blk" size="16" style="" color="#000000"/>		
         </style>
+
+		<style id="dialog" background="#80000000"/>			
 		
   		<style font="Swis721 BT" size="20" style="bold">
 			<style id="etext-e" halign="left" left="8" top="8" right="8" bottom="8">
-			<style id="etext-d" color="#959595" background="#6D6D6D"/>
-			<style id="etext-p" background="#B49AFF"/>
-			<style id="etext-s" background="#B49AFF"/>
-		 </style>	
+				<style id="etext-d" color="#959595" background="#6D6D6D"/>
+				<style id="etext-p" background="#B49AFF"/>
+				<style id="etext-s" background="#B49AFF"/>
+			</style>	
 		</style>		
 	
         <texture href="calendarSkins/calendarGraphics.png">
@@ -55,9 +63,22 @@
 		<skin id="copyText" styles="copyText"/>
       	<skin id="eventText"
 				cutouts="htext-lt,htext-ct,htext-rt,htext-lm,htext-cm,htext-rm,htext-lb,htext-cb,htext-rb" 
-				styles="etext-e,etext-e,etext-p,etext-s"/>		
+				styles="etext-e,etext-e,etext-p,etext-s"/>
+				
+		<!--Assests for settings pop-up panel-->	
+		<skin id="swis16blk" styles="swis16blk"/>	
+		<skin id="swis20blk" styles="menu_e"/>
+		<skin id="swis24gry" styles="swis24gry"/>	
+		<skin id="swis24blk" styles="swis24blk"/>
+		<skin id="swis32blk" styles="swis32blk"/>
+		<skin id="customText"
+			cutouts="htext-lt,htext-ct,htext-rt,htext-lm,htext-cm,htext-rm,htext-lb,htext-cb,htext-rb" 
+			styles="swis24gry,swis24blk,swis24blk,swis24blk"/>
     </assets>
 
+	<model>
+		<variable id="week_begins" value="1"/>
+	</model>	
 
     <code>
 		<function id="runJs" params="path,target">
@@ -138,7 +159,7 @@
                 <function id="doOption">	this.doOption();</function>
 				<function id="doRoot">	this.doRoot();</function>
 				<function id="doMenu">	this.doOption();</function>
-				<function id="doCenter">	this.cursorClick();</function>
+				<function id="doCenter">	this.doCenterF();</function>
 				<function id="doLeft">		this.moveCursor("left");</function>
 				<function id="doRight">		this.moveCursor("right");</function>
 				<function id="doUp">	this.moveCursor("up");</function>
@@ -353,8 +374,8 @@
 			
 		  <label id='touchButtons0' skin='touchText' left='20' right='0' bottom='3' height='15' align='left' text='- Month'/>
           <label id='touchButtons1'   skin='touchText'    left='145' right='0' bottom='3' height='15' align='left' text='+ Month'/>
-		  <!--label id='touchButtons2'   skin='touchText'    left='400' right='0' bottom='3' height='15' align='left' text='[Size]'/>
-		  <label id='touchButtons3'   skin='touchText'    left='525' right='0' bottom='3' height='15' align='left' text='[Undo]'/-->
+		  <!--label id='touchButtons2'   skin='touchText'    left='400' right='0' bottom='3' height='15' align='left' text='[Size]'/-->
+		  <label id='touchButtons3'   skin='touchText'    left='520' right='0' bottom='3' height='15' align='left' text='Options'/>
 		  <label id='touchButtons4'   skin='touchText'    left='285' right='0' bottom='3' height='15' align='left' text='Quit'/>
 			<label id='nonTouch1'   skin='touchText'    left='300' right='0' bottom='3' height='15' align='left' text='[Mark] Today'/>		  
 		  <label id='nonTouch2'   skin='touchText'    left='140' right='0' bottom='16' height='15' align='left' text='[Next] +Month'/>
@@ -362,12 +383,42 @@
 			<label id='nonTouch4'   skin='touchText'    left='490' right='0' bottom='3' height='15' align='left' text='[Hold 0] Quit'/>
 			<label id='nonTouch5' skin='touchText' left='1' right='0' bottom='16' height='15' align='left' text='[Prev] -Month'/>
           <label id='nonTouch6'   skin='touchText'    left='1' right='0' bottom='3' height='15' align='left' text='[Hold Prev] -Year'/>
+			<label id='nonTouch7'   skin='touchText'    left='490' right='0' bottom='16' height='15' align='left' text='[Menu] Options'/>
 		  
 		  <text id='eventsText' skin='eventText' left='48' right='55' top='510' bottom='30' active='false' visible='true' />  
 		  <!--button id="BUTTON_EDT" active="true" text="Edit"  left="450" width="90" top="520" height="40" do="doButtonClick"/> If using these buttons, you need to change to right='160' in eventsText above
 		  <button id="BUTTON_DLT" active="true" text="Clear"  left="450" width="90" top="570" height="40" do="doButtonClick"/-->
 
 		  <button id="btn_Exit" left="0" top="-70" height="70" width="70" active="true" visible="false" do="doRoot"/>
+		  
+			<!--Settings pop-up panel-->
+			<dialog id="SETTINGS_DIALOG" width="450" height="250" visible="false">
+				<code>
+					<function id="doOK">
+						this.show(false);
+						this.container.changeSettings();
+					</function>
+					<function id="doClose">
+						this.show(false);
+						this.container.closeDlg();
+					</function>
+					<function id="doLeft">		this.container.moveCursor("left"); </function>
+					<function id="doPrevious">	this.container.moveCursor("left"); </function>
+					<function id="doRight">		this.container.moveCursor("right"); </function>
+					<function id="doNext">		this.container.moveCursor("right"); </function> 
+					<function id="doUp">      	this.container.moveCursor("up");    </function>
+					<function id="doDown">		this.container.moveCursor("down");  </function>	        
+					<function id="doCenter">	this.container.cursorClick();  </function>	        
+				</code>
+				<background skin="dlg_background" left="0" right="0" top="0" bottom="0"/>
+				<label skin="swis32blk" active="false" text="Calendar Settings" align="center" left="28" right="28" top="20" height="38"/>
+				<text skin="customText" id="week_starts" active="false" left="10" width="200" top="70" align="left" height="44"/>
+				<radio id="SUN" variable="week_begins" on="1" active="true" text="Sunday" left="220" width="100" top="75" height="30" do="settingsType"/>
+				<radio id="MON" variable="week_begins" on="2" active="true" text="Monday" left="300" width="100" top="75" height="30" do="settingsType"/> 
+				<default-button id="btn_Ok" text="OK" width="70" bottom="10" do="doOK"/>
+				<button id="btn_Cancel" text="Cancel" width="100" left ="270" bottom="10" do="doClose"/>		
+			</dialog>
+		  
         </group>
     </group>
 </document>
