@@ -6,6 +6,7 @@
 // Initial version: 2011-07-14
 // Changelog:
 // 2011-07-15 Ben Chenoweth - Fixed start-up script; resized "Today" button.
+// 2011-07-17 Ben Chenoweth - Improved layout and event icons; added "Anniversary"; increased event font size; changed event file-format; non-Touch cursor now moves.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -47,20 +48,12 @@ var tmp = function () {
 				// read whole file in first to count how many events there are
 				var tempfile = getFileContent(datPath,'savefile missing');
 				if (tempfile!='savefile missing') {
-					var lines = tempfile.split("\n");
-					var tempnumevents = (lines.length-1)/5;
+					var lines = tempfile.split("\r\n");	// CR LF is used by stream.writeLine()
+					var tempnumevents = (lines.length-1);
 					//this.bubble("tracelog","Events="+tempnumevents);
-					// now read file in using stream
-					var stream = new Stream.File(datPath);
 					for (i=0; i<tempnumevents; i++) {
-						temptype = stream.readLine();
-						tempmonth = stream.readLine();
-						tempdate = stream.readLine();
-						tempyear = stream.readLine();
-						tempdescription = stream.readLine();
-						events.push([temptype, tempmonth, tempdate, tempyear, tempdescription]);
+						events.push(lines[i].split(";"));
 					}
-					stream.close();
 				}
 			} else {
 				// no savefile, so push default events
@@ -71,31 +64,26 @@ var tmp = function () {
 				events.push(["F", "11", "4", "5", "Thanksgiving"]);
 				events.push(["C", "12", "25", "2005", "Christmas"]);
 			}
-		} catch (e) { stream.close(); }
+		} catch (e) { }
 		
 		// hide unwanted graphics
 		this.selection1.changeLayout(0, 0, uD, 0, 0, uD);
 
-		//this.bubble("tracelog","Today: "+today);		
+		//this.bubble("tracelog","Today: "+today);
+		selectionDate=todaysDate;
 		this.dateChanged();
 		
 		if (hasNumericButtons) {
 			this.touchButtons0.show(false);
 			this.touchButtons1.show(false);			
-			this.touchButtons2.show(false);
-			this.touchButtons3.show(false);
+			//this.touchButtons2.show(false);
+			//this.touchButtons3.show(false);
 			this.touchButtons4.show(false);
-			// move gridCursor to today
-			selectionDate=todaysDate;
-			thisDate = 1;
-			for (var i = 1; i <= 6; i++) {
-				for (var j = 1; j <= 7; j++) {
-					daycounter = (thisDate - firstDay)+1;
-					if (selectionDate==daycounter) this.gridCursor.changeLayout((j-1)*70+50, 70, uD, (i-1)*70+80, 70, uD);
-					thisDate++;
-				}
-			}
-			thisDate = 1;
+			this.BUTTON_TDY.show(false);
+			this.BUTTON_PYR.show(false);
+			this.BUTTON_PMN.show(false);
+			this.BUTTON_NMN.show(false);
+			this.BUTTON_NYR.show(false);
 		} else {
 			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);			
 			this.nonTouch1.show(false);
@@ -133,10 +121,34 @@ var tmp = function () {
 		if (!hasNumericButtons) {
 			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);
 		} else {
-			// move gridCursor to actual date in month
+			if (selectionDate > numbDays) selectionDate=numbDays;
+			var daycounter = 0;
+			thisDate == 1;
+			var x = -1;
+			var y = -1;
+			for (var i = 1; i <= 6; i++) {
+				for (var j = 1; j <= 7; j++) {
+					daycounter = (thisDate - firstDay)+1;
+					if (selectionDate==daycounter) {
+						x=j;
+						y=i; 
+					}
+					thisDate++;
+				}
+			}
+			thisDate = 1;
 			
-			// show any events on this date
+			if (selectionDate>0) {
+				//place selection square
+				this.gridCursor.changeLayout((x-1)*70+50, 70, uD, (y-1)*70+80, 70, uD);
+			}
 			
+			if (this.checkevents(selectionDate,monthNum,yearNum,y,x)) {
+				// events in selection square
+				this.showevents(selectionDate,monthNum,yearNum,y,x);
+			} else {
+				this.eventsText.setValue("");
+			}
 		}
 		
 		//this.bubble("tracelog","monthNum="+monthNum+", yearNum="+yearNum+", numbDays="+numbDays);
@@ -232,7 +244,7 @@ var tmp = function () {
 			if (events[i][0] == "W") {
 				if ((events[i][2] == dayofweek)) numevents++;
 			}
-			else if ((events[i][0] == "Y") || (events[i][0] == "C") || (events[i][0] == "B") || (events[i][0] == "V")) {
+			else if ((events[i][0] == "Y") || (events[i][0] == "C") || (events[i][0] == "B") || (events[i][0] == "V") || (events[i][0] == "A")) {
 				if ((events[i][2] == day) && (events[i][1] == month)) numevents++;
 			}
 			else if (events[i][0] == "F") {
@@ -274,11 +286,16 @@ var tmp = function () {
 				}
 			}			
 		}
-		// birthday
+		// birthday and anniversarys are next
 		for ( i = 0; i < events.length; i++) {
 			if (events[i][0] == "B") {
 				if ((events[i][2] == day) && (events[i][1] == month)) {
 					return 3;
+				}
+			}
+			if (events[i][0] == "A") {
+				if ((events[i][2] == day) && (events[i][1] == month)) {
+					return 6;
 				}
 			}
 		}
@@ -302,7 +319,7 @@ var tmp = function () {
 				}
 				if (events[i][0] == "M") {
 				}
-				if ((events[i][0] == "Y") || (events[i][0] == "C") || (events[i][0] == "B") || (events[i][0] == "V")) {
+				if ((events[i][0] == "Y") || (events[i][0] == "C") || (events[i][0] == "B") || (events[i][0] == "V") || (events[i][0] == "A")) {
 					if ((events[i][2] == day) && (events[i][1] == month)) {
 					theevent += events[i][4] + '\n';
 					}
@@ -425,7 +442,6 @@ var tmp = function () {
 			
 		var daycounter = 0;
 		thisDate == 1;
-
 		for (var i = 1; i <= 6; i++) {
 			for (var j = 1; j <= 7; j++) {
 				daycounter = (thisDate - firstDay)+1;
@@ -479,16 +495,14 @@ var tmp = function () {
 	}
 	
 	target.doRoot = function (sender) {
+		var event;
 		// save events to file
 		try {
 			if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
 			stream = new Stream.File(datPath, 1);
 			for (var i = 0; i < events.length; i++) {
-				stream.writeLine(events[i][0]);
-				stream.writeLine(events[i][1]);
-				stream.writeLine(events[i][2]);
-				stream.writeLine(events[i][3]);
-				stream.writeLine(events[i][4]);
+				event=events[i][0]+';'+events[i][1]+';'+events[i][2]+';'+events[i][3]+';'+events[i][4];
+				stream.writeLine(event);
 			}		
 			stream.close();
 		} catch (e) {}
@@ -513,7 +527,74 @@ var tmp = function () {
 		yearNum--;
 		this.dateChanged();	
 		return;
-	}	
+	}
+
+	target.moveCursor = function (dir) {
+		switch (dir) {
+		case "down":
+			{
+				selectionDate += 7;
+				break;
+			}
+		case "up":
+			{
+				selectionDate -= 7;
+				break;
+			}
+		case "left":
+			{
+				selectionDate -= 1;
+				if (selectionDate==0) selectionDate=numbDays;
+				break;
+			}
+		case "right":
+			{
+				selectionDate += 1;
+				if (selectionDate==numbDays+1) selectionDate=1;
+				break;
+			}
+		}
+		
+		if (selectionDate > numbDays) {
+			if (selectionDate > 35) {
+				selectionDate -= 35;
+			} else {
+				selectionDate -= 28;
+			}
+		}
+		if (selectionDate < 1) {
+			if (numbDays==28) {
+				selectionDate +=28;
+			} else if (numbDays==29) {
+				if (selectionDate < -5) {
+					selectionDate += 35;
+				} else {
+					selectionDate += 28;
+				}
+			} else if (numbDays==30) {
+				if (selectionDate < -4) {
+					selectionDate += 35;
+				} else {
+					selectionDate +=28;
+				}
+			} else {
+				if (selectionDate < -3) {
+					selectionDate += 35;
+				} else {
+					selectionDate += 28;
+				}
+			}
+		}
+		this.dateChanged();
+	}
+	
+	target.doMark = function () {
+		monthNum=todaysMonth;
+		yearNum=todaysYear;
+		this.dateChanged();			
+		return;
+	}
+	
 };
 tmp();
 tmp = undefined;
