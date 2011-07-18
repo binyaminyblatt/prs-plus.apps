@@ -8,6 +8,7 @@
 // 2011-07-15 Ben Chenoweth - Fixed start-up script; resized "Today" button.
 // 2011-07-17 Ben Chenoweth - Improved layout and event icons; added "Anniversary"; increased event font size; changed event file-format; non-Touch cursor now moves.
 // 2011-07-17 Ben Chenoweth - Added settings popup panel; 'Week starts with' option (Sunday or Monday).
+// 2011-07-18 Ben Chenoweth - Fixed: "today" indicator missing in week-starts-Monday mode.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -134,6 +135,7 @@ var tmp = function () {
 			this.labelThu.setValue("Fri");
 			this.labelFri.setValue("Sat");
 			this.labelSat.setValue("Sun");
+			todaysDay = today.getDay();
 		} else {
 			this.labelSun.setValue("Sun");
 			this.labelMon.setValue("Mon");
@@ -142,6 +144,7 @@ var tmp = function () {
 			this.labelThu.setValue("Thu");
 			this.labelFri.setValue("Fri");
 			this.labelSat.setValue("Sat");
+			todaysDay = today.getDay() + 1;
 		}
 		
 		selectionDate=todaysDate;
@@ -287,6 +290,7 @@ var tmp = function () {
 					if (firstDay==1) daycounter -= 7;
 				}
 				thisDate++;
+				this.bubble("tracelog","daycounter="+daycounter+", todaysDate="+todaysDate+", todaysDay="+todaysDay+", x="+x);
 				if ((daycounter > numbDays) || (daycounter < 1)) {
 					// square not used by current month
 					this.setSquare(i,x,2,"0");
@@ -739,6 +743,7 @@ var tmp = function () {
 			this.labelThu.setValue("Fri");
 			this.labelFri.setValue("Sat");
 			this.labelSat.setValue("Sun");
+			todaysDay = today.getDay();
 		} else {
 			this.labelSun.setValue("Sun");
 			this.labelMon.setValue("Mon");
@@ -747,6 +752,7 @@ var tmp = function () {
 			this.labelThu.setValue("Thu");
 			this.labelFri.setValue("Fri");
 			this.labelSat.setValue("Sat");
+			todaysDay = today.getDay() + 1;
 		}
 		this.dateChanged();
 		return;
