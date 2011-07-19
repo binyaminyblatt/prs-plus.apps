@@ -9,6 +9,7 @@
 // 2011-07-17 Ben Chenoweth - Improved layout and event icons; added "Anniversary"; increased event font size; changed event file-format; non-Touch cursor now moves.
 // 2011-07-17 Ben Chenoweth - Added settings popup panel; 'Week starts with' option (Sunday or Monday).
 // 2011-07-18 Ben Chenoweth - Fixed: "today" indicator missing in week-starts-Monday mode.
+// 2011-07-19 Ben Chenoweth - Relocated Edit button; enabled option text on Touch and event text; started event popup panel.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -39,8 +40,16 @@ var tmp = function () {
 	var settingsPath = datPath0 + 'settings.dat';
 	var selectionDate;
 	var settingsDlgOpen = false;
+	var eventsDlgOpen = false;
 	var weekBeginsWith = "Sun";
 	var custSel;
+	var maxEventNum;
+	var maxEventType;
+	var maxEventMonth;
+	var maxEventDay;
+	var maxEventYear;
+	var tempEvents = [];
+	var tempEventsNum = [];
 	var mouseLeave = getSoValue( target.SETTINGS_DIALOG.btn_Cancel,'mouseLeave');
 	var mouseEnter = getSoValue( target.SETTINGS_DIALOG.btn_Cancel,'mouseEnter');	
 	
@@ -128,22 +137,22 @@ var tmp = function () {
 		//this.bubble("tracelog","Today: "+today);
 		
 		if (weekBeginsWith=="Mon") {
-			this.labelSun.setValue("Mon");
-			this.labelMon.setValue("Tue");
-			this.labelTue.setValue("Wed");
-			this.labelWed.setValue("Thu");
-			this.labelThu.setValue("Fri");
-			this.labelFri.setValue("Sat");
-			this.labelSat.setValue("Sun");
+			this.labelSun.setValue(wordDays[1]);
+			this.labelMon.setValue(wordDays[2]);
+			this.labelTue.setValue(wordDays[3]);
+			this.labelWed.setValue(wordDays[4]);
+			this.labelThu.setValue(wordDays[5]);
+			this.labelFri.setValue(wordDays[6]);
+			this.labelSat.setValue(wordDays[0]);
 			todaysDay = today.getDay();
 		} else {
-			this.labelSun.setValue("Sun");
-			this.labelMon.setValue("Mon");
-			this.labelTue.setValue("Tue");
-			this.labelWed.setValue("Wed");
-			this.labelThu.setValue("Thu");
-			this.labelFri.setValue("Fri");
-			this.labelSat.setValue("Sat");
+			this.labelSun.setValue(wordDays[0]);
+			this.labelMon.setValue(wordDays[1]);
+			this.labelTue.setValue(wordDays[2]);
+			this.labelWed.setValue(wordDays[3]);
+			this.labelThu.setValue(wordDays[4]);
+			this.labelFri.setValue(wordDays[5]);
+			this.labelSat.setValue(wordDays[6]);
 			todaysDay = today.getDay() + 1;
 		}
 		
@@ -161,6 +170,7 @@ var tmp = function () {
 			this.BUTTON_PMN.show(false);
 			this.BUTTON_NMN.show(false);
 			this.BUTTON_NYR.show(false);
+			this.BUTTON_EDT.show(false);
 		} else {
 			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);			
 			this.nonTouch1.show(false);
@@ -171,6 +181,9 @@ var tmp = function () {
 			this.nonTouch6.show(false);
 			this.nonTouch7.show(false);
 		}
+		
+		target.eventsText.enable(true);
+		target.BUTTON_EDT.enable(false);
 		return;
 	}
 
@@ -194,6 +207,7 @@ var tmp = function () {
 
 		// hide events
 		this.eventsText.setValue("");
+		target.BUTTON_EDT.enable(false);
 		
 		// hide cursor on Touch
 		if (!hasNumericButtons) {
@@ -201,7 +215,7 @@ var tmp = function () {
 		} else {
 			if (selectionDate > numbDays) selectionDate=numbDays;
 			var daycounter = 0;
-			thisDate == 1;
+			thisDate = 1;
 			var x = -1;
 			var y = -1;
 			for (var i = 1; i <= 6; i++) {
@@ -276,7 +290,7 @@ var tmp = function () {
 		//calendarString = '';
 		var daycounter = 0;
 		var eventtype;
-		thisDate == 1;
+		thisDate = 1;
 		
 		//hide today marker
 		this.selection1.changeLayout(0, 0, uD, 0, 0, uD);
@@ -290,7 +304,6 @@ var tmp = function () {
 					if (firstDay==1) daycounter -= 7;
 				}
 				thisDate++;
-				this.bubble("tracelog","daycounter="+daycounter+", todaysDate="+todaysDate+", todaysDay="+todaysDay+", x="+x);
 				if ((daycounter > numbDays) || (daycounter < 1)) {
 					// square not used by current month
 					this.setSquare(i,x,2,"0");
@@ -328,6 +341,12 @@ var tmp = function () {
 	var numevents = 0;
 	var floater = 0;
 
+	// reset the temporary array
+	if (tempEvents.length>0) {
+		tempEvents.length=0;
+		tempEventsNum.length=0;
+	}
+	
 		for (var i = 0; i < events.length; i++) {
 			if (events[i][0] == "W") {
 				if ((events[i][2] == dayofweek)) numevents++;
@@ -394,28 +413,35 @@ var tmp = function () {
 	target.showevents = function (day,month,year,week,dayofweek) {
 	var theevent = "";
 	var floater = 0;
-
+	
 		for (var i = 0; i < events.length; i++) {
 			// First we'll process recurring events (if any):
 			if (events[i][0] != "") {
+				// repeating event
 				if (events[i][0] == "D") {
 				}
 				if (events[i][0] == "W") {
 					if ((events[i][2] == dayofweek)) {
-					theevent += events[i][4] + '\n';
+						theevent += events[i][4] + '\n';
+						tempEvents=tempEvents.concat(events.slice(i,i+1));
+						tempEventsNum.push(i);
 					}
 				}
 				if (events[i][0] == "M") {
 				}
 				if ((events[i][0] == "Y") || (events[i][0] == "C") || (events[i][0] == "B") || (events[i][0] == "V") || (events[i][0] == "A")) {
 					if ((events[i][2] == day) && (events[i][1] == month)) {
-					theevent += events[i][4] + '\n';
+						theevent += events[i][4] + '\n';
+						tempEvents=tempEvents.concat(events.slice(i,i+1));
+						tempEventsNum.push(i);
 					}
 				}
 				if (events[i][0] == "F") {
 					if ((events[i][1] == 3) && (events[i][2] == 0) && (events[i][3] == 0) ) {
 						if (easterday == day && eastermonth == month) {
 							theevent += events[i][4] + '\n';
+							tempEvents=tempEvents.concat(events.slice(i,i+1));
+							tempEventsNum.push(i);							
 						} 
 					} else {
 						floater = this.floatingholiday(year,events[i][1],events[i][2],events[i][3]);
@@ -423,27 +449,32 @@ var tmp = function () {
 						if ((month == 5) && (events[i][1] == 5) && (events[i][2] == 4) && (events[i][3] == 2)) {
 							if ((floater + 7 <= 31) && (day == floater + 7)) {
 								theevent += events[i][4] + '\n';
+								tempEvents=tempEvents.concat(events.slice(i,i+1));
+								tempEventsNum.push(i);
 							} else if ((floater + 7 > 31) && (day == floater)) {
 								theevent += events[i][4] + '\n';
+								tempEvents=tempEvents.concat(events.slice(i,i+1));
+								tempEventsNum.push(i);								
 							}
 						} else if ((events[i][1] == month) && (floater == day)) {
 							theevent += events[i][4] + '\n';
+							tempEvents=tempEvents.concat(events.slice(i,i+1));
+							tempEventsNum.push(i);
 						}
 					}
-			}
+				}
 			}
 			// Now we'll process any One Time events happening on the matching month, day, year:
 			else if ((events[i][2] == day) && (events[i][1] == month) && (events[i][3] == year)) {
+				// one-off event
 				theevent += events[i][4] + '\n';
+				tempEvents=tempEvents.concat(events.slice(i,i+1));
+				tempEventsNum.push(i);				
 			}
 		}
-		if (theevent == "") {
-			theevent = 'No events to show.';
-		}
-		
-		//this.bubble("tracelog","events="+theevent);
+			
+		//this.bubble("tracelog","events="+theevent+"numEvents="+tempEvents.length);
 		this.eventsText.setValue(theevent);
-		
 		return;
 	}
 
@@ -519,17 +550,21 @@ var tmp = function () {
 			this.dateChanged();
 			return;
 		}
-	}
+		if (n == "EDT") {
+			// edit events
+			this.doEditEvents();
+			return;
+		}	}
 
 	target.doSquareClick = function (sender) {
-		var id, n, x, y, id;
+		var id, n, x, y;
 		id = getSoValue(sender, "id");
 		n = id.substring(6, 8);
 		x = (n % 7) + 1; // find column
 		y = (Math.floor(n / 7)) + 1; // find row
 			
 		var daycounter = 0;
-		thisDate == 1;
+		thisDate = 1;
 		for (var i = 1; i <= 6; i++) {
 			for (var j = 1; j <= 7; j++) {
 				if (weekBeginsWith=="Sun") {
@@ -548,6 +583,7 @@ var tmp = function () {
 		if (selectionDate>0) {
 			//place selection square
 			this.gridCursor.changeLayout((x-1)*70+50, 70, uD, (y-1)*70+80, 70, uD);
+			target.BUTTON_EDT.enable(true);
 		}
 		
 		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)) {
@@ -584,6 +620,18 @@ var tmp = function () {
 	}
 
 	target.doRoot = function (sender) {
+		this.saveEvents();
+		kbook.autoRunRoot.exitIf(kbook.model);
+		return;
+	}
+	
+	target.doHold0 = function () {
+		this.saveEvents();
+		kbook.autoRunRoot.exitIf(kbook.model);
+		return;
+	}
+
+	target.saveEvents = function () {
 		var event;
 		// save events to file
 		try {
@@ -595,15 +643,8 @@ var tmp = function () {
 			}		
 			stream.close();
 		} catch (e) {}
-		kbook.autoRunRoot.exitIf(kbook.model);
 		return;
 	}
-	
-	target.doHold0 = function () {
-		kbook.autoRunRoot.exitIf(kbook.model);
-		return;
-	}
-
 	target.doLast = function () {
 		// next year
 		yearNum++;
@@ -623,12 +664,20 @@ var tmp = function () {
 			this.SETTINGS_DIALOG.doCenterF();
 			return;
 		}
+		if (eventsDlgOpen) {
+			this.EVENTS_DIALOG.doCenterF();
+			return;
+		}
 		return;
 	}
 	
 	target.moveCursor = function (dir) {
 		if (settingsDlgOpen) {
 			this.SETTINGS_DIALOG_moveCursor(dir);
+			return;
+		}	
+		if (eventsDlgOpen) {
+			this.EVENTS_DIALOG_moveCursor(dir);
 			return;
 		}	
 		switch (dir) {
@@ -707,6 +756,8 @@ var tmp = function () {
 		if (hasNumericButtons) {
 			custSel = 0;
 			this.ntHandleSettingsDlg();
+		} else {
+			//target.SETTINGS_DIALOG.week_starts.enable(true);
 		}
 		settingsDlgOpen = true;
 		target.SETTINGS_DIALOG.show(true);
@@ -715,6 +766,7 @@ var tmp = function () {
 	
 	target.closeDlg = function () {
 		settingsDlgOpen = false;
+		eventsDlgOpen = false;
 		return;
 	}
 
@@ -736,22 +788,22 @@ var tmp = function () {
 		
 		// change calendar
 		if (weekBeginsWith=="Mon") {
-			this.labelSun.setValue("Mon");
-			this.labelMon.setValue("Tue");
-			this.labelTue.setValue("Wed");
-			this.labelWed.setValue("Thu");
-			this.labelThu.setValue("Fri");
-			this.labelFri.setValue("Sat");
-			this.labelSat.setValue("Sun");
+			this.labelSun.setValue(wordDays[1]);
+			this.labelMon.setValue(wordDays[2]);
+			this.labelTue.setValue(wordDays[3]);
+			this.labelWed.setValue(wordDays[4]);
+			this.labelThu.setValue(wordDays[5]);
+			this.labelFri.setValue(wordDays[6]);
+			this.labelSat.setValue(wordDays[0]);
 			todaysDay = today.getDay();
 		} else {
-			this.labelSun.setValue("Sun");
-			this.labelMon.setValue("Mon");
-			this.labelTue.setValue("Tue");
-			this.labelWed.setValue("Wed");
-			this.labelThu.setValue("Thu");
-			this.labelFri.setValue("Fri");
-			this.labelSat.setValue("Sat");
+			this.labelSun.setValue(wordDays[0]);
+			this.labelMon.setValue(wordDays[1]);
+			this.labelTue.setValue(wordDays[2]);
+			this.labelWed.setValue(wordDays[3]);
+			this.labelThu.setValue(wordDays[4]);
+			this.labelFri.setValue(wordDays[5]);
+			this.labelSat.setValue(wordDays[6]);
 			todaysDay = today.getDay() + 1;
 		}
 		this.dateChanged();
@@ -813,10 +865,238 @@ var tmp = function () {
 		return;
 	}
 
-	target.SETTINGS.settingsType = function (t) {
+	target.SETTINGS_DIALOG.settingsType = function (t) {
 		return;
 	}
 	
+	// events popup stuff
+    target.doEditEvents = function () {
+		this.bubble("tracelog","initialising event popup...");
+		this.bubble("tracelog","Number of events="+tempEvents.length);
+		// reset labels
+		target.EVENTS_DIALOG.eventDayText.setValue("Date:");
+		target.EVENTS_DIALOG.eventYearText.setValue("Year:");	
+		target.EVENTS_DIALOG.weekDay.show(false);
+		maxEventNum=tempEvents.length+1;
+		maxEventType=6;
+		maxEventMonth=12;
+		maxEventDay=numbDays;
+		maxEventYear=2100;
+		
+		if (tempEvents.length==0) {
+			// prepare textboxes for new event
+			target.EVENTS_DIALOG.eventNum.setValue("1");
+			target.setVariable("event_num","1");
+			target.EVENTS_DIALOG.eventType.setValue("0");
+			target.setVariable("event_type","0");
+			target.EVENTS_DIALOG.eventTypeText.setValue("One-off");
+			target.EVENTS_DIALOG.eventMonth.setValue(monthNum);
+			target.setVariable("event_month",monthNum);
+			target.EVENTS_DIALOG.eventDay.setValue(selectionDate);
+			target.setVariable("event_day",selectionDate);
+			target.EVENTS_DIALOG.eventYear.setValue(yearNum);
+			target.setVariable("event_year",yearNum);
+			target.EVENTS_DIALOG.eventDescription.setValue("");
+			target.setVariable("event_description","");
+		} else {
+			// put first event information into textboxes
+			target.EVENTS_DIALOG.eventNum.setValue("1");		
+			target.setVariable("event_num","1");
+			if (tempEvents[0][0]=="") {
+				target.EVENTS_DIALOG.eventType.setValue("0");
+				target.setVariable("event_type","0");
+				target.EVENTS_DIALOG.eventTypeText.setValue("One-off");
+			} else if (tempEvents[0][1]=="Y") {
+				target.EVENTS_DIALOG.eventType.setValue("1");
+				target.setVariable("event_type","1");
+				target.EVENTS_DIALOG.eventTypeText.setValue("Yearly");							
+			//} else if (tempEvents[0][1]=="M") {
+			//} else if (tempEvents[0][1]=="W") {		
+			} else if (tempEvents[0][0]=="B") {
+				target.EVENTS_DIALOG.eventType.setValue("2");
+				target.setVariable("event_type","2");
+				target.EVENTS_DIALOG.eventTypeText.setValue("Birthday");
+			} else if (tempEvents[0][0]=="A") {
+				target.EVENTS_DIALOG.eventType.setValue("3");
+				target.setVariable("event_type","3");
+				target.EVENTS_DIALOG.eventTypeText.setValue("Anniversary");
+			} else if (tempEvents[0][0]=="C") {
+				target.EVENTS_DIALOG.eventType.setValue("4");
+				target.setVariable("event_type","4");
+				target.EVENTS_DIALOG.eventTypeText.setValue("Christmas");	
+			} else if (tempEvents[0][0]=="F") {
+				target.EVENTS_DIALOG.eventType.setValue("5");
+				target.setVariable("event_type","5");
+				target.EVENTS_DIALOG.eventTypeText.setValue("Floating");	
+				// floating event requires different labels
+				target.EVENTS_DIALOG.eventDayText.setValue("Cardinal:");
+				target.EVENTS_DIALOG.eventYearText.setValue("Weekday:");
+				target.EVENTS_DIALOG.weekDay.show(true);
+				if (tempEvents[0][3]=="1") {
+					target.EVENTS_DIALOG.weekDay.setValue(wordDays[0]);
+				} else if (tempEvents[0][3]=="2") {
+					target.EVENTS_DIALOG.weekDay.setValue(wordDays[1]);
+				} else if (tempEvents[0][3]=="3") {
+					target.EVENTS_DIALOG.weekDay.setValue(wordDays[2]);
+				} else if (tempEvents[0][3]=="4") {
+					target.EVENTS_DIALOG.weekDay.setValue(wordDays[3]);
+				} else if (tempEvents[0][3]=="5") {
+					target.EVENTS_DIALOG.weekDay.setValue(wordDays[4]);
+				} else if (tempEvents[0][3]=="6") {
+					target.EVENTS_DIALOG.weekDay.setValue(wordDays[5]);
+				} else if (tempEvents[0][3]=="7") {
+					target.EVENTS_DIALOG.weekDay.setValue(wordDays[6]);
+				}
+			} else if (tempEvents[0][1]=="V") {
+				target.EVENTS_DIALOG.eventType.setValue("6");
+				target.setVariable("event_type","6");
+				target.EVENTS_DIALOG.eventTypeText.setValue("Valentines");			
+			}
+			target.EVENTS_DIALOG.eventMonth.setValue(tempEvents[0][1]);
+			target.setVariable("event_month",tempEvents[0][1]);
+			target.EVENTS_DIALOG.eventDay.setValue(tempEvents[0][2]);
+			target.setVariable("event_day",tempEvents[0][2]);
+			target.EVENTS_DIALOG.eventYear.setValue(tempEvents[0][3]);
+			target.setVariable("event_year",tempEvents[0][3]);
+			target.EVENTS_DIALOG.eventDescription.setValue(tempEvents[0][4]);
+			target.setVariable("event_description",tempEvents[0][4]);
+		}
+
+		if (hasNumericButtons) {
+			custSel = 0;
+			this.ntHandleEventsDlg();
+		}
+		
+		eventsDlgOpen = true;
+		target.EVENTS_DIALOG.show(true);
+		return;
+    }
+
+	target.EVENTS_DIALOG.doPlusMinus = function (sender) {
+	   var senderID, eventNum, eventType, eventMonth, eventDay, eventYear;
+	   senderID = getSoValue(sender,"id");
+		this.bubble("tracelog","senderID="+senderID);	
+		step = ( senderID.lastIndexOf("+") != -1) ? 1 : -1;
+		this.bubble("tracelog","step="+step);
+		senderID = senderID.slice(0,senderID.length-1);		   
+	   eventNum = parseInt(target.getVariable("event_num"));
+	   eventType = parseInt(target.getVariable("event_type"));
+	   eventMonth = parseInt(target.getVariable("event_month"));
+	   eventDay = parseInt(target.getVariable("event_day"));
+	   eventYear = parseInt(target.getVariable("event_year"));
+	   this.bubble("tracelog","senderID="+senderID);
+	   switch (senderID) {
+			case "eventNum" :
+			{
+				if (eventNum<=maxEventNum-step && eventNum>0-step) {
+					eventNum = eventNum+step;
+				}
+				this.container.setVariable("event_num",eventNum);
+				break;
+			}
+			case "eventType" :
+			{
+				if (eventType<=maxEventType-step && eventType>0-step) {
+					eventType = eventType+step;
+				}
+				this.container.setVariable("event_type",eventType);
+				// change labels if necessary
+				
+				break;
+			}
+			case "eventMonth" :
+			{
+				if (eventMonth<=maxEventMonth-step && eventMonth>0-step) {
+					eventMonth = eventMonth+step;
+				}
+				this.container.setVariable("event_month",eventMonth);
+				break;
+			}
+			case "eventDay" :
+			{
+				if (eventDay<=maxEventDay-step && eventDay>0-step) {
+					eventDay = eventDay+step;
+				}
+				this.container.setVariable("event_day",eventDay);
+				break;
+			}
+			case "eventYear" :
+			{
+				if (eventYear<=maxEventYear-step && eventYear>0-step) {
+					eventYear = eventYear+step;
+				}
+				this.container.setVariable("event_year",eventYear);
+				break;
+			}
+	   }
+	}
+	
+	target.updateCalendar = function () {
+		eventsDlgOpen = false;
+		//var t = target.getVariable("week_begins");
+		//target.bubble("tracelog","t="+t);
+		
+		return;
+	}
+	
+	target.ntHandleEventsDlg = function () {
+		if (custSel === 0) {
+			//target.SETTINGS_DIALOG.week_starts.enable(true);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
+		}
+		if (custSel === 1) {
+			//target.SETTINGS_DIALOG.week_starts.enable(false);	
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
+			mouseEnter.call(target.EVENTS_DIALOG.btn_Ok);
+		}		
+		if (custSel === 2) {				 		
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
+			mouseEnter.call(target.EVENTS_DIALOG.btn_Cancel);	
+		}
+		return;
+	}
+
+	target.EVENTS_DIALOG_moveCursor = function (direction) {
+	switch (direction) {
+		case "up" : {
+			if (custSel>0) {
+				custSel--;
+				this.ntHandleEventsDlg();
+			}
+			break
+		}
+		case "down" : {
+			if (custSel<2) {
+				custSel++;
+				this.ntHandleEventsDlg();
+			}
+			break
+		}
+		case "left" : {
+			if (custSel==0) {
+				//target.setVariable("week_begins","1");
+			}
+			break
+		}		
+		case "right" : {
+			if (custSel==0) {
+				//target.setVariable("week_begins","2");
+			}
+			break
+		}
+		return;
+	  }	
+	}
+	
+	target.EVENTS_DIALOG.doCenterF = function () {
+		if (custSel === 1) target.EVENTS_DIALOG.btn_Ok.click();	
+		if (custSel === 2) target.EVENTS_DIALOG.btn_Cancel.click();
+		return;
+	}
+
+	target.EVENTS_DIALOG.settingsType = function (t) {
+		return;
+	}	
 };
 tmp();
 tmp = undefined;
