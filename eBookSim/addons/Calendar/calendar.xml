@@ -29,10 +29,10 @@
             <style id="touchText" size="12" style="bold" color="#000000"/>
 			<style id="copyText" size="11" style="" color="#BBBBBB"/>
 
-			<!--For settings pop-up-->
+			<!--For pop-up panels-->
 			<style id="swis24gry" size="24" style="" right="15" halign="right" top="5" color="#6D6D6D"/>
 			<style id="swis32blk" size="32" style="" color="#000000"/>
-			<style id="swis24blk" size="24" style="" halign="right" top="5" color="#000000"/>
+			<style id="swis24blk" size="24" style="" right="20" halign="right" top="5" color="#000000"/>
 			<style id="swis16blk" size="16" style="" color="#000000"/>		
         </style>
 
@@ -50,6 +50,7 @@
             <cutout id="selectcalsquare" x="0" y="0" width="70" height="70"/>
 			<cutout id="highlightcalsquare" x="70" y="0" width="70" height="70"/>
 			<cutout id="calendarsquare" x="0" y="70" width="70" height="70" columns="70"/>
+			<cutout id="null32h" x="370" y="32" width="1" height="32" lines="1"/>
         </texture>
 		
         <skin id="klWeis" 		styles="klWeis"/>
@@ -65,7 +66,7 @@
 				cutouts="htext-lt,htext-ct,htext-rt,htext-lm,htext-cm,htext-rm,htext-lb,htext-cb,htext-rb" 
 				styles="etext-e,etext-e,etext-p,etext-s"/>
 				
-		<!--Assests for settings pop-up panel-->	
+		<!--Assests for pop-up panels-->	
 		<skin id="swis16blk" styles="swis16blk"/>	
 		<skin id="swis20blk" styles="menu_e"/>
 		<skin id="swis24gry" styles="swis24gry"/>	
@@ -73,11 +74,20 @@
 		<skin id="swis32blk" styles="swis32blk"/>
 		<skin id="customText"
 			cutouts="htext-lt,htext-ct,htext-rt,htext-lm,htext-cm,htext-rm,htext-lb,htext-cb,htext-rb" 
-			styles="swis24gry,swis24blk,swis24blk,swis24blk"/>
+			styles="swis24blk,swis24blk,swis24blk,swis24blk"/>
+		<skin id="nullButton" 
+			cutouts="null32h,null32h,null32h"
+			styles="button-d,button-e,button-p,button-s"/>			
     </assets>
 
 	<model>
 		<variable id="week_begins" value="1"/>
+		<variable id="event_num" value="1"/>
+		<variable id="event_type" value="1"/>
+		<variable id="event_month" value="1"/>
+		<variable id="event_day" value="1"/>
+		<variable id="event_year" value="1"/>
+		<variable id="event_description" value=""/>
 	</model>	
 
     <code>
@@ -386,8 +396,7 @@
 			<label id='nonTouch7'   skin='touchText'    left='490' right='0' bottom='16' height='15' align='left' text='[Menu] Options'/>
 		  
 		  <text id='eventsText' skin='eventText' left='48' right='55' top='510' bottom='30' active='false' visible='true' />  
-		  <!--button id="BUTTON_EDT" active="true" text="Edit"  left="450" width="90" top="520" height="40" do="doButtonClick"/> If using these buttons, you need to change to right='160' in eventsText above
-		  <button id="BUTTON_DLT" active="true" text="Clear"  left="450" width="90" top="570" height="40" do="doButtonClick"/-->
+		  <button id="BUTTON_EDT" active="true" text="Edit Events"  left="394" width="150" top="460" height="40" do="doButtonClick"/>
 
 		  <button id="btn_Exit" left="0" top="-70" height="70" width="70" active="true" visible="false" do="doRoot"/>
 		  
@@ -418,7 +427,63 @@
 				<default-button id="btn_Ok" text="OK" width="70" bottom="10" do="doOK"/>
 				<button id="btn_Cancel" text="Cancel" width="100" left ="270" bottom="10" do="doClose"/>		
 			</dialog>
-		  
+
+		<!--Events pop-up panel-->
+		<dialog id="EVENTS_DIALOG" width="450" height="450" visible="false">
+			<code>
+				<function id="doLoad">
+					this.show(false);
+					this.container.updateCalendar();
+				</function>
+				<function id="doClose">
+					this.show(false);
+					this.container.closeDlg();
+				</function>
+				<function id="doLeft">		this.container.moveCursor("left"); </function>
+				<function id="doPrevious">	this.container.moveCursor("left"); </function>
+				<function id="doRight">		this.container.moveCursor("right"); </function>
+				<function id="doNext">		this.container.moveCursor("right"); </function> 
+				<function id="doUp">      	this.container.moveCursor("up");    </function>
+				<function id="doDown">		this.container.moveCursor("down");  </function>	        
+				<function id="doCenter">	this.container.doCenterF();  </function>
+			</code>
+			<background skin="dlg_background" left="0" right="0" top="0" bottom="0"/>
+			<label skin="swis32blk" active="false" text="Events" align="center" left="28" right="28" top="20" height="38"/>
+
+			<label skin="swis24blk" active="false" text="Event: " left="40" width="100" top="67" align="left" height="32"/>
+			<text id="eventNum" skin="eventText" active="false" variable="event_num" left="190" width="62" top="67" height="41"/>
+			<button id="eventNum-" skin="nullButton" left="140" top="67" width="50" heigth="28" text="-" do="doPlusMinus"/>
+			<button id="ceventNum+" skin="nullButton" left="252" top="67" width="50" heigth="28" text="+" do="doPlusMinus"/>
+					
+			<label skin="swis24blk" active="false" text="Type:" left="40" width="100" top="107" align="left" height="32"/>
+			<text id="eventType" skin="eventText" active="false" variable="event_type" left="190" width="62" top="107" height="41"/>
+			<text id="eventTypeText" skin="eventText" active="false" left="190" width="160" top="107" height="41"/>
+			<button id="eventType-" skin="nullButton" left="140" top="107" width="50" heigth="28" text="-" do="doPlusMinus"/>
+			<button id="eventType+" skin="nullButton" left="350" top="107" width="50" heigth="28" text="+" do="doPlusMinus"/>
+					
+			<label skin="swis24blk" active="false" text="Month:" left="40" width="100" top="147" align="left" height="32"/>
+			<text id="eventMonth" skin="eventText" active="false" variable="event_month" left="190" width="62" top="147" height="41"/>
+			<button id="eventMonth-" skin="nullButton" left="140" top="147" width="50" heigth="28" text="-" do="doPlusMinus"/>
+			<button id="eventMonth+" skin="nullButton" left="252" top="147" width="50" heigth="28" text="+" do="doPlusMinus"/>
+			
+			<label id="eventDayText" skin="swis24blk" active="false" text="Date:" left="40" width="100" top="187" align="left" height="32"/>
+			<text id="eventDay" skin="eventText" active="false" variable="event_day" left="190" width="62" top="187" height="41"/>
+			<button id="eventDay-" skin="nullButton" left="140" top="187" width="50" heigth="28" text="-" do="doPlusMinus"/>
+			<button id="eventDay+" skin="nullButton" left="252" top="187" width="50" heigth="28" text="+" do="doPlusMinus"/>
+
+			<label id="eventYearText" skin="swis24blk" active="false" text="Year:" left="40" width="100" top="227" align="left" height="32"/>
+			<text id="eventYear" skin="eventText" active="false" variable="event_year" left="190" width="102" top="227" height="41"/>
+			<text id="weekDay" skin="eventText" active="false" variable="event_year" left="190" width="102" top="227" height="41"/>			
+			<button id="eventYear-" skin="nullButton" left="140" top="227" width="50" heigth="28" text="-" do="doPlusMinus"/>
+			<button id="eventYear+" skin="nullButton" left="292" top="227" width="50" heigth="28" text="+" do="doPlusMinus"/>
+
+			<label skin="swis24blk" active="false" text="Description:" left="40" width="180" top="267" align="left" height="32"/>
+			<text id="eventDescription" skin="eventText" active="false" variable="event_description" left="40" width="390" top="307" height="41"/>
+
+			<default-button id="btn_Ok" text="OK" width="70" bottom="10" do="doLoad"/>
+			<button id="btn_Cancel" text="Cancel" width="100" left ="270" bottom="10" do="doClose"/>		
+		</dialog>
+		
         </group>
     </group>
 </document>
