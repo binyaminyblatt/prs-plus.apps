@@ -11,6 +11,7 @@
 // 2011-07-18 Ben Chenoweth - Fixed: "today" indicator missing in week-starts-Monday mode.
 // 2011-07-19 Ben Chenoweth - Relocated Edit button; enabled option text on Touch and event text; started event popup panel.
 // 2011-07-20 Ben Chenoweth - Event popup panel working (apart from changing description); delete event; fixed floating events.
+// 2011-07-20 Ben Chenoweth - Event popup panel working for non-Touch; few bug fixes.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -183,6 +184,7 @@ var tmp = function () {
 			this.nonTouch5.show(false);
 			this.nonTouch6.show(false);
 			this.nonTouch7.show(false);
+			this.nonTouch8.show(false);
 		}
 		
 		target.eventsText.enable(true);
@@ -215,6 +217,7 @@ var tmp = function () {
 		// hide cursor on Touch
 		if (!hasNumericButtons) {
 			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);
+			this.createCalendar();			
 		} else {
 			if (selectionDate > numbDays) selectionDate=numbDays;
 			var daycounter = 0;
@@ -238,11 +241,13 @@ var tmp = function () {
 			}
 			thisDate = 1;
 			
+			this.createCalendar();
+			
 			if (selectionDate>0) {
 				//place selection square
 				this.gridCursor.changeLayout((x-1)*70+50, 70, uD, (y-1)*70+80, 70, uD);
 			}
-			
+
 			if (this.checkevents(selectionDate,monthNum,yearNum,y,x)) {
 				// events in selection square
 				this.showevents(selectionDate,monthNum,yearNum,y,x);
@@ -253,7 +258,6 @@ var tmp = function () {
 		
 		//target.bubble("tracelog","monthNum="+monthNum+", yearNum="+yearNum+", numbDays="+numbDays);
 		//target.bubble("tracelog","firstDate="+firstDate+", lastDate="+lastDate+", firstDay="+firstDay);
-		this.createCalendar();
 		return;	
 	}
 
@@ -338,6 +342,7 @@ var tmp = function () {
 			}
 		}
 		thisDate = 1;
+		return;
 	}
 
 	target.checkevents = function (day,month,year,week,dayofweek) {
@@ -596,7 +601,7 @@ var tmp = function () {
 		} else {
 			this.eventsText.setValue("");
 		}
-		
+
 		//target.bubble("tracelog","n="+n+", column="+x+", row="+y+", date="+selectionDate);
 		return;
 	}
@@ -672,6 +677,8 @@ var tmp = function () {
 			this.EVENTS_DIALOG.doCenterF();
 			return;
 		}
+		target.bubble("tracelog","selectionDate="+selectionDate+", numEvents="+tempEvents.length);
+		this.doEditEvents();
 		return;
 	}
 	
@@ -739,7 +746,10 @@ var tmp = function () {
 				}
 			}
 		}
+		target.bubble("tracelog","Before: selectionDate="+selectionDate);
 		this.dateChanged();
+		target.bubble("tracelog","After: selectionDate="+selectionDate);
+		return;
 	}
 	
 	target.doMark = function () {
@@ -990,7 +1000,7 @@ var tmp = function () {
 				} else if (tempEvents[currentTempEvent][2]=="5") {
 					target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[4]);
 				}
-			} else if (tempEvents[currentTempEvent][1]=="V") {
+			} else if (tempEvents[currentTempEvent][0]=="V") {
 				target.EVENTS_DIALOG.eventType.setValue("7");
 				target.setVariable("event_type","7");
 				target.EVENTS_DIALOG.eventTypeText.setValue("Valentines");			
@@ -1242,17 +1252,120 @@ var tmp = function () {
 	
 	target.ntHandleEventsDlg = function () {
 		if (custSel === 0) {
-			//target.SETTINGS_DIALOG.week_starts.enable(true);
+			target.EVENTS_DIALOG.eventNum.enable(true);
+			target.EVENTS_DIALOG.eventTypeText.enable(false);
+			target.EVENTS_DIALOG.eventMonth.enable(false);
+			target.EVENTS_DIALOG.eventDay.enable(false);
+			target.EVENTS_DIALOG.cardinalDay.enable(false);
+			target.EVENTS_DIALOG.eventYear.enable(false);
+			target.EVENTS_DIALOG.weekDay.enable(false);
+			target.EVENTS_DIALOG.eventDescription.enable(false);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
 		}
 		if (custSel === 1) {
-			//target.SETTINGS_DIALOG.week_starts.enable(false);	
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
-			mouseEnter.call(target.EVENTS_DIALOG.btn_Ok);
-		}		
-		if (custSel === 2) {				 		
+			target.EVENTS_DIALOG.eventNum.enable(false);
+			target.EVENTS_DIALOG.eventTypeText.enable(false);
+			target.EVENTS_DIALOG.eventMonth.enable(false);
+			target.EVENTS_DIALOG.eventDay.enable(false);
+			target.EVENTS_DIALOG.cardinalDay.enable(false);
+			target.EVENTS_DIALOG.eventYear.enable(false);
+			target.EVENTS_DIALOG.weekDay.enable(false);
+			target.EVENTS_DIALOG.eventDescription.enable(false);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
-			mouseEnter.call(target.EVENTS_DIALOG.btn_Cancel);	
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
+			mouseEnter.call(target.EVENTS_DIALOG.btn_Delete);
+		}
+		if (custSel === 2) {
+			target.EVENTS_DIALOG.eventNum.enable(false);
+			target.EVENTS_DIALOG.eventTypeText.enable(true);
+			target.EVENTS_DIALOG.eventMonth.enable(false);
+			target.EVENTS_DIALOG.eventDay.enable(false);
+			target.EVENTS_DIALOG.cardinalDay.enable(false);
+			target.EVENTS_DIALOG.eventYear.enable(false);
+			target.EVENTS_DIALOG.weekDay.enable(false);
+			target.EVENTS_DIALOG.eventDescription.enable(false);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
+		}
+		if (custSel === 3) {
+			target.EVENTS_DIALOG.eventNum.enable(false);
+			target.EVENTS_DIALOG.eventTypeText.enable(false);
+			target.EVENTS_DIALOG.eventMonth.enable(true);
+			target.EVENTS_DIALOG.eventDay.enable(false);
+			target.EVENTS_DIALOG.cardinalDay.enable(false);
+			target.EVENTS_DIALOG.eventYear.enable(false);
+			target.EVENTS_DIALOG.weekDay.enable(false);
+			target.EVENTS_DIALOG.eventDescription.enable(false);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
+		}
+		if (custSel === 4) {
+			target.EVENTS_DIALOG.eventNum.enable(false);
+			target.EVENTS_DIALOG.eventTypeText.enable(false);
+			target.EVENTS_DIALOG.eventMonth.enable(false);
+			target.EVENTS_DIALOG.eventDay.enable(true);
+			target.EVENTS_DIALOG.cardinalDay.enable(true);
+			target.EVENTS_DIALOG.eventYear.enable(false);
+			target.EVENTS_DIALOG.weekDay.enable(false);
+			target.EVENTS_DIALOG.eventDescription.enable(false);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
+		}
+		if (custSel === 5) {
+			target.EVENTS_DIALOG.eventNum.enable(false);
+			target.EVENTS_DIALOG.eventTypeText.enable(false);
+			target.EVENTS_DIALOG.eventMonth.enable(false);
+			target.EVENTS_DIALOG.eventDay.enable(false);
+			target.EVENTS_DIALOG.cardinalDay.enable(false);
+			target.EVENTS_DIALOG.eventYear.enable(true);
+			target.EVENTS_DIALOG.weekDay.enable(true);
+			target.EVENTS_DIALOG.eventDescription.enable(false);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
+		}
+		if (custSel === 6) {
+			target.EVENTS_DIALOG.eventNum.enable(false);
+			target.EVENTS_DIALOG.eventTypeText.enable(false);
+			target.EVENTS_DIALOG.eventMonth.enable(false);
+			target.EVENTS_DIALOG.eventDay.enable(false);
+			target.EVENTS_DIALOG.cardinalDay.enable(false);
+			target.EVENTS_DIALOG.eventYear.enable(false);
+			target.EVENTS_DIALOG.weekDay.enable(false);
+			target.EVENTS_DIALOG.eventDescription.enable(true);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
+		}
+		if (custSel === 7) {
+			target.EVENTS_DIALOG.eventNum.enable(false);
+			target.EVENTS_DIALOG.eventTypeText.enable(false);
+			target.EVENTS_DIALOG.eventMonth.enable(false);
+			target.EVENTS_DIALOG.eventDay.enable(false);
+			target.EVENTS_DIALOG.cardinalDay.enable(false);
+			target.EVENTS_DIALOG.eventYear.enable(false);
+			target.EVENTS_DIALOG.weekDay.enable(false);
+			target.EVENTS_DIALOG.eventDescription.enable(false);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
+			mouseEnter.call(target.EVENTS_DIALOG.btn_Ok);
+		}	
+		if (custSel === 8) {
+			target.EVENTS_DIALOG.eventNum.enable(false);
+			target.EVENTS_DIALOG.eventType.enable(false);
+			target.EVENTS_DIALOG.eventMonth.enable(false);
+			target.EVENTS_DIALOG.eventDay.enable(false);
+			target.EVENTS_DIALOG.cardinalDay.enable(false);
+			target.EVENTS_DIALOG.eventYear.enable(false);
+			target.EVENTS_DIALOG.eventDescription.enable(true);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
+			mouseEnter.call(target.EVENTS_DIALOG.btn_Cancel);
 		}
 		return;
 	}
@@ -1267,22 +1380,26 @@ var tmp = function () {
 			break
 		}
 		case "down" : {
-			if (custSel<2) {
+			if (custSel<8) {
 				custSel++;
 				target.ntHandleEventsDlg();
 			}
 			break
 		}
 		case "left" : {
-			if (custSel==0) {
-				//target.setVariable("week_begins","1");
-			}
+			if (custSel==0) target.EVENTS_DIALOG.doPlusMinusF("eventNum-");
+			if (custSel==2) target.EVENTS_DIALOG.doPlusMinusF("eventType-");
+			if (custSel==3) target.EVENTS_DIALOG.doPlusMinusF("eventMonth-");
+			if (custSel==4) target.EVENTS_DIALOG.doPlusMinusF("eventDay-");
+			if (custSel==5) target.EVENTS_DIALOG.doPlusMinusF("eventYear-");
 			break
 		}		
 		case "right" : {
-			if (custSel==0) {
-				//target.setVariable("week_begins","2");
-			}
+			if (custSel==0) target.EVENTS_DIALOG.doPlusMinusF("eventNum+");
+			if (custSel==2) target.EVENTS_DIALOG.doPlusMinusF("eventType+");
+			if (custSel==3) target.EVENTS_DIALOG.doPlusMinusF("eventMonth+");
+			if (custSel==4) target.EVENTS_DIALOG.doPlusMinusF("eventDay+");
+			if (custSel==5) target.EVENTS_DIALOG.doPlusMinusF("eventYear+");			
 			break
 		}
 		return;
@@ -1290,8 +1407,9 @@ var tmp = function () {
 	}
 	
 	target.EVENTS_DIALOG.doCenterF = function () {
-		if (custSel === 1) target.EVENTS_DIALOG.btn_Ok.click();	
-		if (custSel === 2) target.EVENTS_DIALOG.btn_Cancel.click();
+		if (custSel === 1) target.EVENTS_DIALOG.btn_Delete.click();
+		if (custSel === 7) target.EVENTS_DIALOG.btn_Ok.click();
+		if (custSel === 8) target.EVENTS_DIALOG.btn_Cancel.click();
 		return;
 	}
 

@@ -394,6 +394,7 @@
 			<label id='nonTouch5' skin='touchText' left='1' right='0' bottom='16' height='15' align='left' text='[Prev] -Month'/>
           <label id='nonTouch6'   skin='touchText'    left='1' right='0' bottom='3' height='15' align='left' text='[Hold Prev] -Year'/>
 			<label id='nonTouch7'   skin='touchText'    left='490' right='0' bottom='16' height='15' align='left' text='[Menu] Options'/>
+			<label id='nonTouch8'   skin='touchText'    left='300' right='0' bottom='16' height='15' align='left' text='[Center] Edit Events'/>
 		  
 		  <text id='eventsText' skin='eventText' left='48' right='55' top='510' bottom='30' active='false' visible='true' />  
 		  <button id="BUTTON_EDT" active="true" text="Edit Events"  left="394" width="150" top="460" height="40" do="doButtonClick"/>
