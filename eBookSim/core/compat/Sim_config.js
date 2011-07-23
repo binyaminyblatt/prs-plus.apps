@@ -53,25 +53,29 @@ return {
 		MS: 34,
 		SD: 35,
 		INTERNAL_MEM: 36,
+		SEARCH: 37,
+		ROOT_MENU: 38,
+
+		STANDBY: 62,
+
+		UNCHECKED: 39,
+		CHECKED: 40,
 		
-		FOLDER: 37,
-		GAME: 38,
-		CALC: 39,
+		FOLDER: 41,
+		GAME: 42,
+		CALC: 43,
+		LANGUAGE: 44,
+		KEYBOARD: 45,
 		CHESS: 46,
-		CARDS: 43,
-		SUDOKU: 44,
-		MAHJONG: 45,
-		FIVEROW: 56,
-		FIVEBALLS: 47,
-		DRAUGHTS: 48,
-		TEXT_SCALE: 49,
-		BOMB: 50,
-
-		SEARCH: 51,
-		ROOT_MENU: 52,	
-		UNCHECKED: 53,
-		CHECKED: 54,		
-
+		CARDS: 47,
+		SUDOKU: 48,
+		MAHJONG: 49,
+		FIVEROW: 50,
+		FIVEBALLS: 51,
+		DRAUGHTS: 52,
+		TEXT_SCALE: 53,
+		BOMB: 54,
+		
 		FONT: 55,
 		EXECUTABLE: 56,
 		APPLICATIONS: 57,
@@ -80,13 +84,13 @@ return {
 		PREVIOUS: 60,
 		NEXT: 61,
 		
-		DEFAULT: 37,
+		DEFAULT: 41,
 		
 		// At least 600 and 900 have more than one type of icons
 		getIcon: function (strKind, type) {
 			var kind = this[strKind];
 			if (typeof kind === "undefined") {
-				kind = 37;
+				kind = 41;
 			}
 			return kind;
 		}
