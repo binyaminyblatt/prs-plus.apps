@@ -16,6 +16,7 @@ tmp = function() {
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
 			kbook.autoRunRoot.sandbox.getFileContent = Core.io.getFileContent;
+			kbook.autoRunRoot.sandbox.startsWith = Core.text.startsWith;
 			kbook.autoRunRoot.sandbox.gamesSavePath = Core.config.userGamesSavePath;
 			kbook.autoRunRoot.path = Core.config.addonsPath + "Calendar/calendar.xml";
 			kbook.autoRunRoot.enterIf(kbook.model);

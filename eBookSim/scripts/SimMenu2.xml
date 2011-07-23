@@ -137,31 +137,31 @@
 		<button id="1" bottom="630" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
 
    		<panel skin="piMenuRow" left="0" bottom="560" right="0" height="70" />
-	    <sprite skin="kbookMenuIcon" left="0" width="70" bottom="560" height="70" u="39" v="0" active="false" canFocus="false"/>   
+	    <sprite skin="kbookMenuIcon" left="0" width="70" bottom="560" height="70" u="44" v="0" active="false" canFocus="false"/>   
 		<label skin="piRowNum" bottom="560" right="0" width="35" height="70" align="center" text="2" />
 		<label skin="piRow" bottom="560" right="0" left="70" height="70" text="TestApp" />   		
 		<button id="2" bottom="560" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
 		
    		<panel skin="piMenuRow" left="0" bottom="490" right="0" height="70" />
-	    <sprite skin="kbookMenuIcon" left="0" width="70" bottom="490" height="70" u="47" v="0" active="false" canFocus="false"/>   
+	    <sprite skin="kbookMenuIcon" left="0" width="70" bottom="490" height="70" u="51" v="0" active="false" canFocus="false"/>   
 		<label skin="piRowNum" bottom="490" right="0" width="35" height="70" align="center" text="3" />
 		<label skin="piRow" bottom="490" right="0" left="70" height="70" text="Fiveballs" />   		
 		<button id="3" bottom="490" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
 		
    		<panel skin="piMenuRow" left="0" bottom="420" right="0" height="70" />
-	    <sprite skin="kbookMenuIcon" left="0" width="70" bottom="420" height="70" u="46" v="0" active="false" canFocus="false"/>      		
+	    <sprite skin="kbookMenuIcon" left="0" width="70" bottom="420" height="70" u="50" v="0" active="false" canFocus="false"/>      		
 		<label skin="piRowNum" bottom="420" right="0" width="35" height="70" align="center" text="4" />
 		<label skin="piRow" bottom="420" right="0" left="70" height="70" text="XO-Cubed" />   		
 		<button id="4" bottom="420" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
 
 		<panel skin="piMenuRow" left="0" bottom="350" right="0" height="70" />
-	    <sprite skin="kbookMenuIcon" left="0" width="70" bottom="350" height="70" u="43" v="0" active="false" canFocus="false"/>   		
+	    <sprite skin="kbookMenuIcon" left="0" width="70" bottom="350" height="70" u="48" v="0" active="false" canFocus="false"/>   		
 		<label skin="piRowNum" bottom="350" right="0" width="35" height="70" align="center" text="5" />
 		<label skin="piRow" bottom="350" right="0" left="70" height="70" text="FreeCell" />   		
 		<button id="5" bottom="350" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
 
 		<panel skin="piMenuRow" left="0" bottom="280" right="0" height="70" />
-		<sprite skin="kbookMenuIcon" left="0" width="70" bottom="280" height="70" u="48" v="0" active="false" canFocus="false"/>   
+		<sprite skin="kbookMenuIcon" left="0" width="70" bottom="280" height="70" u="52" v="0" active="false" canFocus="false"/>   
 		<label skin="piRowNum" bottom="280" right="0" width="35" height="70" align="center" text="6" />
 		<label skin="piRow" bottom="280" right="0" left="70" height="70" text="Dame" />   		
 		<button id="6" bottom="280" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>

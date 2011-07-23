@@ -18,6 +18,8 @@
 			 2010-10-03		"Compiled" Core and mapped _Core functions  
 			 2010-12-04		505 / x50 Skin, Buttons enebled accordingly, to be set via system-menu
 			 2010-12-08		Modified Layout for screen-res 1280x800
+			 2011-06-02		corrected hold-prev = doFirst; hold-next = doLast
+ 			 2011-07-23		moved setView() to external file
  -->
 	<assets>
 		<import href="../assets/simAssets/simAssets.xml"/>
@@ -74,14 +76,28 @@
 					} catch(e) {this.bubble("tracelog","error run _PRSPlus.js: "+e);
 					} finally {
 						f.close();
-						this.setView("Menu");					
-						//this.setView("TestApp");		
 					}
 				}
 			} catch(e2) {this.bubble("tracelog","outer Error _PRSPlus: "+e2);}
-			
+
+			/* load external setView()  */
+			try {
+				if(FileSystem.getFileInfo(path.concat('/scripts/setView.js'))) {
+					var f = new Stream.File(path.concat('/scripts/setView.js'));
+					try {					
+						this.setView = new Function("app", f.toString());	
+					} catch(e) {
+						this.bubble("tracelog","error load setView.js: "+e);
+					} finally {
+						f.close();
+					}
+				}
+			} catch(e2) {this.bubble("tracelog","outer Error load setView: "+e2);}	
+					
 	   /* initialize global functions and variables (ugly but works) */
   		 try {
+			this.setView("Menu");					
+			//this.setView("TestApp");	
   		    fnPageScroll = _Core.system.getSoValue(this.TRACER, 'scrollPage');
 			touch = !_Core.config.compat.hasNumericButtons;
 		 	this.changeInterface(touch);
@@ -94,27 +110,6 @@
 		arguments.callee.grammar.call(this);
         var state = this.getVariable("STATE");
         
-        var target;
-   //     this.enable();
-	//	this.focus(true);
-        //(if (this.state != state) {
-        //    this.focus(true)
-        //    this.AUTORUN_GROUP.show(false)
-        //    switch(state) {
-        //    case "AUTORUN":
-        // 	  this.loadScript();
-        //        this.AUTORUN_GROUP.show(true);
-        //        target = this.AUTORUN_GROUP.AUTORUN;
-        //        break;
-        //    }
-        //    this.state = state;
-        //	  target.init();            
-        //     if (target.isEnabled())
-        //        {
-        //        target.focus(true);
-        //        }; 
-   //     this.showClock();       
-        //}         
     </function>
      
 		<function id="tracelog" params="msg">
@@ -217,131 +212,11 @@
 				}	 
 			]]>
 			</function>	
-			
   		
-    		<function id="setView" params="app">
-			<![CDATA[
-			/* define Starter.js exports to sandbox like this: kbook.autoRunRoot.sandbox.Titel = "anything"; in Sim omit sandbox */
-			//this.bubble("tracelog","setView "+app);	
-			/* exports for all apps*/
-			kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
-			kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
-			kbook.autoRunRoot.gamesSavePath = _Core.config.userGamesSavePath;			
-				switch (app) {		
-				 case "Calc" : {
-								kbook.autoRunRoot._icon = 39;
-								kbook.autoRunRoot._title = "Taschenrechner";
-								this.bubble("tracelog","setURI");
-								this.MAIN.EINK.VIEW.setURI("../addons/Calc/calculator.xml");
-								break;
-								}	
-				 case "Dict" : {
-								kbook.autoRunRoot.exec = _Core.shell.exec;
-								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
-								kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;
-								kbook.autoRunRoot.maxSmartZoom = 20; 	//DictionaryCL.options.maxSmartZoom;
-								kbook.autoRunRoot.resultSize = 25; 		//DictionaryCL.options.resultSize;
-								kbook.autoRunRoot.dictPath = dictPath;
-								this.MAIN.EINK.VIEW.setURI("../addons/DictionaryCL/dictionary.xml");				
-								break;
-								}	
-				 case "Fiveballs" : {
-								kbook.autoRunRoot._icon = 47;
-								kbook.autoRunRoot._title = "FiveBalls";				
-				 				kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
-								this.MAIN.EINK.VIEW.setURI("../addons/Fiveballs/fiveballs.xml");				
-								break;
-								}	
-				 case "Mahjong" : {
-								kbook.autoRunRoot._icon = 45;
-								kbook.autoRunRoot._title = "MahJonG";				 
-								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
-								this.MAIN.EINK.VIEW.setURI("../addons/Mahjong/mahjong.xml");				
-								break;
-								}	
-				 case "Sudoku" : {
-								kbook.autoRunRoot._icon = 44;
-								kbook.autoRunRoot._title = "Sudoku";				
-				 				kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
-								this.MAIN.EINK.VIEW.setURI("../addons/Sudoku/sudoku.xml");				
-								break;
-								}	
-				 case "xDicto" : {
-								this.MAIN.EINK.VIEW.setURI("../addons/xDictionaryCL/kb.xml");				
-								break;
-								}									
-				 case "Chess" : {
-								kbook.autoRunRoot._icon = 42;
-								kbook.autoRunRoot._title = "Schach";				
-								this.MAIN.EINK.VIEW.setURI("../addons/Chess/chess.xml");				
-								break;
-								}
-				 case "Dame" : {kbook.autoRunRoot._icon = 48;
-								kbook.autoRunRoot._title = "Dame";				
-								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
-								this.MAIN.EINK.VIEW.setURI("../addons/Draughts/draughts.xml");				
-								break;
-								}
-				 case "TestApp" : {
-								this.MAIN.EINK.VIEW.setURI("../addons/TestApp/TestApp.xml");				
-								break;
-								}											
-				 case "Fiverow" : {
- 							    kbook.autoRunRoot._icon = 46; 
-								kbook.autoRunRoot._title = "Fünfgewinnt";				
-								this.MAIN.EINK.VIEW.setURI("../addons/Fiverow/fiverow.xml");				
-								break;
-								}				
-				case "Freecell" : {
-								kbook.autoRunRoot._icon = 43;
-								kbook.autoRunRoot._title = "Free Cell";				
-								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
-								this.MAIN.EINK.VIEW.setURI("../addons/Freecell/freecell.xml");				
-								break;
-								}				
-				case "MineSweeper" : {
-								this.bubble("tracelog","MineSweeper ");
-								kbook.autoRunRoot._icon = 50;
-								kbook.autoRunRoot._title = "MineSweeper";				
-								kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;								
-								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
-								this.MAIN.EINK.VIEW.setURI("../addons/MineSweeper/minesweeper.xml");				
-								break;
-								}
-				case "Spider" : {
-								this.bubble("tracelog","Spider ");
-								kbook.autoRunRoot._icon = 43;
-								kbook.autoRunRoot._title = "SpiderSoilitaire";				
-								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
-								this.EINK.VIEW.setURI("../addons/SpiderSolitaire/spider.xml");				
-								break;
-								}								
-				case "XOCubed" : {
- 							    kbook.autoRunRoot._icon = 46; 
-								kbook.autoRunRoot._title = "XO-Cubed";				
-								this.MAIN.EINK.VIEW.setURI("../addons/XOCubed/xocubed.xml");				
-								break;
-								}	
-				case "Menu" : {
-								this.bubble("tracelog","Menu ");
-								this.MAIN.EINK.VIEW.setURI("SimMenu.xml");	
-								break;
-								}										
-				 case "Menu2" : {
-								this.bubble("tracelog","Menu2 ");
-								this.MAIN.EINK.VIEW.setURI("SimMenu2.xml");	
-								break;
-								}
-				 case "Calendar" : {
-								kbook.autoRunRoot._icon = 22;
-								kbook.autoRunRoot._title = "Calendar";				
-								kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
-								this.EINK.VIEW.setURI("../addons/Calendar/calendar.xml");				
-								break;
-								}									
-				}
-			]]>	
-    		</function>		
+    		<!--function id="setView" params="app">
+				2011-07-23 Mark Nord - moved to external file setView.js
+    		</function-->	
+
 			<function id="doAbout">
 				this.ABOUT_DIALOG.open()
 			</function>

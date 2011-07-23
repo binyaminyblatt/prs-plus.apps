@@ -185,7 +185,7 @@ _Core.lang.LX  = getSoValue(theRoot,'Core.lang.LX');
 _Core.lang.getLocalizer  = getSoValue(theRoot,'Core.lang.getLocalizer');
 _Core.lang.getStrings  = getSoValue(theRoot,'Core.lang.getStrings');
 //target.bubble('tracelog','done lang');
-
+_Core.config.compat.NodeKinds = getSoValue(theRoot,'Core.config.compat.NodeKinds');
 _Core.config.compat.NodeKinds.getIcon = getSoValue(theRoot,'Core.config.compat.NodeKinds.getIcon');
 
 /* something to play with; Output is routed to the simulators trace-window
