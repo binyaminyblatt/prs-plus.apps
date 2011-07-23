@@ -87,6 +87,7 @@
 		<variable id="event_month" value="1"/>
 		<variable id="event_day" value="1"/>
 		<variable id="event_year" value="1"/>
+		<variable id="event_icon" value="1"/>
 		<variable id="event_description" value=""/>
 	</model>	
 
@@ -482,7 +483,13 @@
 			<text id="weekDay" skin="eventText" active="false" left="190" width="102" top="227" height="41"/>			
 			<button id="eventYear-" skin="nullButton" left="140" top="227" width="50" heigth="28" text="-" do="doPlusMinus"/>
 			<button id="eventYear+" skin="nullButton" left="292" top="227" width="50" heigth="28" text="+" do="doPlusMinus"/>
-
+			
+			<label id="eventIconText" skin="swis24blk" active="false" text="Icon:" left="360" width="80" top="147" align="left" height="32"/>
+			<text id="eventIcon" skin="eventText" active="false" variable="event_icon" left="355" width="83" top="181" height="84"/>
+			<sprite skin='calendarSquare' id='square42' left="360" width="70" top="187" height="70"  u='2' active='true' canFocus='true'/>
+			<button id="eventIcon-" skin="nullButton" left="350" top="260" width="50" heigth="28" text="-" do="doPlusMinus"/>
+			<button id="eventIcon+" skin="nullButton" left="390" top="260" width="50" heigth="28" text="+" do="doPlusMinus"/>
+			
 			<label skin="swis24blk" active="false" text="Description:" left="40" width="180" top="267" align="left" height="32"/>
 			<text id="eventDescription" skin="eventText" active="false" variable="event_description" left="40" width="390" top="307" height="41"/>
 
