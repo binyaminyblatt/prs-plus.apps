@@ -14,6 +14,7 @@
 // 2011-07-20 Ben Chenoweth - Event popup panel working for non-Touch; few bug fixes.
 // 2011-07-22 Ben Chenoweth - Monthly/weekly events now work; changed event file format to include icon number; changed event popup panel to include icon; added more icons; weekend shaded slightly.
 // 2011-07-23 Mark Nord - auto-correct dat-file (insert icon-number); allow "#" as rem-character, some code optimisations
+// 2011-07-24 Ben Chenoweth - Various bug fixes; new weekly event now shows day of clicked date.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -45,6 +46,7 @@ var tmp = function () {
 	var datPath  = datPath0 + 'calendar.dat';
 	var settingsPath = datPath0 + 'settings.dat';
 	var selectionDate;
+	var selectionDay;
 	var settingsDlgOpen = false;
 	var eventsDlgOpen = false;
 	var weekBeginsWith = "Sun";
@@ -249,7 +251,8 @@ var tmp = function () {
 					}
 					if (selectionDate==daycounter) {
 						x=j;
-						y=i; 
+						y=i;
+						selectionDay=i;
 					}
 					thisDate++;
 				}
@@ -391,7 +394,11 @@ var tmp = function () {
 	target.checkevents = function (day,month,year,week,dayofweek) {
 	var numevents = 0;
 	var floater = 0;
-
+	var altdayofweek;
+	
+	altdayofweek = dayofweek+1;
+	if (altdayofweek==8) altdayofweek=1;
+	
 	// reset the temporary array
 	if (tempEvents.length>0) {
 		tempEvents.length=0;
@@ -400,7 +407,11 @@ var tmp = function () {
 	
 		for (var i = 0; i < events.length; i++) {
 			if (events[i][0] == "W") {
-				if ((events[i][3] == dayofweek)) numevents++;
+				if (weekBeginsWith=="Sun") {
+					if ((events[i][3] == dayofweek)) numevents++;
+				} else {
+					if ((events[i][3] == altdayofweek)) numevents++;
+				}
 			}
 			else if (events[i][0] == "M") {
 				if ((events[i][2] == day) && (events[i][3] <= year)) numevents++;
@@ -434,6 +445,11 @@ var tmp = function () {
 	}
 
 	target.getevent = function (day,month,year,week,dayofweek) {
+		var altdayofweek;
+		
+		altdayofweek = dayofweek+1;
+		if (altdayofweek==8) altdayofweek=1;
+		
 		// Only one icon can be shown, so we have to prioritise them
 		// Also, the icon of the first event of each type will be the one displayed
 		// yearly events are first
@@ -477,9 +493,11 @@ var tmp = function () {
 		// weekly events are next
 		for ( i = 0; i < events.length; i++) {
 			if (events[i][0] == "W") {
-				if ((events[i][3] == dayofweek)) {
-					return events[i][4];
-				}
+				if (weekBeginsWith=="Sun") {
+					if ((events[i][3] == dayofweek)) return events[i][4];
+				} else {
+					if ((events[i][3] == altdayofweek)) return events[i][4];
+				}				
 			}
 		}
 		// one off events
@@ -497,6 +515,10 @@ var tmp = function () {
 	target.showevents = function (day,month,year,week,dayofweek) {
 	var theevent = "";
 	var floater = 0;
+	var altdayofweek;
+
+		altdayofweek = dayofweek+1;
+		if (altdayofweek==8) altdayofweek=1;
 	
 		for (var i = 0; i < events.length; i++) {
 			// First we'll process recurring events (if any):
@@ -504,10 +526,21 @@ var tmp = function () {
 				// repeating event
 				if (events[i][0] == "W") {
 					if ((events[i][3] == dayofweek)) {
-						theevent += events[i][5] + '\n';
-						tempEvents=tempEvents.concat(events.slice(i,i+1));
-						tempEventsNum.push(i);
+						
 					}
+					if (weekBeginsWith=="Sun") {
+						if ((events[i][3] == dayofweek)) {
+							theevent += events[i][5] + '\n';
+							tempEvents=tempEvents.concat(events.slice(i,i+1));
+							tempEventsNum.push(i);						
+						}
+					} else {
+						if ((events[i][3] == altdayofweek)) {
+							theevent += events[i][5] + '\n';
+							tempEvents=tempEvents.concat(events.slice(i,i+1));
+							tempEventsNum.push(i);						
+						}
+					}						
 				}
 				if (events[i][0] == "M") {
 					if ((events[i][2] == day) && (events[i][3] <= year)) {
@@ -661,7 +694,10 @@ var tmp = function () {
 					daycounter = (thisDate - firstDay)+2;
 					if (firstDay==1) daycounter -= 7;
 				}
-				if ((x==j) && (y==i)) selectionDate=daycounter;
+				if ((x==j) && (y==i)) {
+					selectionDate=daycounter;
+					selectionDay=j;
+				}
 				thisDate++;
 			}
 		}
@@ -729,8 +765,8 @@ var tmp = function () {
 			stream.writeLine("# Type can be: Y<early, M<onthly, W<eekly, F<loating, BLANK for one-off events");
 			stream.writeLine("# Float-Format: F; Month; Cardinal Occurrence; Day of Week (Sun=0; Monday=1); Icon; Text");
 			stream.writeLine("# Special Float-Format: F;3;0;0;Icon;Easter Sunday");
-			stream.writeLine("# Icons: 3=default, 4=Birthday, 5=Chistmas, 6=2Harts, 7=Anniversary, 8=Airlane, 9=Car ");
-			stream.writeLine("# Icons:10=St.Patrick's Day, 11=Thanksgiving, 12=New Year's Day, 13=RIP");
+			stream.writeLine("# Icons: 3=Default, 4=Birthday, 5=Christmas, 6=Two Hearts, 7=Anniversary, 8=Airplane, 9=Car");
+			stream.writeLine("# Icons: 10=St. Patrick's Day, 11=Thanksgiving, 12=New Year's Day, 13=R.I.P., 14=Easter");
 			for (var i = 0; i < events.length; i++) {
 				event=events[i][0]+';'+events[i][1]+';'+events[i][2]+';'+events[i][3]+';'+events[i][4]+';'+events[i][5];
 				stream.writeLine(event);
@@ -989,12 +1025,17 @@ var tmp = function () {
 			target.setVariable("event_day",selectionDate);
 			target.EVENTS_DIALOG.eventYear.setValue(yearNum);
 			target.setVariable("event_year",yearNum);
+			target.EVENTS_DIALOG.eventIcon.setValue("3");
+			target.setVariable("event_icon","3");
+			this.EVENTS_DIALOG.square42.u = 3;			
 			target.EVENTS_DIALOG.eventDescription.setValue("Temporary description");
 			target.setVariable("event_description","Temporary description");
 			target.EVENTS_DIALOG.eventDayText.setValue("Date:");
 			target.EVENTS_DIALOG.eventYearText.setValue("Year:");	
 			target.EVENTS_DIALOG.weekDay.show(false);
 			target.EVENTS_DIALOG.cardinalDay.show(false);
+			target.EVENTS_DIALOG.eventMonth.show(true);
+			target.EVENTS_DIALOG.eventDay.show(true);			
 			target.EVENTS_DIALOG.btn_Delete.enable(false);
 		} else {
 			// put first event information into textboxes
@@ -1028,20 +1069,77 @@ var tmp = function () {
 				target.EVENTS_DIALOG.eventType.setValue("1");
 				target.setVariable("event_type","1");
 				target.EVENTS_DIALOG.eventTypeText.setValue("One-off");
+				target.EVENTS_DIALOG.eventMonth.setValue(tempEvents[currentTempEvent][1]);
+				target.setVariable("event_month",tempEvents[currentTempEvent][1]);
+				target.EVENTS_DIALOG.eventDay.setValue(tempEvents[currentTempEvent][2]);
+				target.setVariable("event_day",tempEvents[currentTempEvent][2]);
+				target.EVENTS_DIALOG.eventYear.setValue(tempEvents[currentTempEvent][3]);
+				target.setVariable("event_year",tempEvents[currentTempEvent][3]);				
 			} else if (tempEvents[currentTempEvent][0]=="Y") {
 				target.EVENTS_DIALOG.eventType.setValue("2");
 				target.setVariable("event_type","2");
-				target.EVENTS_DIALOG.eventTypeText.setValue("Yearly");									
+				target.EVENTS_DIALOG.eventTypeText.setValue("Yearly");
+				target.EVENTS_DIALOG.eventMonth.setValue(tempEvents[currentTempEvent][1]);
+				target.setVariable("event_month",tempEvents[currentTempEvent][1]);
+				target.EVENTS_DIALOG.eventDay.setValue(tempEvents[currentTempEvent][2]);
+				target.setVariable("event_day",tempEvents[currentTempEvent][2]);
+				target.EVENTS_DIALOG.eventYear.setValue(tempEvents[currentTempEvent][3]);
+				target.setVariable("event_year",tempEvents[currentTempEvent][3]);				
 			} else if (tempEvents[currentTempEvent][0]=="M") {
+				// monthly event (therefore don't need the month label)
 				target.EVENTS_DIALOG.eventType.setValue("3");
 				target.setVariable("event_type","3");
 				target.EVENTS_DIALOG.eventTypeText.setValue("Monthly");
-				// monthly event does not require month label
 				target.EVENTS_DIALOG.eventMonth.show(false);
+				eventMonth=0;
+				target.setVariable("event_month",eventMonth);
+				target.EVENTS_DIALOG.eventDayText.setValue("Date:");
+				target.EVENTS_DIALOG.eventYearText.setValue("Year:");	
+				target.EVENTS_DIALOG.weekDay.show(false);
+				target.EVENTS_DIALOG.cardinalDay.show(false);
+				target.EVENTS_DIALOG.eventDay.show(true);
+				eventYear=tempEvents[currentTempEvent][3];
+				eventDay=tempEvents[currentTempEvent][2];
+				if (eventYear<1900) eventYear=todaysYear; // if original event was a floating event
+				target.setVariable("event_year",eventYear);
+				target.EVENTS_DIALOG.eventYear.setValue(eventYear);
+				if (eventDay==0) eventDay=1; // if original event was a floating event
+				target.setVariable("event_day",eventDay);
+				target.EVENTS_DIALOG.eventDay.setValue(eventDay);
 			} else if (tempEvents[currentTempEvent][0]=="W") {
+				// weekly event (therefore don't need the month or date, and yearly becomes week day)
 				target.EVENTS_DIALOG.eventType.setValue("4");
 				target.setVariable("event_type","4");
 				target.EVENTS_DIALOG.eventTypeText.setValue("Weekly");
+				target.EVENTS_DIALOG.eventMonth.show(false);
+				eventMonth=0;
+				target.setVariable("event_month",eventMonth);
+				target.EVENTS_DIALOG.eventDay.show(false);
+				target.EVENTS_DIALOG.cardinalDay.show(false);
+				eventDay=0;
+				target.setVariable("event_day",eventDay);
+				target.EVENTS_DIALOG.eventYearText.setValue("Weekday:");
+				target.EVENTS_DIALOG.weekDay.show(true);
+				eventYear=tempEvents[currentTempEvent][3];
+				if (eventYear>7) eventYear=1;
+				target.setVariable("event_year",eventYear);
+				if (eventYear==0) {
+					target.EVENTS_DIALOG.weekDay.setValue("0");
+				} else if (eventYear==1) {
+					target.EVENTS_DIALOG.weekDay.setValue(wordDays[0]);				
+				} else if (eventYear==2) {
+					target.EVENTS_DIALOG.weekDay.setValue(wordDays[1]);
+				} else if (eventYear==3) {
+					target.EVENTS_DIALOG.weekDay.setValue(wordDays[2]);
+				} else if (eventYear==4) {
+					target.EVENTS_DIALOG.weekDay.setValue(wordDays[3]);
+				} else if (eventYear==5) {
+					target.EVENTS_DIALOG.weekDay.setValue(wordDays[4]);
+				} else if (eventYear==6) {
+					target.EVENTS_DIALOG.weekDay.setValue(wordDays[5]);
+				} else if (eventYear==7) {
+					target.EVENTS_DIALOG.weekDay.setValue(wordDays[6]);
+				}
 			} else if (tempEvents[currentTempEvent][0]=="F") {
 				target.EVENTS_DIALOG.eventType.setValue("5");
 				target.setVariable("event_type","5");
@@ -1088,13 +1186,13 @@ var tmp = function () {
 				} else if (tempEvents[currentTempEvent][2]=="5") {
 					target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[4]);
 				}*/
+				target.EVENTS_DIALOG.eventMonth.setValue(tempEvents[currentTempEvent][1]);
+				target.setVariable("event_month",tempEvents[currentTempEvent][1]);
+				target.EVENTS_DIALOG.eventDay.setValue(tempEvents[currentTempEvent][2]);
+				target.setVariable("event_day",tempEvents[currentTempEvent][2]);
+				target.EVENTS_DIALOG.eventYear.setValue(tempEvents[currentTempEvent][3]);
+				target.setVariable("event_year",tempEvents[currentTempEvent][3]);				
 			}
-			target.EVENTS_DIALOG.eventMonth.setValue(tempEvents[currentTempEvent][1]);
-			target.setVariable("event_month",tempEvents[currentTempEvent][1]);
-			target.EVENTS_DIALOG.eventDay.setValue(tempEvents[currentTempEvent][2]);
-			target.setVariable("event_day",tempEvents[currentTempEvent][2]);
-			target.EVENTS_DIALOG.eventYear.setValue(tempEvents[currentTempEvent][3]);
-			target.setVariable("event_year",tempEvents[currentTempEvent][3]);
 			target.EVENTS_DIALOG.eventIcon.setValue(tempEvents[currentTempEvent][4]);
 			target.setVariable("event_icon",tempEvents[currentTempEvent][4]);
 			this.square42.u = tempEvents[currentTempEvent][4];
@@ -1143,9 +1241,9 @@ var tmp = function () {
 					target.setVariable("event_day",selectionDate);
 					target.EVENTS_DIALOG.eventYear.setValue(yearNum);
 					target.setVariable("event_year",yearNum);
-					target.EVENTS_DIALOG.eventIcon.setValue("2");
-					target.setVariable("event_icon","2");
-					this.square42.u = 2;
+					target.EVENTS_DIALOG.eventIcon.setValue("3");
+					target.setVariable("event_icon","3");
+					this.square42.u = 3;
 					target.EVENTS_DIALOG.eventDescription.setValue("Temporary description");
 					target.setVariable("event_description","Temporary description");
 					target.EVENTS_DIALOG.eventDayText.setValue("Date:");
@@ -1212,7 +1310,13 @@ var tmp = function () {
 					target.EVENTS_DIALOG.weekDay.show(true);
 					if (currentTempEvent==tempEventsNum.length) {
 						// new event
-						eventYear=1;
+						if (weekBeginsWith=="Sun") {
+							eventYear=selectionDay;
+						} else {
+							eventYear=selectionDay+1;
+							if (selectionDay==8) selectionDay=1;
+						}
+						target.bubble("tracelog","In here. eventYear="+eventYear);
 					} else {
 						eventYear=tempEvents[currentTempEvent][3];
 					}
@@ -1297,9 +1401,11 @@ var tmp = function () {
 						// new event
 						eventYear=todaysYear;
 						eventDay=todaysDate;
+						eventMonth=todaysMonth;
 					} else {
 						eventYear=tempEvents[currentTempEvent][3];
 						eventDay=tempEvents[currentTempEvent][2];
+						eventMonth=tempEvents[currentTempEvent][1];
 					}
 					if (eventYear<1900) eventYear=todaysYear; // if original event was a floating event
 					target.setVariable("event_year",eventYear);
@@ -1307,6 +1413,9 @@ var tmp = function () {
 					if (eventDay==0) eventDay=1; // if original event was a floating event
 					target.setVariable("event_day",eventDay);
 					target.EVENTS_DIALOG.eventDay.setValue(eventDay);
+					if (eventMonth==0) eventMonth=1; // if original event was a floating event
+					target.setVariable("event_month",eventmonth);
+					target.EVENTS_DIALOG.eventMonth.setValue(eventMonth);
 				}
 				break;
 			}
@@ -1457,7 +1566,7 @@ var tmp = function () {
 		}
 		if (custSel === 1) {
 			target.EVENTS_DIALOG.eventNum.enable(false);
-		/*	target.EVENTS_DIALOG.eventTypeText.enable(false);
+			target.EVENTS_DIALOG.eventTypeText.enable(false);
 			target.EVENTS_DIALOG.eventMonth.enable(false);
 			target.EVENTS_DIALOG.eventDay.enable(false);
 			target.EVENTS_DIALOG.cardinalDay.enable(false);
@@ -1466,109 +1575,95 @@ var tmp = function () {
 			target.EVENTS_DIALOG.eventIcon.enable(false);
 			target.EVENTS_DIALOG.eventDescription.enable(false);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel); */
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
 			mouseEnter.call(target.EVENTS_DIALOG.btn_Delete);
 		}
 		if (custSel === 2) {
-		//	target.EVENTS_DIALOG.eventNum.enable(false); 
+			target.EVENTS_DIALOG.eventNum.enable(false); 
 			target.EVENTS_DIALOG.eventTypeText.enable(true);
 			target.EVENTS_DIALOG.eventMonth.enable(false);
-		/*	target.EVENTS_DIALOG.eventDay.enable(false);
+			target.EVENTS_DIALOG.eventDay.enable(false);
 			target.EVENTS_DIALOG.cardinalDay.enable(false);
 			target.EVENTS_DIALOG.eventYear.enable(false);
 			target.EVENTS_DIALOG.weekDay.enable(false);
 			target.EVENTS_DIALOG.eventIcon.enable(false);
 			target.EVENTS_DIALOG.eventDescription.enable(false);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel); */
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
 		}
 		if (custSel === 3) {
-		//	target.EVENTS_DIALOG.eventNum.enable(false);
+			target.EVENTS_DIALOG.eventNum.enable(false);
 			target.EVENTS_DIALOG.eventTypeText.enable(false);
 			target.EVENTS_DIALOG.eventMonth.enable(true);
 			target.EVENTS_DIALOG.eventDay.enable(false);
-		/*	target.EVENTS_DIALOG.cardinalDay.enable(false);
+			target.EVENTS_DIALOG.cardinalDay.enable(false);
 			target.EVENTS_DIALOG.eventYear.enable(false);
 			target.EVENTS_DIALOG.weekDay.enable(false);
 			target.EVENTS_DIALOG.eventIcon.enable(false);
 			target.EVENTS_DIALOG.eventDescription.enable(false);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete); */
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
 		}
 		if (custSel === 4) {
-		/*	target.EVENTS_DIALOG.eventNum.enable(false);
-			target.EVENTS_DIALOG.eventTypeText.enable(false); */
+			target.EVENTS_DIALOG.eventNum.enable(false);
+			target.EVENTS_DIALOG.eventTypeText.enable(false);
 			target.EVENTS_DIALOG.eventMonth.enable(false);
 			target.EVENTS_DIALOG.eventDay.enable(true);
 			target.EVENTS_DIALOG.cardinalDay.enable(true);
-		/*	target.EVENTS_DIALOG.eventYear.enable(false);
+			target.EVENTS_DIALOG.eventYear.enable(false);
 			target.EVENTS_DIALOG.weekDay.enable(false);
 			target.EVENTS_DIALOG.eventIcon.enable(false);
 			target.EVENTS_DIALOG.eventDescription.enable(false);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete); */
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
 		}
 		if (custSel === 5) {
-		/*	target.EVENTS_DIALOG.eventNum.enable(false);
+			target.EVENTS_DIALOG.eventNum.enable(false);
 			target.EVENTS_DIALOG.eventTypeText.enable(false);
 			target.EVENTS_DIALOG.eventMonth.enable(false);
-			target.EVENTS_DIALOG.eventDay.enable(false); */
+			target.EVENTS_DIALOG.eventDay.enable(false);
 			target.EVENTS_DIALOG.cardinalDay.enable(false);
 			target.EVENTS_DIALOG.eventYear.enable(true);
 			target.EVENTS_DIALOG.weekDay.enable(true);
-		/*	target.EVENTS_DIALOG.eventIcon.enable(false);
+			target.EVENTS_DIALOG.eventIcon.enable(false);
 			target.EVENTS_DIALOG.eventDescription.enable(false);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete); */
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
 		}
 		if (custSel === 6) {
-		/*	target.EVENTS_DIALOG.eventNum.enable(false);
+			target.EVENTS_DIALOG.eventNum.enable(false);
 			target.EVENTS_DIALOG.eventTypeText.enable(false);
 			target.EVENTS_DIALOG.eventMonth.enable(false);
 			target.EVENTS_DIALOG.eventDay.enable(false);
 			target.EVENTS_DIALOG.cardinalDay.enable(false);
-			target.EVENTS_DIALOG.eventYear.enable(false); */
+			target.EVENTS_DIALOG.eventYear.enable(false);
 			target.EVENTS_DIALOG.weekDay.enable(false);
 			target.EVENTS_DIALOG.eventIcon.enable(true);
 			target.EVENTS_DIALOG.eventDescription.enable(false);
-		/*	mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete); */
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
 		}
 		if (custSel === 7) {
-		/*	target.EVENTS_DIALOG.eventNum.enable(false);
+			target.EVENTS_DIALOG.eventNum.enable(false);
 			target.EVENTS_DIALOG.eventTypeText.enable(false);
 			target.EVENTS_DIALOG.eventMonth.enable(false);
 			target.EVENTS_DIALOG.eventDay.enable(false);
 			target.EVENTS_DIALOG.cardinalDay.enable(false);
 			target.EVENTS_DIALOG.eventYear.enable(false);
-			target.EVENTS_DIALOG.weekDay.enable(false); */
+			target.EVENTS_DIALOG.weekDay.enable(false);
 			target.EVENTS_DIALOG.eventIcon.enable(false);
 			target.EVENTS_DIALOG.eventDescription.enable(true);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
-		/*	mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete); */
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete); 
 		}
 		if (custSel === 8) {
-		/*	target.EVENTS_DIALOG.eventNum.enable(false);
-			target.EVENTS_DIALOG.eventTypeText.enable(false);
-			target.EVENTS_DIALOG.eventMonth.enable(false);
-			target.EVENTS_DIALOG.eventDay.enable(false);
-			target.EVENTS_DIALOG.cardinalDay.enable(false);
-			target.EVENTS_DIALOG.eventYear.enable(false);
-			target.EVENTS_DIALOG.weekDay.enable(false);
-			target.EVENTS_DIALOG.eventIcon.enable(false); */
-			target.EVENTS_DIALOG.eventDescription.enable(false);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
-		//	mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
-			mouseEnter.call(target.EVENTS_DIALOG.btn_Ok);
-		}	
-		if (custSel === 9) {
-		/*	target.EVENTS_DIALOG.eventNum.enable(false);
+			target.EVENTS_DIALOG.eventNum.enable(false);
 			target.EVENTS_DIALOG.eventTypeText.enable(false);
 			target.EVENTS_DIALOG.eventMonth.enable(false);
 			target.EVENTS_DIALOG.eventDay.enable(false);
@@ -1576,9 +1671,23 @@ var tmp = function () {
 			target.EVENTS_DIALOG.eventYear.enable(false);
 			target.EVENTS_DIALOG.weekDay.enable(false);
 			target.EVENTS_DIALOG.eventIcon.enable(false);
-			target.EVENTS_DIALOG.eventDescription.enable(false); */
+			target.EVENTS_DIALOG.eventDescription.enable(false);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
+			mouseEnter.call(target.EVENTS_DIALOG.btn_Ok);
+		}	
+		if (custSel === 9) {
+			target.EVENTS_DIALOG.eventNum.enable(false);
+			target.EVENTS_DIALOG.eventTypeText.enable(false);
+			target.EVENTS_DIALOG.eventMonth.enable(false);
+			target.EVENTS_DIALOG.eventDay.enable(false);
+			target.EVENTS_DIALOG.cardinalDay.enable(false);
+			target.EVENTS_DIALOG.eventYear.enable(false);
+			target.EVENTS_DIALOG.weekDay.enable(false);
+			target.EVENTS_DIALOG.eventIcon.enable(false);
+			target.EVENTS_DIALOG.eventDescription.enable(false);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
-		//	mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
 			mouseEnter.call(target.EVENTS_DIALOG.btn_Cancel);
 		}
 		return;
