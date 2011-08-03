@@ -119,5 +119,13 @@
       					kbook.autoRunRoot.startsWith = _Core.text.startsWith;
       					this.MAIN.EINK.VIEW.setURI("../addons/Calendar/calendar.xml");				
       					break;
-      					}								
+      					}
+      	 case "Solitaire" : {
+      					kbook.autoRunRoot._icon = _Core.config.compat.NodeKinds.getIcon("FIVEBALLS",0);
+      					kbook.autoRunRoot._title = "Solitaire";
+						kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;						
+      	 				kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
+      					this.MAIN.EINK.VIEW.setURI("../addons/Solitaire/solitaire.xml");				
+      					break;
+      					}						
       	}
