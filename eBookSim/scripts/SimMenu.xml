@@ -108,7 +108,7 @@
 								break;
 							}								
 					case 8 : {
-								this.bubble("setView","Fiverow");
+								this.bubble("setView","Solitaire");
 								break;
 							}								
 					case 9 : {
@@ -172,9 +172,9 @@
 		<button id="7" bottom="210" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
 
 		<panel skin="piMenuRow" left="0" bottom="140" right="0" height="70" />
-		<sprite skin="kbookMenuIcon" left="0" width="70" bottom="140" height="70" u="50" v="0" active="false" canFocus="false"/>   
+		<sprite skin="kbookMenuIcon" left="0" width="70" bottom="140" height="70" u="51" v="0" active="false" canFocus="false"/>   
 		<label skin="piRowNum" bottom="140" right="0" width="35" height="70" align="center" text="8" />
-		<label skin="piRow" bottom="140" right="0" left="70" height="70" text="Five in a Row" />
+		<label skin="piRow" bottom="140" right="0" left="70" height="70" text="Solitaire" />
 		<button id="8" bottom="140" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
 
    		<panel skin="piMenuRow" left="0" bottom="70" right="0" height="70" />
