@@ -66,7 +66,9 @@ var tmp = function () {
 	var mouseLeave = getSoValue( target.SETTINGS_DIALOG.btn_Cancel,'mouseLeave');
 	var mouseEnter = getSoValue( target.SETTINGS_DIALOG.btn_Cancel,'mouseEnter');
 	var shifted = false;
+	var shiftOffset = 26;
 	var symbols = false;
+	var symbolsOffset = 52;
 	var keys = [];
 	var kbdPath = target.calendarRoot;
 	FileSystem.ensureDirectory(kbdPath);
@@ -118,7 +120,11 @@ var tmp = function () {
 		weekBeginsWith = WeekBeginsWith;
 		target.setVariable("week_begins",WeekBeginsWith);
 	}
-	
+
+	var twoDigits = function (i) {
+		if (i<10) {return "0"+i}
+		return i;	
+	}	
 	target.loadWesternKeys = function () {
 		keys[0]="q";
 		keys[1]="w";
@@ -229,6 +235,7 @@ var tmp = function () {
 	
 	// load keyboard from file
 	target.loadKeyboard = function (filename) {
+		var i;
 		// attempt to load keyboard from file
 		if (FileSystem.getFileInfo(filename)) {
 			// read whole file in first to count how many events there are
@@ -245,7 +252,12 @@ var tmp = function () {
 		}
 		
 		// put keys on buttons
-		setSoValue(target.EVENTS_DIALOG.key01, 'text', keys[0]);
+		//target.bubble("tracelog","put buttons...");
+		//target.bubble("tracelog","twoDigits(1) "+twoDigits(1));
+		for (i=1; i<=26; i++) {
+			setSoValue(target.EVENTS_DIALOG['key'+twoDigits(i)], 'text', keys[i-1]);
+		}
+	/*	setSoValue(target.EVENTS_DIALOG.key01, 'text', keys[0]);
 		setSoValue(target.EVENTS_DIALOG.key02, 'text', keys[1]);
 		setSoValue(target.EVENTS_DIALOG.key03, 'text', keys[2]);
 		setSoValue(target.EVENTS_DIALOG.key04, 'text', keys[3]);
@@ -270,8 +282,8 @@ var tmp = function () {
 		setSoValue(target.EVENTS_DIALOG.key23, 'text', keys[22]);
 		setSoValue(target.EVENTS_DIALOG.key24, 'text', keys[23]);
 		setSoValue(target.EVENTS_DIALOG.key25, 'text', keys[24]);
-		setSoValue(target.EVENTS_DIALOG.key26, 'text', keys[25]);
-		return;
+		setSoValue(target.EVENTS_DIALOG.key26, 'text', keys[25]); */
+		return; 
 	}
 	
 	// load keyboard from file once at startup
@@ -1855,7 +1867,6 @@ var tmp = function () {
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
 			mouseEnter.call(target.EVENTS_DIALOG.btn_Cancel);
 		}
-		return;
 	}
 
 	target.EVENTS_DIALOG.moveCursor = function (direction) {
@@ -1894,7 +1905,6 @@ var tmp = function () {
 			if (custSel==6) target.EVENTS_DIALOG.doPlusMinusF("eventIcon+");
 			break
 		}
-		return;
 	  }	
 	}
 	
@@ -1902,7 +1912,6 @@ var tmp = function () {
 		if (custSel === 1) target.EVENTS_DIALOG.btn_Delete.click();
 		if (custSel === 8) target.EVENTS_DIALOG.btn_Ok.click();
 		if (custSel === 9) target.EVENTS_DIALOG.btn_Cancel.click();
-		return;
 	}
 
 	target.doUpdateEvent = function () {
@@ -1938,7 +1947,6 @@ var tmp = function () {
 		} else {
 			this.eventsText.setValue("");
 		}		
-		return;
 	}
 
 	target.doDeleteEvent = function () {
@@ -1951,304 +1959,72 @@ var tmp = function () {
 		} else {
 			this.eventsText.setValue("");
 		}
-		return;
 	}
 	
-	target.doShift = function () {
+	target.refreshKeys = function () {
 		//target.bubble("tracelog","symbols="+symbols+", shifted="+shifted);
-		if (symbols) {
-			if (shifted) {
-				setSoValue(target.EVENTS_DIALOG.key01, 'text', keys[52]);
-				setSoValue(target.EVENTS_DIALOG.key02, 'text', keys[53]);
-				setSoValue(target.EVENTS_DIALOG.key03, 'text', keys[54]);
-				setSoValue(target.EVENTS_DIALOG.key04, 'text', keys[55]);
-				setSoValue(target.EVENTS_DIALOG.key05, 'text', keys[56]);
-				setSoValue(target.EVENTS_DIALOG.key06, 'text', keys[57]);
-				setSoValue(target.EVENTS_DIALOG.key07, 'text', keys[58]);
-				setSoValue(target.EVENTS_DIALOG.key08, 'text', keys[59]);
-				setSoValue(target.EVENTS_DIALOG.key09, 'text', keys[60]);
-				setSoValue(target.EVENTS_DIALOG.key10, 'text', keys[61]);
-				setSoValue(target.EVENTS_DIALOG.key11, 'text', keys[62]);
-				setSoValue(target.EVENTS_DIALOG.key12, 'text', keys[63]);
-				setSoValue(target.EVENTS_DIALOG.key13, 'text', keys[64]);
-				setSoValue(target.EVENTS_DIALOG.key14, 'text', keys[65]);
-				setSoValue(target.EVENTS_DIALOG.key15, 'text', keys[66]);
-				setSoValue(target.EVENTS_DIALOG.key16, 'text', keys[67]);
-				setSoValue(target.EVENTS_DIALOG.key17, 'text', keys[68]);
-				setSoValue(target.EVENTS_DIALOG.key18, 'text', keys[69]);
-				setSoValue(target.EVENTS_DIALOG.key19, 'text', keys[70]);
-				setSoValue(target.EVENTS_DIALOG.key20, 'text', keys[71]);
-				setSoValue(target.EVENTS_DIALOG.key21, 'text', keys[72]);
-				setSoValue(target.EVENTS_DIALOG.key22, 'text', keys[73]);
-				setSoValue(target.EVENTS_DIALOG.key23, 'text', keys[74]);
-				setSoValue(target.EVENTS_DIALOG.key24, 'text', keys[75]);
-				setSoValue(target.EVENTS_DIALOG.key25, 'text', keys[76]);
-				setSoValue(target.EVENTS_DIALOG.key26, 'text', keys[77]);
-				setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', "Shft");
-				shifted=false;
-			} else {
-				setSoValue(target.EVENTS_DIALOG.key01, 'text', keys[78]);
-				setSoValue(target.EVENTS_DIALOG.key02, 'text', keys[79]);
-				setSoValue(target.EVENTS_DIALOG.key03, 'text', keys[80]);
-				setSoValue(target.EVENTS_DIALOG.key04, 'text', keys[81]);
-				setSoValue(target.EVENTS_DIALOG.key05, 'text', keys[82]);
-				setSoValue(target.EVENTS_DIALOG.key06, 'text', keys[83]);
-				setSoValue(target.EVENTS_DIALOG.key07, 'text', keys[84]);
-				setSoValue(target.EVENTS_DIALOG.key08, 'text', keys[85]);
-				setSoValue(target.EVENTS_DIALOG.key09, 'text', keys[86]);
-				setSoValue(target.EVENTS_DIALOG.key10, 'text', keys[87]);
-				setSoValue(target.EVENTS_DIALOG.key11, 'text', keys[88]);
-				setSoValue(target.EVENTS_DIALOG.key12, 'text', keys[89]);
-				setSoValue(target.EVENTS_DIALOG.key13, 'text', keys[90]);
-				setSoValue(target.EVENTS_DIALOG.key14, 'text', keys[91]);
-				setSoValue(target.EVENTS_DIALOG.key15, 'text', keys[92]);
-				setSoValue(target.EVENTS_DIALOG.key16, 'text', keys[93]);
-				setSoValue(target.EVENTS_DIALOG.key17, 'text', keys[94]);
-				setSoValue(target.EVENTS_DIALOG.key18, 'text', keys[95]);
-				setSoValue(target.EVENTS_DIALOG.key19, 'text', keys[96]);
-				setSoValue(target.EVENTS_DIALOG.key20, 'text', keys[97]);
-				setSoValue(target.EVENTS_DIALOG.key21, 'text', keys[98]);
-				setSoValue(target.EVENTS_DIALOG.key22, 'text', keys[99]);
-				setSoValue(target.EVENTS_DIALOG.key23, 'text', keys[100]);
-				setSoValue(target.EVENTS_DIALOG.key24, 'text', keys[101]);
-				setSoValue(target.EVENTS_DIALOG.key25, 'text', keys[102]);
-				setSoValue(target.EVENTS_DIALOG.key26, 'text', keys[103]);
-				setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', "Unsh");
-				shifted=true;
-			}
+		var i,n,keyy;
+		n = -1;
+		if (shifted) {
+			n = n + shiftOffset;
+			setSoValue(target.EVENTS_DIALOG['SHIFT'], 'text', 'unSh');
 		} else {
-			if (shifted) {
-				setSoValue(target.EVENTS_DIALOG.key01, 'text', keys[0]);
-				setSoValue(target.EVENTS_DIALOG.key02, 'text', keys[1]);
-				setSoValue(target.EVENTS_DIALOG.key03, 'text', keys[2]);
-				setSoValue(target.EVENTS_DIALOG.key04, 'text', keys[3]);
-				setSoValue(target.EVENTS_DIALOG.key05, 'text', keys[4]);
-				setSoValue(target.EVENTS_DIALOG.key06, 'text', keys[5]);
-				setSoValue(target.EVENTS_DIALOG.key07, 'text', keys[6]);
-				setSoValue(target.EVENTS_DIALOG.key08, 'text', keys[7]);
-				setSoValue(target.EVENTS_DIALOG.key09, 'text', keys[8]);
-				setSoValue(target.EVENTS_DIALOG.key10, 'text', keys[9]);
-				setSoValue(target.EVENTS_DIALOG.key11, 'text', keys[10]);
-				setSoValue(target.EVENTS_DIALOG.key12, 'text', keys[11]);
-				setSoValue(target.EVENTS_DIALOG.key13, 'text', keys[12]);
-				setSoValue(target.EVENTS_DIALOG.key14, 'text', keys[13]);
-				setSoValue(target.EVENTS_DIALOG.key15, 'text', keys[14]);
-				setSoValue(target.EVENTS_DIALOG.key16, 'text', keys[15]);
-				setSoValue(target.EVENTS_DIALOG.key17, 'text', keys[16]);
-				setSoValue(target.EVENTS_DIALOG.key18, 'text', keys[17]);
-				setSoValue(target.EVENTS_DIALOG.key19, 'text', keys[18]);
-				setSoValue(target.EVENTS_DIALOG.key20, 'text', keys[19]);
-				setSoValue(target.EVENTS_DIALOG.key21, 'text', keys[20]);
-				setSoValue(target.EVENTS_DIALOG.key22, 'text', keys[21]);
-				setSoValue(target.EVENTS_DIALOG.key23, 'text', keys[22]);
-				setSoValue(target.EVENTS_DIALOG.key24, 'text', keys[23]);
-				setSoValue(target.EVENTS_DIALOG.key25, 'text', keys[24]);
-				setSoValue(target.EVENTS_DIALOG.key26, 'text', keys[25]);
-				setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', "Shft");
-				shifted=false;
-			} else {
-				setSoValue(target.EVENTS_DIALOG.key01, 'text', keys[26]);
-				setSoValue(target.EVENTS_DIALOG.key02, 'text', keys[27]);
-				setSoValue(target.EVENTS_DIALOG.key03, 'text', keys[28]);
-				setSoValue(target.EVENTS_DIALOG.key04, 'text', keys[29]);
-				setSoValue(target.EVENTS_DIALOG.key05, 'text', keys[30]);
-				setSoValue(target.EVENTS_DIALOG.key06, 'text', keys[31]);
-				setSoValue(target.EVENTS_DIALOG.key07, 'text', keys[32]);
-				setSoValue(target.EVENTS_DIALOG.key08, 'text', keys[33]);
-				setSoValue(target.EVENTS_DIALOG.key09, 'text', keys[34]);
-				setSoValue(target.EVENTS_DIALOG.key10, 'text', keys[35]);
-				setSoValue(target.EVENTS_DIALOG.key11, 'text', keys[36]);
-				setSoValue(target.EVENTS_DIALOG.key12, 'text', keys[37]);
-				setSoValue(target.EVENTS_DIALOG.key13, 'text', keys[38]);
-				setSoValue(target.EVENTS_DIALOG.key14, 'text', keys[39]);
-				setSoValue(target.EVENTS_DIALOG.key15, 'text', keys[40]);
-				setSoValue(target.EVENTS_DIALOG.key16, 'text', keys[41]);
-				setSoValue(target.EVENTS_DIALOG.key17, 'text', keys[42]);
-				setSoValue(target.EVENTS_DIALOG.key18, 'text', keys[43]);
-				setSoValue(target.EVENTS_DIALOG.key19, 'text', keys[44]);
-				setSoValue(target.EVENTS_DIALOG.key20, 'text', keys[45]);
-				setSoValue(target.EVENTS_DIALOG.key21, 'text', keys[46]);
-				setSoValue(target.EVENTS_DIALOG.key22, 'text', keys[47]);
-				setSoValue(target.EVENTS_DIALOG.key23, 'text', keys[48]);
-				setSoValue(target.EVENTS_DIALOG.key24, 'text', keys[49]);
-				setSoValue(target.EVENTS_DIALOG.key25, 'text', keys[50]);
-				setSoValue(target.EVENTS_DIALOG.key26, 'text', keys[51]);
-				setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', "Unsh");
-				shifted=true;
+			setSoValue(target.EVENTS_DIALOG['SHIFT'], 'text', 'Shft');
 			}
-		}
-		this.refreshKeys();
-		return;
-	}
-	
+		if (symbols) {
+			n = n + symbolsOffset;
+			setSoValue(target.EVENTS_DIALOG['SYMBOL'], 'text', 'Abc');
+		} else {
+			setSoValue(target.EVENTS_DIALOG['SYMBOL'], 'text', 'Symbols');
+			}
+		for (i=1; i<=26; i++) {
+			key = 'key'+twoDigits(i);
+			setSoValue(target.EVENTS_DIALOG[key], 'text', keys[n+i]);
+			mouseEnter.call(target.EVENTS_DIALOG[key]);
+			mouseLeave.call(target.EVENTS_DIALOG[key]);
+			}	
+     	}
+
 	target.doSpace = function () {
 		// ADD A SPACE
 		var eventDescription = target.getVariable("event_description");
 		eventDescription = eventDescription + " ";
 		target.EVENTS_DIALOG.eventDescription.setValue(eventDescription);
 		target.setVariable("event_description",eventDescription);
-		return;
 	}
 
 	target.doSymbol = function () {
-		if (symbols) {
-			setSoValue(target.EVENTS_DIALOG.key01, 'text', keys[0]);
-			setSoValue(target.EVENTS_DIALOG.key02, 'text', keys[1]);
-			setSoValue(target.EVENTS_DIALOG.key03, 'text', keys[2]);
-			setSoValue(target.EVENTS_DIALOG.key04, 'text', keys[3]);
-			setSoValue(target.EVENTS_DIALOG.key05, 'text', keys[4]);
-			setSoValue(target.EVENTS_DIALOG.key06, 'text', keys[5]);
-			setSoValue(target.EVENTS_DIALOG.key07, 'text', keys[6]);
-			setSoValue(target.EVENTS_DIALOG.key08, 'text', keys[7]);
-			setSoValue(target.EVENTS_DIALOG.key09, 'text', keys[8]);
-			setSoValue(target.EVENTS_DIALOG.key10, 'text', keys[9]);
-			setSoValue(target.EVENTS_DIALOG.key11, 'text', keys[10]);
-			setSoValue(target.EVENTS_DIALOG.key12, 'text', keys[11]);
-			setSoValue(target.EVENTS_DIALOG.key13, 'text', keys[12]);
-			setSoValue(target.EVENTS_DIALOG.key14, 'text', keys[13]);
-			setSoValue(target.EVENTS_DIALOG.key15, 'text', keys[14]);
-			setSoValue(target.EVENTS_DIALOG.key16, 'text', keys[15]);
-			setSoValue(target.EVENTS_DIALOG.key17, 'text', keys[16]);
-			setSoValue(target.EVENTS_DIALOG.key18, 'text', keys[17]);
-			setSoValue(target.EVENTS_DIALOG.key19, 'text', keys[18]);
-			setSoValue(target.EVENTS_DIALOG.key20, 'text', keys[19]);
-			setSoValue(target.EVENTS_DIALOG.key21, 'text', keys[20]);
-			setSoValue(target.EVENTS_DIALOG.key22, 'text', keys[21]);
-			setSoValue(target.EVENTS_DIALOG.key23, 'text', keys[22]);
-			setSoValue(target.EVENTS_DIALOG.key24, 'text', keys[23]);
-			setSoValue(target.EVENTS_DIALOG.key25, 'text', keys[24]);
-			setSoValue(target.EVENTS_DIALOG.key26, 'text', keys[25]);
-			setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', "Shft");
-			setSoValue(target.EVENTS_DIALOG.SYMBOL, 'text', "Symbols");
-			symbols=false;
-			shifted=false;			
-		} else {
-			setSoValue(target.EVENTS_DIALOG.key01, 'text', keys[52]);
-			setSoValue(target.EVENTS_DIALOG.key02, 'text', keys[53]);
-			setSoValue(target.EVENTS_DIALOG.key03, 'text', keys[54]);
-			setSoValue(target.EVENTS_DIALOG.key04, 'text', keys[55]);
-			setSoValue(target.EVENTS_DIALOG.key05, 'text', keys[56]);
-			setSoValue(target.EVENTS_DIALOG.key06, 'text', keys[57]);
-			setSoValue(target.EVENTS_DIALOG.key07, 'text', keys[58]);
-			setSoValue(target.EVENTS_DIALOG.key08, 'text', keys[59]);
-			setSoValue(target.EVENTS_DIALOG.key09, 'text', keys[60]);
-			setSoValue(target.EVENTS_DIALOG.key10, 'text', keys[61]);
-			setSoValue(target.EVENTS_DIALOG.key11, 'text', keys[62]);
-			setSoValue(target.EVENTS_DIALOG.key12, 'text', keys[63]);
-			setSoValue(target.EVENTS_DIALOG.key13, 'text', keys[64]);
-			setSoValue(target.EVENTS_DIALOG.key14, 'text', keys[65]);
-			setSoValue(target.EVENTS_DIALOG.key15, 'text', keys[66]);
-			setSoValue(target.EVENTS_DIALOG.key16, 'text', keys[67]);
-			setSoValue(target.EVENTS_DIALOG.key17, 'text', keys[68]);
-			setSoValue(target.EVENTS_DIALOG.key18, 'text', keys[69]);
-			setSoValue(target.EVENTS_DIALOG.key19, 'text', keys[70]);
-			setSoValue(target.EVENTS_DIALOG.key20, 'text', keys[71]);
-			setSoValue(target.EVENTS_DIALOG.key21, 'text', keys[72]);
-			setSoValue(target.EVENTS_DIALOG.key22, 'text', keys[73]);
-			setSoValue(target.EVENTS_DIALOG.key23, 'text', keys[74]);
-			setSoValue(target.EVENTS_DIALOG.key24, 'text', keys[75]);
-			setSoValue(target.EVENTS_DIALOG.key25, 'text', keys[76]);
-			setSoValue(target.EVENTS_DIALOG.key26, 'text', keys[77]);
-			setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', "Shft");
-			setSoValue(target.EVENTS_DIALOG.SYMBOL, 'text', "Abc");
-			symbols=true;
-			shifted=false;
-		}
+		symbols = !symbols;
 		this.refreshKeys();
-		return;
-	}
-	
-	target.refreshKeys = function () {
-		mouseEnter.call(target.EVENTS_DIALOG.key01);
-		mouseLeave.call(target.EVENTS_DIALOG.key01);
-		mouseEnter.call(target.EVENTS_DIALOG.key02);
-		mouseLeave.call(target.EVENTS_DIALOG.key02);
-		mouseEnter.call(target.EVENTS_DIALOG.key03);
-		mouseLeave.call(target.EVENTS_DIALOG.key03);
-		mouseEnter.call(target.EVENTS_DIALOG.key04);
-		mouseLeave.call(target.EVENTS_DIALOG.key04);
-		mouseEnter.call(target.EVENTS_DIALOG.key05);
-		mouseLeave.call(target.EVENTS_DIALOG.key05);
-		mouseEnter.call(target.EVENTS_DIALOG.key06);
-		mouseLeave.call(target.EVENTS_DIALOG.key06);
-		mouseEnter.call(target.EVENTS_DIALOG.key07);
-		mouseLeave.call(target.EVENTS_DIALOG.key07);
-		mouseEnter.call(target.EVENTS_DIALOG.key08);
-		mouseLeave.call(target.EVENTS_DIALOG.key08);
-		mouseEnter.call(target.EVENTS_DIALOG.key09);
-		mouseLeave.call(target.EVENTS_DIALOG.key09);
-		mouseEnter.call(target.EVENTS_DIALOG.key10);
-		mouseLeave.call(target.EVENTS_DIALOG.key10);
-		mouseEnter.call(target.EVENTS_DIALOG.key11);
-		mouseLeave.call(target.EVENTS_DIALOG.key11);
-		mouseEnter.call(target.EVENTS_DIALOG.key12);
-		mouseLeave.call(target.EVENTS_DIALOG.key12);
-		mouseEnter.call(target.EVENTS_DIALOG.key13);
-		mouseLeave.call(target.EVENTS_DIALOG.key13);
-		mouseEnter.call(target.EVENTS_DIALOG.key14);
-		mouseLeave.call(target.EVENTS_DIALOG.key14);
-		mouseEnter.call(target.EVENTS_DIALOG.key15);
-		mouseLeave.call(target.EVENTS_DIALOG.key15);
-		mouseEnter.call(target.EVENTS_DIALOG.key16);
-		mouseLeave.call(target.EVENTS_DIALOG.key16);
-		mouseEnter.call(target.EVENTS_DIALOG.key17);
-		mouseLeave.call(target.EVENTS_DIALOG.key17);
-		mouseEnter.call(target.EVENTS_DIALOG.key18);
-		mouseLeave.call(target.EVENTS_DIALOG.key18);
-		mouseEnter.call(target.EVENTS_DIALOG.key19);
-		mouseLeave.call(target.EVENTS_DIALOG.key19);
-		mouseEnter.call(target.EVENTS_DIALOG.key20);
-		mouseLeave.call(target.EVENTS_DIALOG.key20);
-		mouseEnter.call(target.EVENTS_DIALOG.key21);
-		mouseLeave.call(target.EVENTS_DIALOG.key21);
-		mouseEnter.call(target.EVENTS_DIALOG.key22);
-		mouseLeave.call(target.EVENTS_DIALOG.key22);
-		mouseEnter.call(target.EVENTS_DIALOG.key23);
-		mouseLeave.call(target.EVENTS_DIALOG.key23);
-		mouseEnter.call(target.EVENTS_DIALOG.key24);
-		mouseLeave.call(target.EVENTS_DIALOG.key24);
-		mouseEnter.call(target.EVENTS_DIALOG.key25);
-		mouseLeave.call(target.EVENTS_DIALOG.key25);
-		mouseEnter.call(target.EVENTS_DIALOG.key26);
-		mouseLeave.call(target.EVENTS_DIALOG.key26);
-		return;
-	}
+	} 
 
+	target.doShift = function () {
+		shifted = !shifted;
+		this.refreshKeys();
+	}	
+	
 	target.doBack = function () {
 		// BACKSPACE
 		var eventDescription = target.getVariable("event_description");
 		eventDescription = eventDescription.slice(0,eventDescription.length-1);
 		target.EVENTS_DIALOG.eventDescription.setValue(eventDescription);
 		target.setVariable("event_description",eventDescription);
-		return;
 	}
 	
 	target.doKeyPress = function (sender) {
 		var id;
 		var character;
 		id = getSoValue(sender, "id");
-		n = parseInt(id.substring(3, 5));
+		n = parseInt(id.substring(3, 5))-1;
 		//target.bubble("tracelog","id="+id+", n="+n);
-		if (symbols) {
-			if (shifted) {
-				n=n+77;
-			} else {
-				n=n+51;
-			}
-		} else {
-			if (shifted) {
-				n=n+25;
-			} else {
-				n=n-1;
-			}
-		}
+		if (symbols) { n = n + symbolsOffset};
+		if (shifted) { n = n + shiftOffset};
 		character = keys[n];
 		//target.bubble("tracelog","n="+n+", character="+character);
 		var eventDescription = target.getVariable("event_description");
 		eventDescription = eventDescription + character;
 		target.EVENTS_DIALOG.eventDescription.setValue(eventDescription);
 		target.setVariable("event_description",eventDescription);		
-		return;
 	}
 };
 tmp();
