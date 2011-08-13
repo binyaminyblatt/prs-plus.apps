@@ -431,7 +431,7 @@
 			</dialog>
 
 		<!--Events pop-up panel-->
-		<dialog id="EVENTS_DIALOG" width="450" height="450" visible="false">
+		<dialog id="EVENTS_DIALOG" width="450" height="630" visible="false">
 			<code>
 				<function id="doOK">
 					this.show(false);
@@ -444,6 +444,21 @@
 				<function id="doClose">
 					this.show(false);
 					this.container.closeDlg();
+				</function>
+				<function id="doShift">
+					this.container.doShift();
+				</function>
+				<function id="doSpace">
+					this.container.doSpace();
+				</function>
+				<function id="doSymbol">
+					this.container.doSymbol();
+				</function>
+				<function id="doBack">
+					this.container.doBack();
+				</function>
+				<function id="doKeyPress" params="sender">
+					this.container.doKeyPress(sender);
 				</function>
 				<function id="doLeft">		this.container.moveCursor("left"); </function>
 				<function id="doPrevious">	this.container.moveCursor("left"); </function>
@@ -492,7 +507,41 @@
 			
 			<label skin="swis24blk" active="false" text="Description:" left="40" width="180" top="267" align="left" height="32"/>
 			<text id="eventDescription" skin="eventText" active="false" variable="event_description" left="40" width="390" top="307" height="41"/>
+			
+			<button id="key01" text="q" left=  "5" top="370" width="40" height="40" do="doKeyPress"/>
+			<button id="key02" text="w" left= "50" top="370" width="40" height="40" do="doKeyPress"/>
+			<button id="key03" text="e" left= "95" top="370" width="40" height="40" do="doKeyPress"/>
+			<button id="key04" text="r" left="140" top="370" width="40" height="40" do="doKeyPress"/>
+			<button id="key05" text="t" left="185" top="370" width="40" height="40" do="doKeyPress"/>
+			<button id="key06" text="y" left="230" top="370" width="40" height="40" do="doKeyPress"/>
+			<button id="key07" text="u" left="275" top="370" width="40" height="40" do="doKeyPress"/>
+			<button id="key08" text="i" left="320" top="370" width="40" height="40" do="doKeyPress"/>
+			<button id="key09" text="o" left="365" top="370" width="40" height="40" do="doKeyPress"/>
+			<button id="key10" text="p" left="410" top="370" width="40" height="40" do="doKeyPress"/>
+			
+			<button id="key11" text="a" left= "25" top="420" width="40" height="40" do="doKeyPress"/>
+			<button id="key12" text="s" left= "70" top="420" width="40" height="40" do="doKeyPress"/>
+			<button id="key13" text="d" left="115" top="420" width="40" height="40" do="doKeyPress"/>
+			<button id="key14" text="f" left="160" top="420" width="40" height="40" do="doKeyPress"/>
+			<button id="key15" text="g" left="205" top="420" width="40" height="40" do="doKeyPress"/>
+			<button id="key16" text="h" left="250" top="420" width="40" height="40" do="doKeyPress"/>
+			<button id="key17" text="j" left="295" top="420" width="40" height="40" do="doKeyPress"/>
+			<button id="key18" text="k" left="340" top="420" width="40" height="40" do="doKeyPress"/>
+			<button id="key19" text="l" left="385" top="420" width="40" height="40" do="doKeyPress"/>			
 
+			<button id="key20" text="z" left= "70" top="470" width="40" height="40" do="doKeyPress"/>
+			<button id="key21" text="x" left="115" top="470" width="40" height="40" do="doKeyPress"/>
+			<button id="key22" text="c" left="160" top="470" width="40" height="40" do="doKeyPress"/>
+			<button id="key23" text="v" left="205" top="470" width="40" height="40" do="doKeyPress"/>
+			<button id="key24" text="b" left="250" top="470" width="40" height="40" do="doKeyPress"/>
+			<button id="key25" text="n" left="295" top="470" width="40" height="40" do="doKeyPress"/>
+			<button id="key26" text="m" left="340" top="470" width="40" height="40" do="doKeyPress"/>
+			
+			<button id="SHIFT" text="Shft" left="0" top="470" width="65" height="40" do="doShift"/>
+			<button id="SYMBOL" text="Symbols" left="0" top="520" width="110" height="40" do="doSymbol"/>
+			<button id="SPACE" text="Space" left="115" top="520" width="220" height="40" do="doSpace"/>
+			<button id="BACK" text="Back" left="340" top="520" width="110" height="40" do="doBack"/>
+		
 			<default-button id="btn_Ok" text="OK" width="70" bottom="10" do="doOK"/>
 			<button id="btn_Cancel" text="Cancel" width="100" left ="270" bottom="10" do="doClose"/>
 			<button id="btn_Delete" text="Delete" width="100" left ="350" top="60" do="doDelete"/>	
