@@ -383,7 +383,7 @@ var tmp = function () {
 			this.nonTouch8.show(false);
 		}
 		
-		target.eventsText.enable(true);
+		//target.eventsText.enable(true);
 		target.BUTTON_EDT.enable(false);
 		return;
 	}
