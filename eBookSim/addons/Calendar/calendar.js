@@ -16,6 +16,7 @@
 // 2011-07-23 Mark Nord - auto-correct dat-file (insert icon-number); allow "#" as rem-character, some code optimisations
 // 2011-07-24 Ben Chenoweth - Various bug fixes; new weekly event now shows day of clicked date.
 // 2011-08-13 Ben Chenoweth - Added Western keyboard (for touch readers) for editing event descriptions.
+// 2011-08-13 Ben Chenoweth - Keyboard now works for non-touch readers.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -124,7 +125,8 @@ var tmp = function () {
 	var twoDigits = function (i) {
 		if (i<10) {return "0"+i}
 		return i;	
-	}	
+	}
+
 	target.loadWesternKeys = function () {
 		keys[0]="q";
 		keys[1]="w";
@@ -1708,7 +1710,7 @@ var tmp = function () {
 	target.ntHandleEventsDlg = function () {
 		// work out direction of movement and check if item is available
 		eventType = parseInt(target.getVariable("event_type"));
-		target.bubble("tracelog","Before: eventType="+eventType+", prevSel="+prevSel+", custSel="+custSel);
+		//target.bubble("tracelog","Before: eventType="+eventType+", prevSel="+prevSel+", custSel="+custSel);
 		if ((eventType=="3") && (custSel==3)) {
 			// no month item
 			if (prevSel==2) custSel=4;
@@ -1726,36 +1728,20 @@ var tmp = function () {
 				if (prevSel==2) custSel=0;
 			}
 		}
-		target.bubble("tracelog","After: eventType="+eventType+", prevSel="+prevSel+", custSel="+custSel);
-		if (custSel === 0) {
+		//target.bubble("tracelog","After: eventType="+eventType+", prevSel="+prevSel+", custSel="+custSel);
+		if (custSel == 0) {
 			target.EVENTS_DIALOG.eventNum.enable(true);
 			target.EVENTS_DIALOG.eventTypeText.enable(false);
-			target.EVENTS_DIALOG.eventMonth.enable(false);
-			target.EVENTS_DIALOG.eventDay.enable(false);
-			target.EVENTS_DIALOG.cardinalDay.enable(false);
-			target.EVENTS_DIALOG.eventYear.enable(false);
-			target.EVENTS_DIALOG.weekDay.enable(false);
-			target.EVENTS_DIALOG.eventIcon.enable(false);
-			target.EVENTS_DIALOG.eventDescription.enable(false);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
 		}
-		if (custSel === 1) {
+		if (custSel == 1) {
 			target.EVENTS_DIALOG.eventNum.enable(false);
 			target.EVENTS_DIALOG.eventTypeText.enable(false);
-			target.EVENTS_DIALOG.eventMonth.enable(false);
-			target.EVENTS_DIALOG.eventDay.enable(false);
-			target.EVENTS_DIALOG.cardinalDay.enable(false);
-			target.EVENTS_DIALOG.eventYear.enable(false);
-			target.EVENTS_DIALOG.weekDay.enable(false);
-			target.EVENTS_DIALOG.eventIcon.enable(false);
-			target.EVENTS_DIALOG.eventDescription.enable(false);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
 			mouseEnter.call(target.EVENTS_DIALOG.btn_Delete);
 		}
-		if (custSel === 2) {
+		if (custSel == 2) {
 			target.EVENTS_DIALOG.eventNum.enable(false); 
 			target.EVENTS_DIALOG.eventTypeText.enable(true);
 			target.EVENTS_DIALOG.eventMonth.enable(false);
@@ -1763,42 +1749,23 @@ var tmp = function () {
 			target.EVENTS_DIALOG.cardinalDay.enable(false);
 			target.EVENTS_DIALOG.eventYear.enable(false);
 			target.EVENTS_DIALOG.weekDay.enable(false);
-			target.EVENTS_DIALOG.eventIcon.enable(false);
-			target.EVENTS_DIALOG.eventDescription.enable(false);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
 		}
-		if (custSel === 3) {
-			target.EVENTS_DIALOG.eventNum.enable(false);
+		if (custSel == 3) {
 			target.EVENTS_DIALOG.eventTypeText.enable(false);
 			target.EVENTS_DIALOG.eventMonth.enable(true);
 			target.EVENTS_DIALOG.eventDay.enable(false);
 			target.EVENTS_DIALOG.cardinalDay.enable(false);
-			target.EVENTS_DIALOG.eventYear.enable(false);
-			target.EVENTS_DIALOG.weekDay.enable(false);
-			target.EVENTS_DIALOG.eventIcon.enable(false);
-			target.EVENTS_DIALOG.eventDescription.enable(false);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
 		}
-		if (custSel === 4) {
-			target.EVENTS_DIALOG.eventNum.enable(false);
+		if (custSel == 4) {
 			target.EVENTS_DIALOG.eventTypeText.enable(false);
 			target.EVENTS_DIALOG.eventMonth.enable(false);
 			target.EVENTS_DIALOG.eventDay.enable(true);
 			target.EVENTS_DIALOG.cardinalDay.enable(true);
 			target.EVENTS_DIALOG.eventYear.enable(false);
 			target.EVENTS_DIALOG.weekDay.enable(false);
-			target.EVENTS_DIALOG.eventIcon.enable(false);
-			target.EVENTS_DIALOG.eventDescription.enable(false);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
 		}
-		if (custSel === 5) {
-			target.EVENTS_DIALOG.eventNum.enable(false);
+		if (custSel == 5) {
 			target.EVENTS_DIALOG.eventTypeText.enable(false);
 			target.EVENTS_DIALOG.eventMonth.enable(false);
 			target.EVENTS_DIALOG.eventDay.enable(false);
@@ -1806,26 +1773,46 @@ var tmp = function () {
 			target.EVENTS_DIALOG.eventYear.enable(true);
 			target.EVENTS_DIALOG.weekDay.enable(true);
 			target.EVENTS_DIALOG.eventIcon.enable(false);
-			target.EVENTS_DIALOG.eventDescription.enable(false);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
 		}
-		if (custSel === 6) {
-			target.EVENTS_DIALOG.eventNum.enable(false);
-			target.EVENTS_DIALOG.eventTypeText.enable(false);
-			target.EVENTS_DIALOG.eventMonth.enable(false);
-			target.EVENTS_DIALOG.eventDay.enable(false);
-			target.EVENTS_DIALOG.cardinalDay.enable(false);
+		if (custSel == 6) {
 			target.EVENTS_DIALOG.eventYear.enable(false);
 			target.EVENTS_DIALOG.weekDay.enable(false);
 			target.EVENTS_DIALOG.eventIcon.enable(true);
-			target.EVENTS_DIALOG.eventDescription.enable(false);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
+			mouseLeave.call(target.EVENTS_DIALOG.key01);
+			mouseLeave.call(target.EVENTS_DIALOG.key02);
+			mouseLeave.call(target.EVENTS_DIALOG.key03);
+			mouseLeave.call(target.EVENTS_DIALOG.key04);
+			mouseLeave.call(target.EVENTS_DIALOG.key05);
+			mouseLeave.call(target.EVENTS_DIALOG.key06);
+			mouseLeave.call(target.EVENTS_DIALOG.key07);
+			mouseLeave.call(target.EVENTS_DIALOG.key08);
+			mouseLeave.call(target.EVENTS_DIALOG.key09);
+			mouseLeave.call(target.EVENTS_DIALOG.key10);
 		}
-		if (custSel === 7) {
+		if (custSel == 7) {
+			mouseEnter.call(target.EVENTS_DIALOG.key01);
+			mouseLeave.call(target.EVENTS_DIALOG.key02);
+			mouseLeave.call(target.EVENTS_DIALOG.key11);
+		}
+		if (custSel == 8) {
+			mouseLeave.call(target.EVENTS_DIALOG.key01);
+			mouseEnter.call(target.EVENTS_DIALOG.key02);
+			mouseLeave.call(target.EVENTS_DIALOG.key03);
+			mouseLeave.call(target.EVENTS_DIALOG.key12);
+		}
+		if (custSel == 9) {
+			mouseLeave.call(target.EVENTS_DIALOG.key02);
+			mouseEnter.call(target.EVENTS_DIALOG.key03);
+			mouseLeave.call(target.EVENTS_DIALOG.key04);
+			mouseLeave.call(target.EVENTS_DIALOG.key13);
+		}
+		if (custSel == 10) {
+			mouseLeave.call(target.EVENTS_DIALOG.key03);
+			mouseEnter.call(target.EVENTS_DIALOG.key04);
+			mouseLeave.call(target.EVENTS_DIALOG.key05);
+			mouseLeave.call(target.EVENTS_DIALOG.key14);
+		}
+		if (custSel == 11) {
 			target.EVENTS_DIALOG.eventNum.enable(false);
 			target.EVENTS_DIALOG.eventTypeText.enable(false);
 			target.EVENTS_DIALOG.eventMonth.enable(false);
@@ -1834,84 +1821,398 @@ var tmp = function () {
 			target.EVENTS_DIALOG.eventYear.enable(false);
 			target.EVENTS_DIALOG.weekDay.enable(false);
 			target.EVENTS_DIALOG.eventIcon.enable(false);
-			target.EVENTS_DIALOG.eventDescription.enable(true);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete); 
-		}
-		if (custSel === 8) {
-			target.EVENTS_DIALOG.eventNum.enable(false);
-			target.EVENTS_DIALOG.eventTypeText.enable(false);
-			target.EVENTS_DIALOG.eventMonth.enable(false);
-			target.EVENTS_DIALOG.eventDay.enable(false);
-			target.EVENTS_DIALOG.cardinalDay.enable(false);
-			target.EVENTS_DIALOG.eventYear.enable(false);
-			target.EVENTS_DIALOG.weekDay.enable(false);
-			target.EVENTS_DIALOG.eventIcon.enable(false);
 			target.EVENTS_DIALOG.eventDescription.enable(false);
+			mouseLeave.call(target.EVENTS_DIALOG.key04);
+			mouseEnter.call(target.EVENTS_DIALOG.key05);
+			mouseLeave.call(target.EVENTS_DIALOG.key06);
+			mouseLeave.call(target.EVENTS_DIALOG.key15);
+		}
+		if (custSel == 12) {
+			mouseLeave.call(target.EVENTS_DIALOG.key05);
+			mouseEnter.call(target.EVENTS_DIALOG.key06);
+			mouseLeave.call(target.EVENTS_DIALOG.key07);
+			mouseLeave.call(target.EVENTS_DIALOG.key16);
+		}
+		if (custSel == 13) {
+			mouseLeave.call(target.EVENTS_DIALOG.key06);
+			mouseEnter.call(target.EVENTS_DIALOG.key07);
+			mouseLeave.call(target.EVENTS_DIALOG.key08);
+			mouseLeave.call(target.EVENTS_DIALOG.key17);
+		}
+		if (custSel == 14) {
+			mouseLeave.call(target.EVENTS_DIALOG.key07);
+			mouseEnter.call(target.EVENTS_DIALOG.key08);
+			mouseLeave.call(target.EVENTS_DIALOG.key09);
+			mouseLeave.call(target.EVENTS_DIALOG.key18);
+		}
+		if (custSel == 15) {
+			mouseLeave.call(target.EVENTS_DIALOG.key08);
+			mouseEnter.call(target.EVENTS_DIALOG.key09);
+			mouseLeave.call(target.EVENTS_DIALOG.key10);
+			mouseLeave.call(target.EVENTS_DIALOG.key19);
+		}
+		if (custSel == 16) {
+			mouseLeave.call(target.EVENTS_DIALOG.key09);
+			mouseEnter.call(target.EVENTS_DIALOG.key10);
+		}
+		if (custSel == 17) {
+			mouseLeave.call(target.EVENTS_DIALOG.key01);
+			mouseEnter.call(target.EVENTS_DIALOG.key11);
+			mouseLeave.call(target.EVENTS_DIALOG.key12);
+			mouseLeave.call(target.EVENTS_DIALOG.SHIFT);
+		}
+		if (custSel == 18) {
+			mouseLeave.call(target.EVENTS_DIALOG.key02);
+			mouseLeave.call(target.EVENTS_DIALOG.key11);
+			mouseEnter.call(target.EVENTS_DIALOG.key12);
+			mouseLeave.call(target.EVENTS_DIALOG.key13);
+			mouseLeave.call(target.EVENTS_DIALOG.key20);
+		}
+		if (custSel == 19) {
+			mouseLeave.call(target.EVENTS_DIALOG.key03);
+			mouseLeave.call(target.EVENTS_DIALOG.key12);
+			mouseEnter.call(target.EVENTS_DIALOG.key13);
+			mouseLeave.call(target.EVENTS_DIALOG.key14);
+			mouseLeave.call(target.EVENTS_DIALOG.key21);
+		}
+		if (custSel == 20) {
+			mouseLeave.call(target.EVENTS_DIALOG.key04);
+			mouseLeave.call(target.EVENTS_DIALOG.key13);
+			mouseEnter.call(target.EVENTS_DIALOG.key14);
+			mouseLeave.call(target.EVENTS_DIALOG.key15);
+			mouseLeave.call(target.EVENTS_DIALOG.key22);
+		}
+		if (custSel == 21) {
+			mouseLeave.call(target.EVENTS_DIALOG.key05);
+			mouseLeave.call(target.EVENTS_DIALOG.key14);
+			mouseEnter.call(target.EVENTS_DIALOG.key15);
+			mouseLeave.call(target.EVENTS_DIALOG.key16);
+			mouseLeave.call(target.EVENTS_DIALOG.key23);
+		}
+		if (custSel == 22) {
+			mouseLeave.call(target.EVENTS_DIALOG.key06);
+			mouseLeave.call(target.EVENTS_DIALOG.key15);
+			mouseEnter.call(target.EVENTS_DIALOG.key16);
+			mouseLeave.call(target.EVENTS_DIALOG.key17);
+			mouseLeave.call(target.EVENTS_DIALOG.key24);
+		}
+		if (custSel == 23) {
+			mouseLeave.call(target.EVENTS_DIALOG.key07);
+			mouseLeave.call(target.EVENTS_DIALOG.key16);
+			mouseEnter.call(target.EVENTS_DIALOG.key17);
+			mouseLeave.call(target.EVENTS_DIALOG.key18);
+			mouseLeave.call(target.EVENTS_DIALOG.key25);
+		}
+		if (custSel == 24) {
+			mouseLeave.call(target.EVENTS_DIALOG.key08);
+			mouseLeave.call(target.EVENTS_DIALOG.key17);
+			mouseEnter.call(target.EVENTS_DIALOG.key18);
+			mouseLeave.call(target.EVENTS_DIALOG.key19);
+			mouseLeave.call(target.EVENTS_DIALOG.key26);
+		}
+		if (custSel == 25) {
+			mouseLeave.call(target.EVENTS_DIALOG.key09);
+			mouseLeave.call(target.EVENTS_DIALOG.key10);
+			mouseLeave.call(target.EVENTS_DIALOG.key18);
+			mouseEnter.call(target.EVENTS_DIALOG.key19);
+		}
+		if (custSel == 26) {
+			mouseLeave.call(target.EVENTS_DIALOG.key11);
+			mouseLeave.call(target.EVENTS_DIALOG.key20);
+			mouseEnter.call(target.EVENTS_DIALOG.SHIFT);
+			mouseLeave.call(target.EVENTS_DIALOG.SYMBOL);
+		}
+		if (custSel == 27) {
+			mouseLeave.call(target.EVENTS_DIALOG.key12);
+			mouseLeave.call(target.EVENTS_DIALOG.SHIFT);
+			mouseEnter.call(target.EVENTS_DIALOG.key20);
+			mouseLeave.call(target.EVENTS_DIALOG.key21);
+			mouseLeave.call(target.EVENTS_DIALOG.SYMBOL);
+		}
+		if (custSel == 28) {
+			mouseLeave.call(target.EVENTS_DIALOG.key13);
+			mouseLeave.call(target.EVENTS_DIALOG.key20);
+			mouseEnter.call(target.EVENTS_DIALOG.key21);
+			mouseLeave.call(target.EVENTS_DIALOG.key22);
+			mouseLeave.call(target.EVENTS_DIALOG.SPACE);
+		}
+		if (custSel == 29) {
+			mouseLeave.call(target.EVENTS_DIALOG.key14);
+			mouseLeave.call(target.EVENTS_DIALOG.key21);
+			mouseEnter.call(target.EVENTS_DIALOG.key22);
+			mouseLeave.call(target.EVENTS_DIALOG.key23);
+			mouseLeave.call(target.EVENTS_DIALOG.SPACE);
+		}
+		if (custSel == 30) {
+			mouseLeave.call(target.EVENTS_DIALOG.key15);
+			mouseLeave.call(target.EVENTS_DIALOG.key22);
+			mouseEnter.call(target.EVENTS_DIALOG.key23);
+			mouseLeave.call(target.EVENTS_DIALOG.key24);
+			mouseLeave.call(target.EVENTS_DIALOG.SPACE);
+		}
+		if (custSel == 31) {
+			mouseLeave.call(target.EVENTS_DIALOG.key16);
+			mouseLeave.call(target.EVENTS_DIALOG.key23);
+			mouseEnter.call(target.EVENTS_DIALOG.key24);
+			mouseLeave.call(target.EVENTS_DIALOG.key25);
+			mouseLeave.call(target.EVENTS_DIALOG.SPACE);
+		}
+		if (custSel == 32) {
+			mouseLeave.call(target.EVENTS_DIALOG.key17);
+			mouseLeave.call(target.EVENTS_DIALOG.key24);
+			mouseEnter.call(target.EVENTS_DIALOG.key25);
+			mouseLeave.call(target.EVENTS_DIALOG.key26);
+			mouseLeave.call(target.EVENTS_DIALOG.SPACE);
+		}
+		if (custSel == 33) {
+			mouseLeave.call(target.EVENTS_DIALOG.key18);
+			mouseLeave.call(target.EVENTS_DIALOG.key19);
+			mouseLeave.call(target.EVENTS_DIALOG.key25);
+			mouseEnter.call(target.EVENTS_DIALOG.key26);
+			mouseLeave.call(target.EVENTS_DIALOG.BACK);
+		}
+		if (custSel == 34) {
+			mouseLeave.call(target.EVENTS_DIALOG.SHIFT);
+			mouseLeave.call(target.EVENTS_DIALOG.key20);
+			mouseLeave.call(target.EVENTS_DIALOG.SPACE);
+			mouseEnter.call(target.EVENTS_DIALOG.SYMBOL);
+		}
+		if (custSel == 35) {
+			mouseLeave.call(target.EVENTS_DIALOG.key21);
+			mouseLeave.call(target.EVENTS_DIALOG.key22);
+			mouseLeave.call(target.EVENTS_DIALOG.key23);
+			mouseLeave.call(target.EVENTS_DIALOG.key24);
+			mouseLeave.call(target.EVENTS_DIALOG.key25);
+			mouseEnter.call(target.EVENTS_DIALOG.SPACE);
+			mouseLeave.call(target.EVENTS_DIALOG.SYMBOL);
+			mouseLeave.call(target.EVENTS_DIALOG.BACK);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
+		}	
+		if (custSel == 36) {
+			mouseLeave.call(target.EVENTS_DIALOG.key26);
+			mouseLeave.call(target.EVENTS_DIALOG.SPACE);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
+			mouseEnter.call(target.EVENTS_DIALOG.BACK);
+		}
+		if (custSel == 37) {
+			mouseLeave.call(target.EVENTS_DIALOG.SHIFT);
+			mouseLeave.call(target.EVENTS_DIALOG.SPACE);
+			mouseLeave.call(target.EVENTS_DIALOG.btn_Cancel);
 			mouseEnter.call(target.EVENTS_DIALOG.btn_Ok);
 		}	
-		if (custSel === 9) {
-			target.EVENTS_DIALOG.eventNum.enable(false);
-			target.EVENTS_DIALOG.eventTypeText.enable(false);
-			target.EVENTS_DIALOG.eventMonth.enable(false);
-			target.EVENTS_DIALOG.eventDay.enable(false);
-			target.EVENTS_DIALOG.cardinalDay.enable(false);
-			target.EVENTS_DIALOG.eventYear.enable(false);
-			target.EVENTS_DIALOG.weekDay.enable(false);
-			target.EVENTS_DIALOG.eventIcon.enable(false);
-			target.EVENTS_DIALOG.eventDescription.enable(false);
+		if (custSel == 38) {
+			mouseLeave.call(target.EVENTS_DIALOG.BACK);
 			mouseLeave.call(target.EVENTS_DIALOG.btn_Ok);
-			mouseLeave.call(target.EVENTS_DIALOG.btn_Delete);
 			mouseEnter.call(target.EVENTS_DIALOG.btn_Cancel);
 		}
+		return;
 	}
 
 	target.EVENTS_DIALOG.moveCursor = function (direction) {
 	switch (direction) {
 		case "up" : {
-			if (custSel>0) {
+			if ((custSel>0) && (custSel<7)) {
 				prevSel=custSel;
 				custSel--;
 				target.ntHandleEventsDlg();
+			} else if ((custSel>6) && (custSel<17)) {
+				prevSel=custSel;
+				custSel=6;
+				target.ntHandleEventsDlg();
+			} else if ((custSel>16) && (custSel<26)) {
+				prevSel=custSel;
+				custSel=custSel-10;
+				target.ntHandleEventsDlg();
+			} else if (custSel==26) {
+				prevSel=custSel;
+				custSel=17;
+				target.ntHandleEventsDlg();				
+			} else if ((custSel>26) && (custSel<34)) {
+				prevSel=custSel;
+				custSel=custSel-9;
+				target.ntHandleEventsDlg();
+			} else if (custSel==34) {
+				prevSel=custSel;
+				custSel=26;
+				target.ntHandleEventsDlg();				
+			} else if (custSel==35) {
+				prevSel=custSel;
+				custSel=30;
+				target.ntHandleEventsDlg();				
+			} else if (custSel==36) {
+				prevSel=custSel;
+				custSel=33;
+				target.ntHandleEventsDlg();				
+			} else if (custSel==37) {
+				prevSel=custSel;
+				custSel=35;
+				target.ntHandleEventsDlg();				
+			} else if (custSel==38) {
+				prevSel=custSel;
+				custSel=36;
+				target.ntHandleEventsDlg();				
 			}
 			break
 		}
 		case "down" : {
-			if (custSel<9) {
+			if (custSel<6) {
 				prevSel=custSel;
 				custSel++;
 				target.ntHandleEventsDlg();
+			} else if (custSel==6) {
+				prevSel=custSel;
+				custSel=11;
+				target.ntHandleEventsDlg();
+			} else if ((custSel>6) && (custSel<16)) {
+				prevSel=custSel;
+				custSel=custSel+10;
+				target.ntHandleEventsDlg();
+			} else if (custSel==16) {
+				prevSel=custSel;
+				custSel=25;
+				target.ntHandleEventsDlg();
+			} else if ((custSel>16) && (custSel<24)) {
+				prevSel=custSel;
+				custSel=custSel+9;
+				target.ntHandleEventsDlg();			
+			} else if ((custSel==24) || (custSel==25)) {
+				prevSel=custSel;
+				custSel=33;
+				target.ntHandleEventsDlg();			
+			} else if ((custSel==26) || (custSel==27)) {
+				prevSel=custSel;
+				custSel=34;
+				target.ntHandleEventsDlg();			
+			} else if ((custSel>27) && (custSel<33)) {
+				prevSel=custSel;
+				custSel=35;
+				target.ntHandleEventsDlg();			
+			} else if (custSel==33) {
+				prevSel=custSel;
+				custSel=36;
+				target.ntHandleEventsDlg();			
+			} else if ((custSel==34) || (custSel==35)) {
+				prevSel=custSel;
+				custSel=37;
+				target.ntHandleEventsDlg();			
+			} else if (custSel==36) {
+				prevSel=custSel;
+				custSel=38;
+				target.ntHandleEventsDlg();			
 			}
 			break
 		}
 		case "left" : {
-			if (custSel==0) target.EVENTS_DIALOG.doPlusMinusF("eventNum-");
-			if (custSel==2) target.EVENTS_DIALOG.doPlusMinusF("eventType-");
-			if (custSel==3) target.EVENTS_DIALOG.doPlusMinusF("eventMonth-");
-			if (custSel==4) target.EVENTS_DIALOG.doPlusMinusF("eventDay-");
-			if (custSel==5) target.EVENTS_DIALOG.doPlusMinusF("eventYear-");
-			if (custSel==6) target.EVENTS_DIALOG.doPlusMinusF("eventIcon-");
+			if (custSel==0) {
+				target.EVENTS_DIALOG.doPlusMinusF("eventNum-");
+			} else if (custSel==2) {
+				target.EVENTS_DIALOG.doPlusMinusF("eventType-");
+			} else if (custSel==3) {
+				target.EVENTS_DIALOG.doPlusMinusF("eventMonth-");
+			} else if (custSel==4) {
+				target.EVENTS_DIALOG.doPlusMinusF("eventDay-");
+			} else if (custSel==5) {
+				target.EVENTS_DIALOG.doPlusMinusF("eventYear-");
+			} else if (custSel==6) {
+				target.EVENTS_DIALOG.doPlusMinusF("eventIcon-");
+			} else if ((custSel>7) && (custSel<17)) {
+				prevSel=custSel;
+				custSel--;
+				target.ntHandleEventsDlg();	
+			} else if ((custSel>17) && (custSel<26)) {
+				prevSel=custSel;
+				custSel--;
+				target.ntHandleEventsDlg();	
+			} else if ((custSel>26) && (custSel<34)) {
+				prevSel=custSel;
+				custSel--;
+				target.ntHandleEventsDlg();	
+			} else if ((custSel==35) || (custSel==36)) {
+				prevSel=custSel;
+				custSel--;
+				target.ntHandleEventsDlg();	
+			} else if (custSel==38) {
+				prevSel=custSel;
+				custSel--;
+				target.ntHandleEventsDlg();	
+			}
 			break
 		}		
 		case "right" : {
-			if (custSel==0) target.EVENTS_DIALOG.doPlusMinusF("eventNum+");
-			if (custSel==2) target.EVENTS_DIALOG.doPlusMinusF("eventType+");
-			if (custSel==3) target.EVENTS_DIALOG.doPlusMinusF("eventMonth+");
-			if (custSel==4) target.EVENTS_DIALOG.doPlusMinusF("eventDay+");
-			if (custSel==5) target.EVENTS_DIALOG.doPlusMinusF("eventYear+");
-			if (custSel==6) target.EVENTS_DIALOG.doPlusMinusF("eventIcon+");
+			if (custSel==0) {
+				target.EVENTS_DIALOG.doPlusMinusF("eventNum+");
+			} else if (custSel==2) {
+				target.EVENTS_DIALOG.doPlusMinusF("eventType+");
+			} else if (custSel==3) {
+				target.EVENTS_DIALOG.doPlusMinusF("eventMonth+");
+			} else if (custSel==4) {
+				target.EVENTS_DIALOG.doPlusMinusF("eventDay+");
+			} else if (custSel==5) {
+				target.EVENTS_DIALOG.doPlusMinusF("eventYear+");
+			} else if (custSel==6) {
+				target.EVENTS_DIALOG.doPlusMinusF("eventIcon+");
+			} else if ((custSel>6) && (custSel<16)) {
+				prevSel=custSel;
+				custSel++;
+				target.ntHandleEventsDlg();	
+			} else if ((custSel>16) && (custSel<25)) {
+				prevSel=custSel;
+				custSel++;
+				target.ntHandleEventsDlg();	
+			} else if ((custSel>25) && (custSel<33)) {
+				prevSel=custSel;
+				custSel++;
+				target.ntHandleEventsDlg();	
+			} else if ((custSel==34) || (custSel==35)) {
+				prevSel=custSel;
+				custSel++;
+				target.ntHandleEventsDlg();	
+			} else if (custSel==37) {
+				prevSel=custSel;
+				custSel++;
+				target.ntHandleEventsDlg();	
+			}
 			break
 		}
+		return;
 	  }	
 	}
 	
 	target.EVENTS_DIALOG.doCenterF = function () {
 		if (custSel === 1) target.EVENTS_DIALOG.btn_Delete.click();
-		if (custSel === 8) target.EVENTS_DIALOG.btn_Ok.click();
-		if (custSel === 9) target.EVENTS_DIALOG.btn_Cancel.click();
+		if (custSel === 7) target.EVENTS_DIALOG.key01.click();
+		if (custSel === 8) target.EVENTS_DIALOG.key02.click();
+		if (custSel === 9) target.EVENTS_DIALOG.key03.click();
+		if (custSel === 10) target.EVENTS_DIALOG.key04.click();
+		if (custSel === 11) target.EVENTS_DIALOG.key05.click();
+		if (custSel === 12) target.EVENTS_DIALOG.key06.click();
+		if (custSel === 13) target.EVENTS_DIALOG.key07.click();
+		if (custSel === 14) target.EVENTS_DIALOG.key08.click();
+		if (custSel === 15) target.EVENTS_DIALOG.key09.click();
+		if (custSel === 16) target.EVENTS_DIALOG.key10.click();
+		if (custSel === 17) target.EVENTS_DIALOG.key11.click();
+		if (custSel === 18) target.EVENTS_DIALOG.key12.click();
+		if (custSel === 19) target.EVENTS_DIALOG.key13.click();
+		if (custSel === 20) target.EVENTS_DIALOG.key14.click();
+		if (custSel === 21) target.EVENTS_DIALOG.key15.click();
+		if (custSel === 22) target.EVENTS_DIALOG.key16.click();
+		if (custSel === 23) target.EVENTS_DIALOG.key17.click();
+		if (custSel === 24) target.EVENTS_DIALOG.key18.click();
+		if (custSel === 25) target.EVENTS_DIALOG.key19.click();
+		if (custSel === 26) target.EVENTS_DIALOG.SHIFT.click();
+		if (custSel === 27) target.EVENTS_DIALOG.key20.click();
+		if (custSel === 28) target.EVENTS_DIALOG.key21.click();
+		if (custSel === 29) target.EVENTS_DIALOG.key22.click();
+		if (custSel === 30) target.EVENTS_DIALOG.key23.click();
+		if (custSel === 31) target.EVENTS_DIALOG.key24.click();
+		if (custSel === 32) target.EVENTS_DIALOG.key25.click();
+		if (custSel === 33) target.EVENTS_DIALOG.key26.click();
+		if (custSel === 34) target.EVENTS_DIALOG.SYMBOL.click();
+		if (custSel === 35) target.EVENTS_DIALOG.SPACE.click();
+		if (custSel === 36) target.EVENTS_DIALOG.BACK.click();
+		if (custSel === 37) target.EVENTS_DIALOG.btn_Ok.click();
+		if (custSel === 38) target.EVENTS_DIALOG.btn_Cancel.click();
+		return;
 	}
 
 	target.doUpdateEvent = function () {
@@ -2012,14 +2313,17 @@ var tmp = function () {
 	}
 	
 	target.doKeyPress = function (sender) {
-		var id;
-		var character;
-		id = getSoValue(sender, "id");
-		n = parseInt(id.substring(3, 5))-1;
+		var id = getSoValue(sender, "id");
+		this.addCharacter(id);
+		return;
+	}
+	
+	target.addCharacter = function (id) {
+		var n = parseInt(id.substring(3, 5));
 		//target.bubble("tracelog","id="+id+", n="+n);
 		if (symbols) { n = n + symbolsOffset};
 		if (shifted) { n = n + shiftOffset};
-		character = keys[n];
+		var character = keys[n-1];
 		//target.bubble("tracelog","n="+n+", character="+character);
 		var eventDescription = target.getVariable("event_description");
 		eventDescription = eventDescription + character;
