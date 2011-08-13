@@ -14,6 +14,7 @@ tmp = function() {
 			kbook.autoRunRoot.sandbox._icon =  Core.config.compat.NodeKinds.getIcon(appIcon,0);
 			kbook.autoRunRoot.sandbox._title = Calendar.title;
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
+			kbook.autoRunRoot.sandbox.setSoValue = Core.system.setSoValue;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
 			kbook.autoRunRoot.sandbox.getFileContent = Core.io.getFileContent;
 			kbook.autoRunRoot.sandbox.startsWith = Core.text.startsWith;

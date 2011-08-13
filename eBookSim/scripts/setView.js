@@ -116,6 +116,7 @@
       					kbook.autoRunRoot._icon = 22;
       					kbook.autoRunRoot._title = "Calendar";				
       					kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
+						kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;
       					kbook.autoRunRoot.startsWith = _Core.text.startsWith;
       					this.MAIN.EINK.VIEW.setURI("../addons/Calendar/calendar.xml");				
       					break;
