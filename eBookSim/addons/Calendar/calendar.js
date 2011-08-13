@@ -977,7 +977,7 @@ var tmp = function () {
 			this.EVENTS_DIALOG.doCenterF();
 			return;
 		}
-		target.bubble("tracelog","selectionDate="+selectionDate+", numEvents="+tempEvents.length);
+		//target.bubble("tracelog","selectionDate="+selectionDate+", numEvents="+tempEvents.length);
 		this.doEditEvents();
 		return;
 	}
@@ -1046,9 +1046,9 @@ var tmp = function () {
 				}
 			}
 		}
-		target.bubble("tracelog","Before: selectionDate="+selectionDate);
+		//target.bubble("tracelog","Before: selectionDate="+selectionDate);
 		this.dateChanged();
-		target.bubble("tracelog","After: selectionDate="+selectionDate);
+		//target.bubble("tracelog","After: selectionDate="+selectionDate);
 		return;
 	}
 	
@@ -1495,7 +1495,7 @@ var tmp = function () {
 							eventYear=selectionDay+1;
 							if (selectionDay==8) selectionDay=1;
 						}
-						target.bubble("tracelog","In here. eventYear="+eventYear);
+						//target.bubble("tracelog","In here. eventYear="+eventYear);
 					} else {
 						eventYear=tempEvents[currentTempEvent][3];
 					}
@@ -2234,11 +2234,11 @@ var tmp = function () {
 		
 		if (currentTempEvent==tempEventsNum.length) {
 			// new event
-			target.bubble("tracelog","Add event");
+			//target.bubble("tracelog","Add event");
 			var addTo=[eventTypeCode, eventMonth, eventDay, eventYear, eventIcon, eventDescription];
 			events.push(addTo);
 		} else {
-			target.bubble("tracelog","Update event "+tempEventsNum[currentTempEvent]);
+			//target.bubble("tracelog","Update event "+tempEventsNum[currentTempEvent]);
 			var replaceWith=[eventTypeCode, eventMonth, eventDay, eventYear, eventIcon, eventDescription];
 			events.splice(tempEventsNum[currentTempEvent],1,replaceWith);
 		}
@@ -2264,27 +2264,27 @@ var tmp = function () {
 	
 	target.refreshKeys = function () {
 		//target.bubble("tracelog","symbols="+symbols+", shifted="+shifted);
-		var i,n,keyy;
+		var i,n,key;
 		n = -1;
 		if (shifted) {
 			n = n + shiftOffset;
 			setSoValue(target.EVENTS_DIALOG['SHIFT'], 'text', 'unSh');
 		} else {
 			setSoValue(target.EVENTS_DIALOG['SHIFT'], 'text', 'Shft');
-			}
+		}
 		if (symbols) {
 			n = n + symbolsOffset;
 			setSoValue(target.EVENTS_DIALOG['SYMBOL'], 'text', 'Abc');
 		} else {
 			setSoValue(target.EVENTS_DIALOG['SYMBOL'], 'text', 'Symbols');
-			}
+		}
 		for (i=1; i<=26; i++) {
 			key = 'key'+twoDigits(i);
 			setSoValue(target.EVENTS_DIALOG[key], 'text', keys[n+i]);
 			mouseEnter.call(target.EVENTS_DIALOG[key]);
 			mouseLeave.call(target.EVENTS_DIALOG[key]);
-			}	
-     	}
+		}	
+	}
 
 	target.doSpace = function () {
 		// ADD A SPACE
