@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.kinoma.com/fskin/1">
+	<assets>
+		<style font="Lucida Console" size="14">
+				<style id="ftext-e" halign="left" left="4" top="4" right="4" bottom="4">
+				<style id="ftext-d" color="#959595" background="#6D6D6D"/>
+				<style id="ftext-p" background="#B49AFF"/>
+				<style id="ftext-s" background="#B49AFF"/>
+			</style>		
+		</style>
+		<style font="Arial" size="14">
+			<style id="label-l" style="bold" color="#000000" halign="left"/>
+			<style id="label-n" style="normal" color="#000000" halign="left"/>
+
+			<style id="button-e" size="22" style="" halign="center">
+				<style id="button-d" color="#6D6D6D"/>
+				<style id="button-p"/>
+				<style id="button-s" />
+			</style>
+			
+			<style id="control-e" style="normal" size="14" left="25" halign="left">
+				<style id="control-d"/>
+				<style id="control-p"/>
+				<style id="control-s"/>
+			</style>
+			
+			<style id="menu-e" halign="left" left="25" top="0" right="5" bottom="0">
+				<style id="menu-d"/>
+				<style id="menu-p"/>
+				<style id="menu-s"/>
+			</style>
+			
+			<style id="tab-e" halign="center" style="bold" left="10" right="10">
+				<style id="tab-d"/>
+				<style id="tab-p"/>
+				<style id="tab-s"/>
+			</style>
+			
+			<style id="text-e" halign="left" left="4" top="4" right="4" bottom="4">
+				<style id="text-d" color="#959595" background="#6D6D6D"/>
+				<style id="text-p" background="#B49AFF"/>
+				<style id="text-s" background="#B49AFF"/>
+			</style>
+
+			<style id="filter-e" halign="left" left="4" top="4" right="20" bottom="4">
+				<style id="filter-d" color="#959595" background="#6D6D6D"/>
+				<style id="filter-p" background="#93C2F6"/>
+				<style id="filter-s" background="#B49AFF"/>
+			</style>
+			
+			<style left="3" right="12">
+				<style id="th-e" style="bold">
+					<style id="th-d"/>
+					<style id="th-p"/>
+					<style id="th-s"/>
+				</style>
+				<style id="tc-e" color="#000000" background="#FFFFFF" top="3" bottom="3">
+					<style id="tc-d"/>
+					<style id="tc-p"/>
+					<style id="tc-s" background="#B49AFF"/>
+				</style>
+			</style>
+			
+			<style id="grid-e" halign="center" left="2" top="2" right="2" bottom="2">
+				<style id="grid-o" background="#F0F0F0"/>
+				<style id="grid-d" background="#6D6D6D"/>
+				<style id="grid-p" background="#70AEF3"/>
+				<style id="grid-s" background="#2094E8"/>
+			</style>
+			
+			<style style="bold" halign="center" left="80" right ="80">
+				<style id="dragBar_d" color="#6D6D6D"/>
+				<style id="dragBar_e" color="#000000"/>
+				<style id="dragBar_p" color="#FFFFFF"/>
+				<style id="dragBar_s" color="#FFFFFF"/>
+			</style>
+			<style halign="left" left="25" top="0" right="15" bottom="0">
+				<style id="menu_d" color="#6D6D6D"/>
+				<style id="menu_e" color="#000000"/>
+				<style id="menu_p" color="#000000"/>
+				<style id="menu_s" color="#000000"/>
+			</style>
+			<style halign="right" left="0" top="0" right="15" bottom="0">
+				<style id="key_d" color="#6D6D6D"/>
+				<style id="key_e" color="#000000"/>
+				<style id="key_p" color="#000000"/>
+				<style id="key_s" color="#000000"/>
+			</style>
+			<style style="bold" halign="center" left="10" right="6">
+				<style id="menuBar_d" color="#6D6D6D"/>
+				<style id="menuBar_e" color="#000000"/>
+				<style id="menuBar_p" color="#000000"/>
+				<style id="menuBar_s" color="#000000"/>
+			</style>
+			
+			<style id="cb-e" halign="center" left="20" right="10" size="11" style="bold">
+			</style>
+			
+			<style id="tip-e" left="10" right="10" size="11">
+			</style>
+		</style>
+		<style id="dialog" background="#80000000"/>
+
+		<texture href="notificationAssets.png">
+			<cutout id="notification-lt" x="0" y="0" width="9" height="9"/>
+			<cutout id="notification-ct" x="9" y="0" width="30" height="9"/>
+			<cutout id="notification-rt" x="39" y="0" width="9" height="9"/>
+			<cutout id="notification-lm" x="0" y="9" width="9" height="30"/>
+			<cutout id="notification-cm" x="9" y="9" width="30" height="30"/>
+			<cutout id="notification-rm" x="39" y="9" width="9" height="30"/>
+			<cutout id="notification-lb" x="0" y="39" width="9" height="9"/>
+			<cutout id="notification-cb" x="9" y="39" width="30" height="9"/>
+			<cutout id="notification-rb" x="39" y="39" width="9" height="9"/>		
+		</texture>
+
+		<texture href="simBackground.jpg">
+			<cutout id="background-f"/>
+			<cutout id="leftShadow-f"/>
+			<cutout id="rightShadow-f"/>
+		</texture>
+		<texture href="simAssets.png">
+			<cutout id="null" x="0" y="0" width="0" height="0"/>
+
+			<cutout id="button-l" x="3" y="5" width="16" height="40" lines="60"/>
+			<cutout id="button-c" x="19" y="5" width="20" height="40" lines="60"/>
+			<cutout id="button-r" x="39" y="5" width="16" height="40" lines="60"/>
+			
+			<cutout id="default-button-l" x="0" y="244" width="19" height="40" lines="60"/>
+			<cutout id="default-button-c" x="20" y="244" width="20" height="40" lines="60"/>
+			<cutout id="default-button-r" x="40" y="244" width="19" height="40" lines="60"/>
+			
+			<cutout id="checkbox-l" x="61" y="4" width="25" height="22" columns="60" lines="30"/>
+			<cutout id="checkbox-c" x="85" y="4" width="15" height="22" columns="60" lines="30"/>
+			<cutout id="checkbox-r" x="100" y="4" width="20" height="22" columns="60" lines="30"/>
+			
+			<cutout id="radio-l" x="60" y="120" width="25" height="30" columns="60"/>
+			<cutout id="radio-c" x="85" y="120" width="15" height="30" columns="60"/>
+			<cutout id="radio-r" x="100" y="120" width="20" height="30" columns="60"/>
+
+			<cutout id="popup-l" x="245" y="4" width="15" height="22" lines="30"/>
+			<cutout id="popup-c" x="260" y="4" width="20" height="22" lines="30"/>
+			<cutout id="popup-r" x="280" y="4" width="15" height="22" lines="30"/>
+			
+			<cutout id="menu-lt" x="180" y="120" width="20" height="10" columns="60"/>
+			<cutout id="menu-ct" x="200" y="120" width="20" height="10" columns="60"/>
+			<cutout id="menu-rt" x="220" y="120" width="20" height="10" columns="60"/>
+			<cutout id="menu-lm" x="180" y="130" width="20" height="20" columns="60"/>
+			<cutout id="menu-cm" x="200" y="130" width="20" height="20" columns="60"/>
+			<cutout id="menu-rm" x="220" y="130" width="20" height="20" columns="60"/>
+			<cutout id="menu-lb" x="180" y="170" width="20" height="10" columns="60"/>
+			<cutout id="menu-cb" x="200" y="170" width="20" height="10" columns="60"/>
+			<cutout id="menu-rb" x="220" y="170" width="20" height="10" columns="60"/>
+			
+			<cutout id="dialog-lt" x="180" y="180" width="10" height="10"/>
+			<cutout id="dialog-ct" x="190" y="180" width="40" height="5"/>
+			<cutout id="dialog-rt" x="230" y="180" width="10" height="10"/>
+			<cutout id="dialog-lm" x="180" y="190" width="5" height="40"/>
+			<cutout id="dialog-rm" x="235" y="190" width="5" height="40"/>
+			<cutout id="dialog-lb" x="180" y="230" width="10" height="10"/>
+			<cutout id="dialog-cb" x="190" y="235" width="40" height="5"/>
+			<cutout id="dialog-rb" x="230" y="230" width="10" height="10"/>
+				
+			<cutout id="panel-lt" x="246" y="186" width="9" height="9"/>
+			<cutout id="panel-ct" x="255" y="186" width="30" height="9"/>
+			<cutout id="panel-rt" x="285" y="186" width="9" height="9"/>
+			<cutout id="panel-lm" x="246" y="195" width="9" height="30"/>
+			<cutout id="panel-cm" x="255" y="195" width="30" height="30"/>
+			<cutout id="panel-rm" x="285" y="195" width="9" height="30"/>
+			<cutout id="panel-lb" x="246" y="225" width="9" height="9"/>
+			<cutout id="panel-cb" x="255" y="225" width="30" height="9"/>
+			<cutout id="panel-rb" x="285" y="225" width="9" height="9"/>
+						
+			<cutout id="text-lt" x="306" y="6" width="9" height="9" lines="60"/>
+			<cutout id="text-ct" x="315" y="6" width="30" height="9" lines="60"/>
+			<cutout id="text-rt" x="345" y="6" width="9" height="9" lines="60"/>
+			<cutout id="text-lm" x="306" y="15" width="9" height="30" lines="60"/>
+			<cutout id="text-cm" x="315" y="15" width="30" height="30" lines="60"/>
+			<cutout id="text-rm" x="345" y="15" width="9" height="30" lines="60"/>
+			<cutout id="text-lb" x="306" y="45" width="9" height="9" lines="60"/>
+			<cutout id="text-cb" x="315" y="45" width="30" height="9" lines="60"/>
+			<cutout id="text-rb" x="345" y="45" width="9" height="9" lines="60"/>
+			
+			<cutout id="titleBarLine" x="315" y="7" width="30" height="2"/>
+
+			<cutout id="border-lt" x="306" y="6" width="4" height="4" lines="60"/>
+			<cutout id="border-ct" x="310" y="6" width="40" height="2" lines="60"/>
+			<cutout id="border-rt" x="350" y="6" width="4" height="4" lines="60"/>
+			<cutout id="border-lm" x="306" y="10" width="2" height="40" lines="60"/>
+			<cutout id="border-rm" x="352" y="10" width="2" height="40" lines="60"/>
+			<cutout id="border-lb" x="306" y="50" width="4" height="4" lines="60"/>
+			<cutout id="border-cb" x="310" y="52" width="40" height="2" lines="60"/>
+			<cutout id="border-rb" x="350" y="50" width="4" height="4" lines="60"/>
+			
+			<cutout id="sb-gt" x="360" y="6" width="18" height="24" columns="20"/>
+			<cutout id="sb-gm" x="360" y="30" width="18" height="20" columns="20"/>
+			<cutout id="sb-gb" x="360" y="50" width="18" height="24" columns="20"/>
+			<cutout id="sb-bu" x="360" y="80" width="18" height="20" columns="20"/>
+			<cutout id="sb-tt" x="362" y="104" width="13" height="11" columns="20"/>
+			<cutout id="sb-tm" x="362" y="115" width="13" height="10" columns="20"/>
+			<cutout id="sb-tb" x="362" y="125" width="13" height="15" columns="20"/>
+			<cutout id="sb-bd" x="360" y="140" width="18" height="20" columns="20"/>
+			
+			<cutout id="sb-gl" x="366" y="160" width="24" height="18" lines="20"/>
+			<cutout id="sb-gc" x="390" y="160" width="20" height="18" lines="20"/>
+			<cutout id="sb-gr" x="410" y="160" width="24" height="18" lines="20"/>
+			<cutout id="sb-bl" x="440" y="160" width="20" height="18" lines="20"/>
+			<cutout id="sb-tl" x="463" y="162" width="12" height="13" lines="20"/>
+			<cutout id="sb-tc" x="475" y="162" width="10" height="13" lines="20"/>
+			<cutout id="sb-tr" x="485" y="162" width="14" height="13" lines="20"/>
+			<cutout id="sb-br" x="500" y="160" width="20" height="18" lines="20"/>
+
+			<cutout id="sbc" x="1000" y="0" width="20" height="20" lines="20"/>
+			
+			<cutout id="y-splitbar" x="365" y="145" width="0" height="0" columns="20"/>
+			<cutout id="x-splitbar" x="505" y="165" width="0" height="0" lines="20"/>
+			
+			<cutout id="sl-gt" x="440" y="0" width="20" height="20"/>
+			<cutout id="sl-gm" x="440" y="20" width="20" height="20"/>
+			<cutout id="sl-gb" x="440" y="40" width="20" height="20"/>
+			<cutout id="sl-tv" x="440" y="60" width="20" height="20"/>
+			
+			<cutout id="nb-gt" x="1024" y= "0" width="20" height="56" />
+			<cutout id="nb-gm" x="1024" y="20" width="20" height="20" />
+			<cutout id="nb-gb" x="1024" y="40" width="20" height="20" />
+			<cutout id="nb-tv" x="1024" y="60" width="20" height="20" />
+			
+			<cutout id="sl-gl" x="444" y="84" width="16" height="15" lines="20"/>
+			<cutout id="sl-gc" x="460" y="84" width="20" height="15" lines="20"/>
+			<cutout id="sl-gr" x="480" y="84" width="16" height="15" lines="20"/>
+			<cutout id="sl-th" x="505" y="84" width="10" height="15" lines="20"/>
+			
+			<cutout id="cb-bh" x="540" y="4" width="20" height="15" lines="20"/>
+			<cutout id="cb-gl" x="584" y="4" width="26" height="15" lines="20"/>
+			<cutout id="cb-gc" x="590" y="4" width="30" height="15" lines="20"/>
+			<cutout id="cb-gr" x="620" y="4" width="6" height="15" lines="20"/>
+			<cutout id="cb-th" x="630" y="4" width="10" height="15" lines="20"/>
+			
+			<cutout id="grid-lt" x="880" y="0" width="5" height="5" lines="60" columns="60"/>
+			<cutout id="grid-ct" x="885" y="0" width="50" height="5" lines="60" columns="60"/>
+			<cutout id="grid-rt" x="935" y="0" width="5" height="5" lines="60" columns="60"/>
+			<cutout id="grid-lm" x="880" y="5" width="5" height="50" lines="60" columns="60"/>
+			<cutout id="grid-cm" x="885" y="5" width="50" height="50" lines="60" columns="60"/>
+			<cutout id="grid-rm" x="935" y="5" width="5" height="50" lines="60" columns="60"/>
+			<cutout id="grid-lb" x="880" y="55" width="5" height="5" lines="60" columns="60"/>
+			<cutout id="grid-cb" x="885" y="55" width="50" height="5" lines="60" columns="60"/>
+			<cutout id="grid-rb" x="935" y="55" width="5" height="5" lines="60" columns="60"/>
+			
+			<cutout id="th-l" x="520" y="80" width="10" height="20" columns="40"/>
+			<cutout id="th-c" x="530" y="80" width="20" height="20" columns="40"/>
+			<cutout id="th-r" x="550" y="80" width="10" height="20" columns="40"/>
+			
+			<cutout id="tc-l" x="520" y="160" width="10" height="20" columns="40"/>
+			<cutout id="tc-c" x="530" y="160" width="20" height="20" columns="40"/>
+			<cutout id="tc-r" x="550" y="160" width="10" height="20" columns="40"/>
+			
+			<cutout id="ta" x="600" y="160" width="20" height="20"/>
+		
+			<cutout id="tab-l" x="640" y="0" width="10" height="30" columns="40"/>
+			<cutout id="tab-c" x="650" y="0" width="20" height="30" columns="40"/>
+			<cutout id="tab-r" x="670" y="0" width="10" height="30" columns="40"/>
+			<cutout id="tab" x="640" y="120" width="40" height="30" columns="40"/>
+			
+			<cutout id="progress-l" x="640" y="160" width="6" height="20"/>
+			<cutout id="progress-c" x="646" y="160" width="48" height="20"/>
+			<cutout id="progress-r" x="694" y="160" width="6" height="20"/>
+			
+			<cutout id="growBorder_lt" x="820" y="120" width="10" height="10" lines="60"/>
+			<cutout id="growBorder_ct" x="830" y="120" width="40" height="4" lines="60"/>
+			<cutout id="growBorder_rt" x="870" y="120" width="10" height="10" lines="60"/>
+			<cutout id="growBorder_lm" x="820" y="130" width="4" height="40" lines="60"/>
+			<cutout id="growBorder_rm" x="876" y="130" width="4" height="40" lines="60"/>
+			<cutout id="growBorder_lb" x="820" y="170" width="10" height="10" lines="60"/>
+			<cutout id="growBorder_cb" x="830" y="176" width="40" height="4" lines="60"/>
+			<cutout id="growBorder_rb" x="870" y="170" width="10" height="10" lines="60"/>
+			<cutout id="dragBar_l" x="820" y="4" width="10" height="26" lines="30"/>
+			<cutout id="dragBar_c" x="830" y="4" width="40" height="26" lines="30"/>
+			<cutout id="dragBar_m" x="870" y="4" width="10" height="26" lines="30"/>
+			
+			<cutout id="menu_lt" x="760" y="46" width="20" height="4"/>
+			<cutout id="menu_ct" x="780" y="46" width="20" height="4"/>
+			<cutout id="menu_rt" x="800" y="46" width="20" height="4"/>
+			<cutout id="menu_lu" x="760" y="50" width="20" height="6"/>
+			<cutout id="menu_cu" x="780" y="50" width="20" height="6"/>
+			<cutout id="menu_ru" x="800" y="50" width="20" height="6"/>
+			<cutout id="menu_ls" x="760" y="56" width="20" height="10"/>
+			<cutout id="menu_cs" x="780" y="56" width="20" height="10"/>
+			<cutout id="menu_rs" x="800" y="56" width="20" height="10"/>
+			<cutout id="menu_li" x="760" y="66" width="20" height="20" columns="60"/>
+			<cutout id="menu_ci" x="780" y="66" width="20" height="20" columns="60"/>
+			<cutout id="menu_ri" x="800" y="66" width="20" height="20" columns="60"/>
+			<cutout id="menu_ld" x="760" y="106" width="20" height="6"/>
+			<cutout id="menu_cd" x="780" y="106" width="20" height="6"/>
+			<cutout id="menu_rd" x="800" y="106" width="20" height="6"/>
+			<cutout id="menu_lb" x="760" y="112" width="20" height="8"/>
+			<cutout id="menu_cb" x="780" y="112" width="20" height="8"/>
+			<cutout id="menu_rb" x="800" y="112" width="20" height="8"/>
+			
+			<cutout id="menuBar_l" x="720" y="0" width="10" height="28" lines="30"/>
+			<cutout id="menuBar_c" x="730" y="0" width="20" height="28" lines="30"/>
+			<cutout id="menuBar_r" x="750" y="0" width="6" height="28" lines="30"/>
+			<cutout id="menuBar_a" x="720" y="0" width="26" height="28" lines="30"/>
+			
+			<cutout id="closeBox_cutout" x="700" y="160" width="20" height="20"/>
+			<cutout id="collapseBox_cutout" x="720" y="160" width="20" height="20"/>
+			<cutout id="zoomBox_cutout" x="740" y="160" width="20" height="20"/>
+			<cutout id="growBox_cutout" x="780" y="160" width="20" height="20"/>
+			<cutout id="systemBox_cutout" x="800" y="160" width="20" height="20"/>
+			
+			<cutout id="tip-l" x="760" y="0" width="10" height="24"/>
+			<cutout id="tip-c" x="770" y="0" width="40" height="24"/>
+			<cutout id="tip-r" x="810" y="0" width="10" height="24"/>
+		</texture>
+		
+		<!--texture href="PRS505.png">
+			<cutout id="PRS505Header-l" x="1" y="1" width="269" height="37"/>
+			<cutout id="PRS505Header-c" x="269" y="1" width="269" height="37"/>
+			<cutout id="PRS505Header-r" x="538" y="1" width="269" height="37"/>
+			<cutout id="PRS505Info-l" x="1" y="38" width="1" height="800"/>
+			<cutout id="PRS505Info-c" x="1" y="38" width="977" height="800"/>
+			<cutout id="PRS505Info-r" x="1" y="38" width="1" height="800"/>
+			<cutout id="PRS505Status-l" x="1" y="847" width="269" height="134"/>
+			<cutout id="PRS505Status-c" x="269" y="847" width="269" height="134"/>
+			<cutout id="PRS505Status-r" x="538" y="847" width="269" height="134"/>
+			<cutout id="505LeftNavi" x="80" y="855" width="150" heigth="120"/>
+			<cutout id="505RightNavi" x="600" y="850" width="130" heigth="120"/>
+		</texture-->		
+
+		<texture href="PRS505.png">
+			<cutout id="PRS505Header-l" x="1" y="1" width="81" height="37"/>
+			<cutout id="PRS505Header-c" x="81" y="1" width="600" height="37"/>
+			<cutout id="PRS505Header-r" x="681" y="1" width="126" height="37"/>
+			<cutout id="PRS505Info-l" x="1" y="38" width="81" height="800"/>
+			<cutout id="PRS505Info-c" x="81" y="38" width="600" height="800"/>
+			<cutout id="PRS505Info-r" x="681" y="38" width="126" height="800"/>
+			<cutout id="PRS505Status-l" x="1" y="847" width="81" height="134"/>
+			<cutout id="PRS505Status-c" x="81" y="847" width="600" height="134"/>
+			<cutout id="PRS505Status-r" x="681" y="847" width="126" height="134"/>
+			<cutout id="505LeftNavi" x="80" y="855" width="150" heigth="120"/>
+			<cutout id="505RightNavi" x="600" y="850" width="130" heigth="120"/>
+		</texture>	
+
+		<texture href="PRS650.png">
+			<cutout id="PRSx50Header-l" x="0" y="0" width="81" height="37"/>
+			<cutout id="PRSx50Header-c" x="81" y="0" width="600" height="37"/>
+			<cutout id="PRSx50Header-r" x="681" y="0" width="126" height="37"/>
+			<cutout id="PRSx50Info-l" x="0" y="38" width="81" height="800"/>
+			<cutout id="PRSx50Info-c" x="81" y="38" width="600" height="800"/>
+			<cutout id="PRSx50Info-r" x="681" y="38" width="126" height="800"/>
+			<cutout id="PRSx50Status-l" x="0" y="847" width="81" height="134"/>
+			<cutout id="PRSx50Status-c" x="81" y="847" width="600" height="134"/>
+			<cutout id="PRSx50Status-r" x="681" y="847" width="126" height="134"/>
+		</texture>	
+
+		<skin id="simpleTexts80"
+				cutouts="null,null,null,null,null,null,null,null,null" 
+				styles="control-d,control-e,control-p,control-s"/>	
+		<skin id="panel-titleBarLine" 
+				cutouts="null,titleBarLine,null,null,null,null,null,null,null"/>
+
+		<skin id="PRS505background" 
+				cutouts="PRS505Header-l,PRS505Header-c,PRS505Header-r,PRS505Info-l,PRS505Info-c,PRS505Info-r,PRS505Status-l,PRS505Status-c,PRS505Status-r"/>
+				
+		<skin id="PRSx50background" 
+				cutouts="PRSx50Header-l,PRSx50Header-c,PRSx50Header-r,PRSx50Info-l,PRSx50Info-c,PRSx50Info-r,PRSx50Status-l,PRSx50Status-c,PRSx50Status-r"/>
+		<skin id="LeftNavi" 
+				cutouts="505LeftNavi"/>
+		<skin id="RightNavi" 
+				cutouts="505RightNavi"/>
+
+		<skin id="background" 
+				cutouts="background-f"/>
+		<skin id="leftShadow" 
+				cutouts="leftShadow-f"/>
+		<skin id="rightShadow" 
+				cutouts="rightShadow-f"/>
+				
+		<skin id="dialog" 
+				cutouts="dialog-lt,dialog-ct,dialog-rt,dialog-rm,dialog-rb,dialog-cb,dialog-lb,dialog-lm"
+				styles="dialog"/>
+				
+		<skin id="label" 
+				styles="label-l"/>
+		<skin id="label_normal" 
+				styles="label-n"/>
+		<skin id="panel" 
+				cutouts="panel-lt,panel-ct,panel-rt,panel-lm,panel-cm,panel-rm,panel-lb,panel-cb,panel-rb"/>
+		<skin id="notification" 
+				cutouts="notification-lt,notification-ct,notification-rt,notification-lm,notification-cm,notification-rm,notification-lb,notification-cb,notification-rb"
+				styles="dialog"/>
+		<skin id="progress" 
+				cutouts="progress-l,progress-c,progress-r"/>
+
+		<skin id="button" 
+				cutouts="button-l,button-c,button-r"
+				styles="button-d,button-e,button-p,button-s"/>
+
+		<skin id="default-button" 
+				cutouts="default-button-l,default-button-c,default-button-r"
+				styles="button-d,button-e,button-p,button-s"/>
+		<skin id="checkbox" 
+				cutouts="checkbox-l,checkbox-c,checkbox-r"
+				styles="control-d,control-e,control-p,control-s"/>
+		<skin id="popup"
+				cutouts="popup-l,popup-c,popup-r,menu-lt,menu-ct,menu-rt,menu-lm,menu-cm,menu-rm,menu-lb,menu-cb,menu-rb" 
+				styles="control-d,control-e,control-p,control-s,menu_d,menu_e,menu_p,menu_s"/>
+		<skin id="radio" 
+				cutouts="radio-l,radio-c,radio-r"
+				styles="control-d,control-e,control-p,control-s"/>
+		<skin id="numbutton" 
+				cutouts="nb-gt"/>
+		<skin id="slider" 
+				cutouts="sl-gt,sl-gm,sl-gb,sl-tv,sl-gl,sl-gc,sl-gr,sl-th"/>
+		<skin id="tab" 
+				cutouts="tab,tab-l,tab-c,tab-r"
+				styles="tab-d,tab-e,tab-p,tab-s"/>
+		<skin id="text"
+				cutouts="text-lt,text-ct,text-rt,text-lm,text-cm,text-rm,text-lb,text-cb,text-rb" 
+				styles="text-d,text-e,text-p,text-s"/>
+
+		<skin id="fileText"
+				cutouts="text-lt,text-ct,text-rt,text-lm,text-cm,text-rm,text-lb,text-cb,text-rb" 
+				styles="text-e,text-e,text-p,text-s"/>
+
+		<skin id="helpText"
+				cutouts="text-lt,text-ct,text-rt,text-lm,text-cm,text-rm,text-lb,text-cb,text-rb" 
+				styles="ftext-e,ftext-e,ftext-p,ftext-s"/>				
+
+		<skin id="filter"
+				cutouts="text-lt,text-ct,text-rt,text-lm,text-cm,text-rm,text-lb,text-cb,text-rb" 
+				styles="filter-d,filter-e,filter-p,filter-s"/>
+		<skin id="simpleText"
+				cutouts="null,null,null,null,null,null,null,null,null" 
+				styles="label-l,label-l,label-l,label-l"/>
+				
+		<skin id="controller" 
+				cutouts="cb-bh,cb-gl,cb-gc,cb-gr,cb-th"
+				styles="cb-e"/>
+		<skin id="scrollbar" 
+				cutouts="sb-gt,sb-gm,sb-gb,sb-bu,sb-tt,sb-tm,sb-tb,sb-bd,sb-gl,sb-gc,sb-gr,sb-bl,sb-tl,sb-tc,sb-tr,sb-br"/>
+		<skin id="scrollbarRB" 
+				cutouts="sb-gt,sb-gm,sb-gm,sb-bu,sb-tt,sb-tm,sb-tb,sb-bd,sb-gl,sb-gc,sb-gc,sb-bl,sb-tl,sb-tc,sb-tr,sb-br"/>
+		<skin id="scrollbarCorner"
+				cutouts="sbc"/>
+		<skin id="splitbar" 
+				cutouts="y-splitbar,x-splitbar"/>
+				
+		<skin id="grid" 
+				cutouts="border-lt,border-ct,border-rt,border-lm,border-rm,border-lb,border-cb,border-rb,grid-lt,grid-ct,grid-rt,grid-lm,grid-cm,grid-rm,grid-lb,grid-cb,grid-rb"
+				styles="grid-d,grid-e,grid-p,grid-s,grid-d,grid-o,grid-p,grid-s"/>
+		<skin id="table" 
+				cutouts="border-lt,border-ct,border-rt,border-lm,border-rm,border-lb,border-cb,border-rb,th-l,th-c,th-r,tc-l,tc-c,tc-r"
+				styles="th-d,th-e,th-p,th-s,tc-d,tc-e,tc-p,tc-s"/>
+		<skin id="tree" 
+				cutouts="border-lt,border-ct,border-rt,border-lm,border-rm,border-lb,border-cb,border-rb,th-l,th-c,th-r,tc-l,tc-c,tc-r,ta"
+				styles="th-d,th-e,th-p,th-s,tc-d,tc-e,tc-p,tc-s"/>
+
+		<skin id="menu"
+				cutouts="menu_lt,menu_ct,menu_rt,menu_lu,menu_cu,menu_ru,menu_ls,menu_cs,menu_rs,menu_li,menu_ci,menu_ri,menu_ld,menu_cd,menu_rd,menu_lb,menu_cb,menu_rb"
+				styles="menu_d,menu_e,menu_p,menu_s,key_d,key_e,key_p,key_s"/>
+		<skin id="menuBar"
+				cutouts="menuBar_l,menuBar_c,menuBar_r,menuBar_a"
+				styles="menuBar_d,menuBar_e,menuBar_p,menuBar_s"/>
+		<skin id="menuButton"
+				cutouts="popup-l,popup-c,popup-r"
+				styles="control-d,control-e,control-p,control-s"/>
+				
+		<skin id="growBorder" 
+				cutouts="growBorder_lt,growBorder_ct,growBorder_rt,growBorder_lm,growBorder_rm,growBorder_lb,growBorder_cb,growBorder_rb"/>
+		<skin id="growBox" 
+				cutouts="growBox_cutout"/>
+		<skin id="dragBar" 
+				cutouts="dragBar_l,dragBar_c,dragBar_m"
+				 styles="dragBar_d,dragBar_e,dragBar_p,dragBar_s"/>
+		<skin id="closeBox" 
+				cutouts="closeBox_cutout"/>
+		<skin id="collapseBox" 
+				cutouts="collapseBox_cutout"/>
+		<skin id="zoomBox" 
+				cutouts="zoomBox_cutout"/>
+		<skin id="systemBox"
+				cutouts="systemBox_cutout"
+				styles="control-d,control-e,control-p,control-s"/>
+				
+		<skin id="tip" 
+				cutouts="tip-l,tip-c,tip-r"
+				styles="tip-e"/>
+	</assets>
+</document>

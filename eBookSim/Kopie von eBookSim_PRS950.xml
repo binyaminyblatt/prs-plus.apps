@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<fsk xmlns="http://www.kinoma.com/Fsk/1">
+	<vm name="eBookSim" sync="true">
+
+		<!--bytecode href="[applicationPath]FskCache"/-->
+		<bytecode href="[applicationPath]prsp"/>
+		<!--document href="[applicationPath]eBookSim/scripts/eBookSimMain.xml"/-->
+		<!--document href="[applicationPath]eBookSim/scripts/eBookSimMain800.xml"/-->
+		<document href="[applicationPath]eBookSim/scripts/eBookSimMainPRS950.xml"/>
+	</vm>
+</fsk>

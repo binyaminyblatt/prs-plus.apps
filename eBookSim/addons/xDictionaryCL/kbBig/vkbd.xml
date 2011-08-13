@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.kinoma.com/fskin/1" id="kbdDoc">
+	<assets>
+		<style font="Dutch801 Rm BT">
+		</style>
+		<style font="Courier10 95BT">
+			<style id="kbdInput" size="30" style="bold" color="#000000"/>
+			<style id="kbdTitle" size="20" style="bold" color="#FFFFFF"/>
+		</style>
+		<style font="Swis721 BT">
+			<style id="kbdButton" size="25" style="bold" align="center" color="#000000"/>
+			<style id="kbdStatus" size="20" style="" color="#000000"/>
+		</style>
+		<skin id="kbdTitle" styles="kbdTitle"/>
+		<skin id="kbdInput" styles="kbdInput"/>
+		<skin id="kbdStatus" styles="kbdStatus"/>
+
+		<texture href="skins/kbAssets.png">
+			<cutout id="kbdButton-l" x="0" y="0" width="7" height="20"/>
+			<cutout id="kbdButton-c" x="7" y="0" width="1" height="20"/>
+			<cutout id="kbdButton-r" x="17" y="0" width="7" height="20"/>
+
+			<cutout id="kbdMain-hl" x="50" y="0" width="50" height="25" />
+			<cutout id="kbdMain-hc" x="100" y="0" width="500" height="25" />
+			<cutout id="kbdMain-hr" x="600" y="0" width="50" height="25" />
+			<cutout id="kbdMain-pl" x="50" y="25" width="15" height="775" />
+			<cutout id="kbdMain-pc" x="65" y="25" width="570" height="775" />
+			<cutout id="kbdMain-pr" x="635" y="25" width="15" height="775" />
+			<cutout id="kbdMain-sl" x="50" y="0" width="0" height="0" />
+			<cutout id="kbdMain-sc" x="50" y="0" width="0" height="0" />
+			<cutout id="kbdMain-sr" x="50" y="0" width="0" height="0" />
+
+			<cutout id="kbdLineDark-hl" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineDark-hc" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineDark-hr" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineDark-pl" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineDark-pc" x="50" y="800" width="600" height="23" />
+			<cutout id="kbdLineDark-pr" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineDark-sl" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineDark-sc" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineDark-sr" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineLight-hl" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineLight-hc" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineLight-hr" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineLight-pl" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineLight-pc" x="50" y="846" width="600" height="23" />
+			<cutout id="kbdLineLight-pr" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineLight-sl" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineLight-sc" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineLight-sr" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineSel-hl" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineSel-hc" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineSel-hr" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineSel-pl" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineSel-pc" x="50" y="823" width="600" height="23" />
+			<cutout id="kbdLineSel-pr" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineSel-sl" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineSel-sc" x="0" y="0" width="0" height="0" />
+			<cutout id="kbdLineSel-sr" x="0" y="0" width="0" height="0" />
+		</texture>
+		<skin id="kbdButton"
+			cutouts="kbdButton-l,kbdButton-c,kbdButton-r"
+			styles="kbdButton,kbdButton,kbdButton,kbdButton"/>
+		<skin id="kbdMain"
+				cutouts="kbdMain-hl,kbdMain-hc,kbdMain-hr,kbdMain-pl,kbdMain-pc,kbdMain-pr,kbdMain-sl,kbdMain-sc,kbdMain-sr"/>
+		<skin id="kbdLineDark"
+				cutouts="kbdLineDark-hl,kbdLineDark-hc,kbdLineDark-hr,kbdLineDark-pl,kbdLineDark-pc,kbdLineDark-pr,kbdLineDark-sl,kbdLineDark-sc,kbdLineDark-sr"/>
+		<skin id="kbdLineLight"
+				cutouts="kbdLineLight-hl,kbdLineLight-hc,kbdLineLight-hr,kbdLineLight-pl,kbdLineLight-pc,kbdLineLight-pr,kbdLineLight-sl,kbdLineLight-sc,kbdLineLight-sr"/>
+		<skin id="kbdLineSel"
+				cutouts="kbdLineSel-hl,kbdLineSel-hc,kbdLineSel-hr,kbdLineSel-pl,kbdLineSel-pc,kbdLineSel-pr,kbdLineSel-sl,kbdLineSel-sc,kbdLineSel-sr"/>
+	</assets>
+	<code>
+	</code>
+
+	<clock/>
+	<group id="KBD_GROUP" left="0" right="0" top="0" bottom="0" visible="true">
+		<panel skin="kbdMain" left="0" right="0" top="0" bottom="0"/>
+		<label skin="kbdTitle" left="70" right="15" top="0" height="25" align="right" text="Keyboard by m-land"/>
+		<label id="kbdTitle" skin="kbdTitle" left="70" right="0" top="0" height="25" align="left" text="xxx"/>
+
+		<label id="input" skin="kbdInput" left="10" right="10" top="25" height="30" align="left" text="xxx"/>
+		<!--<label id="stat" skin="kbdStatus" left="10" right="10" top="55" height="0" align="left" text="stat"/>-->
+
+		<label id="hdr1" skin="kbdButton" left= "90" width="49" top="55" height="20" align="center" text="1"		/>
+		<label id="hdr2" skin="kbdButton" left="140" width="49" top="55" height="20" align="center" text="2"		/>
+		<label id="hdr3" skin="kbdButton" left="190" width="49" top="55" height="20" align="center" text="3"		/>
+		<label id="hdr4" skin="kbdButton" left="240" width="49" top="55" height="20" align="center" text="4"		/>
+		<label id="hdr5" skin="kbdButton" left="290" width="49" top="55" height="20" align="center" text="5"		/>
+		<label id="hdr6" skin="kbdButton" left="340" width="49" top="55" height="20" align="center" text="6"		/>
+		<label id="hdr7" skin="kbdButton" left="390" width="49" top="55" height="20" align="center" text="7"		/>
+		<label id="hdr8" skin="kbdButton" left="440" width="49" top="55" height="20" align="center" text="8"		/>
+		<label id="hdr9" skin="kbdButton" left="490" width="49" top="55" height="20" align="center" text="9"		/>
+		<label id="hdr0" skin="kbdButton" left="540" width="49" top="55" height="20" align="center" text="0"		/>
+
+		<view id="line1" href="vkbdline.xml" left="0" right="1" top="75" height="23"/>
+		<view id="line2" href="vkbdline.xml" left="0" right="1" top="98" height="23"/>
+		<view id="line3" href="vkbdline.xml" left="0" right="1" top="121" height="23"/>
+		<view id="line4" href="vkbdline.xml" left="0" right="1" top="144" height="23"/>
+		<view id="line5" href="vkbdline.xml" left="0" right="1" top="167" height="23"/>
+		<view id="line6" href="vkbdline.xml" left="0" right="1" top="175" height="23"/>
+		<view id="line7" href="vkbdline.xml" left="0" right="1" top="198" height="23"/>
+		<view id="line8" href="vkbdline.xml" left="0" right="1" top="221" height="23"/>
+		<view id="line9" href="vkbdline.xml" left="0" right="1" top="244" height="23"/>
+		<view id="line0" href="vkbdline.xml" left="0" right="1" top="267" height="23"/>
+
+	</group>
+</document>
+

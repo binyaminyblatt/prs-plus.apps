@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.kinoma.com/fskin/1" id="DOCUMENT">
+
+<assets>
+	<style font="Swis721 BT">
+		<style id="piRow" size="30" style="bold" halign="left" valign="center" color="#000000" />
+		<style id="piRowNum" size="30" style="bold" halign="center" valign="center" />
+		<style id="clock" size="22" style="bold" color="#FFFFFF"/>
+	</style>
+
+	<skin id="piRow" styles="piRow"/>
+	<skin id="piRowNum" styles="piRowNum" />
+	<skin id="clock" styles="clock"/>
+
+	<texture href="..\assets\simAssets\kBookAssets.png">
+		<cutout id="piDummy" x="0" y="0" width="0" height="0"/>
+		<cutout id="piNull" x="0"  y="70" width="5" height="60"/>
+		<cutout id="piNum" x="173" y="140" width="35" height="70"/>
+		<cutout id="piLine" x="70" y="139" width="70" height="2" />
+		<cutout id="piVerticalLine" x="173" y="140" width="2" height="70" />
+	</texture>
+
+	
+	<skin id="piMenuRow"           cutouts="piDummy,piLine ,piNum, piDummy,piDummy,piDummy, piDummy,piLine ,piDummy" />
+	<skin id="piMenuRowBorderless" cutouts="piDummy,piDummy,piNum, piDummy,piDummy,piDummy, piDummy,piDummy,piDummy" />
+</assets>
+
+<code>
+    <function id="modelChanged">
+		arguments.callee.grammar.call(this);
+        var state = this.getVariable("STATE");
+        
+        var target;
+
+        if (this.state != state) {
+            this.focus(true)
+            this.AUTORUN_GROUP.show(false)
+            switch(state) {
+            case "AUTORUN":
+                // this.loadScript();
+                this.AUTORUN_GROUP.show(true);
+                target = this.AUTORUN_GROUP.AUTORUN;
+                break;
+            }
+            this.state = state;
+          // target.init();            
+          //   if (target.isEnabled())
+                {
+                target.focus(true);
+                };
+        this.showClock();       
+        }         
+    </function>
+    <function id="showClock">
+    <![CDATA[
+		var time = new Date();
+		var timeLocale = time.toLocaleTimeString();
+		var show = timeLocale.substring(0, timeLocale.lastIndexOf(':'));
+		this.AUTORUN_GROUP.clock1.setValue(show);
+	]]>
+    </function>
+ </code>
+<clock/>
+<group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
+   	<panel skin="kbookReset" left="0" right="0" top="0" bottom="0"/>
+    <sprite skin="kbookMenuIcon" left="0" width="70" top="0" height="70" u="36" v="1" active="false" canFocus="false"/>   
+    <label skin="title" left="70" right="0" top="0" height="70" align="left" text="Simulator Main Page"/>
+    <group id="AUTORUN" width="600" top="70" bottom="30">
+        <code>
+           	<function id="doNext">
+        	 this.bubble("setView","Menu2");
+        	</function>
+            <function id="doDigit" params="part"><![CDATA[
+                //this.bubble("tracelog","Digit "+part.key+" pressed");
+                this.container.container.showClock();
+                part.key=part.key*1;
+				switch (part.key) {
+					case 0 : {
+								this.bubble("doClose");
+								break;
+								}
+					case 1 : {
+								this.bubble("setView","Calc");
+								break;
+							}	
+					case 2 : {
+								this.bubble("setView","Calendar");
+								break;
+							}	
+					case 3 : {
+								this.bubble("setView","MineSweeper");
+								break;
+							}															
+					case 4 : {
+								this.bubble("setView","Mahjong");
+								break;
+							}	
+					case 5 : {
+								this.bubble("setView","Sudoku");
+								break;
+							}	
+					case 6 : {
+								this.bubble("setView","Chess");
+								break;
+							}	
+					case 7 : {
+								this.bubble("setView","Dict");
+								break;
+							}								
+					case 8 : {
+								this.bubble("setView","Solitaire");
+								break;
+							}								
+					case 9 : {
+								this.bubble("setView","Spider");
+								break;
+							}															
+					}			
+
+            ]]></function>
+            <function id="doMenu">
+                //this.bubble("tracelog","doMenu pressed");
+                kbook.autoRunRoot.exitIf(kbook.model);
+            </function>
+             <function id="doButtonClick" params="sender">
+				var part = {}; 
+				part.key=_Core.system.getSoValue(sender,"id");
+				this.doDigit(part);
+             </function>
+        </code>
+   		<panel skin="piMenuRow" left="0" bottom="630" right="0" height="70" />
+	    <sprite skin="kbookMenuIcon" left="0" width="70" bottom="630" height="70" u="43" v="0" active="false" canFocus="false"/>   
+		<label skin="piRowNum" bottom="630" right="0" width="35" height="70" align="center" text="1" />
+		<label skin="piRow" bottom="630" right="0" left="70" height="70" text="Calculator" />   
+		<button id="1" bottom="630" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
+
+   		<panel skin="piMenuRow" left="0" bottom="560" right="0" height="70" />
+	    <sprite skin="kbookMenuIcon" left="0" width="70" bottom="560" height="70" u="22" v="0" active="false" canFocus="false"/>   
+		<label skin="piRowNum" bottom="560" right="0" width="35" height="70" align="center" text="2" />
+		<label skin="piRow" bottom="560" right="0" left="70" height="70" text="Calendar" />   		
+		<button id="2" bottom="560" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
+		
+   		<panel skin="piMenuRow" left="0" bottom="490" right="0" height="70" />
+	    <sprite skin="kbookMenuIcon" left="0" width="70" bottom="490" height="70" u="54" v="0" active="false" canFocus="false"/>   
+		<label skin="piRowNum" bottom="490" right="0" width="35" height="70" align="center" text="3" />
+		<label skin="piRow" bottom="490" right="0" left="70" height="70" text="MineSweeper" />   		
+		<button id="3" bottom="490" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
+
+
+   		<panel skin="piMenuRow" left="0" bottom="420" right="0" height="70" />
+	    <sprite skin="kbookMenuIcon" left="0" width="70" bottom="420" height="70" u="49" v="0" active="false" canFocus="false"/>      		
+		<label skin="piRowNum" bottom="420" right="0" width="35" height="70" align="center" text="4" />
+		<label skin="piRow" bottom="420" right="0" left="70" height="70" text="Mahjong" />   		
+		<button id="4" bottom="420" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
+
+		<panel skin="piMenuRow" left="0" bottom="350" right="0" height="70" />
+	    <sprite skin="kbookMenuIcon" left="0" width="70" bottom="350" height="70" u="48" v="0" active="false" canFocus="false"/>   		
+		<label skin="piRowNum" bottom="350" right="0" width="35" height="70" align="center" text="5" />
+		<label skin="piRow" bottom="350" right="0" left="70" height="70" text="Sudoku" />   		
+		<button id="5" bottom="350" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
+
+		<panel skin="piMenuRow" left="0" bottom="280" right="0" height="70" />
+		<sprite skin="kbookMenuIcon" left="0" width="70" bottom="280" height="70" u="46" v="0" active="false" canFocus="false"/>   
+		<label skin="piRowNum" bottom="280" right="0" width="35" height="70" align="center" text="6" />
+		<label skin="piRow" bottom="280" right="0" left="70" height="70" text="Chess" />   		
+		<button id="6" bottom="280" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
+
+		<panel skin="piMenuRow" left="0" bottom="210" right="0" height="70" />
+		<sprite skin="kbookMenuIcon" left="0" width="70" bottom="210" height="70" u="27" v="0" active="false" canFocus="false"/>   
+		<label skin="piRowNum" bottom="210" right="0" width="35" height="70" align="center" text="7" />
+		<label skin="piRow" bottom="210" right="0" left="70" height="70" text="Dictionary" />   		
+		<button id="7" bottom="210" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
+
+		<panel skin="piMenuRow" left="0" bottom="140" right="0" height="70" />
+		<sprite skin="kbookMenuIcon" left="0" width="70" bottom="140" height="70" u="51" v="0" active="false" canFocus="false"/>   
+		<label skin="piRowNum" bottom="140" right="0" width="35" height="70" align="center" text="8" />
+		<label skin="piRow" bottom="140" right="0" left="70" height="70" text="Solitaire" />
+		<button id="8" bottom="140" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
+
+   		<panel skin="piMenuRow" left="0" bottom="70" right="0" height="70" />
+		<sprite skin="kbookMenuIcon" left="0" width="70" bottom="70" height="70" u="47" v="0" active="false" canFocus="false"/>   
+		<label skin="piRowNum" bottom="70" right="0" width="35" height="70" align="center" text="9" />	
+		<label skin="piRow" bottom="70" right="0" left="70" height="70" text="Spider Solitaire" />
+		<button id="9" bottom="70" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
+
+   		<panel skin="piMenuRow" left="0" bottom="0" right="0" height="70" />
+	    <sprite skin="kbookMenuIcon" left="0" width="70" bottom="0" height="70" u="31" v="0" active="false" canFocus="false"/>   
+		<label skin="piRowNum" bottom="0" right="0" width="35" height="70" align="center" text="0" />
+		<label skin="piRow" bottom="0" right="0" left="70" height="70" text="Exit" />
+		<button id="0" bottom="0" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
+    </group>
+	<label id="clock1" skin="clock" width="100" right="4" height="30" bottom="0" align="right" text="00:00"/>
+    <label left="210" right="210" height="30" bottom="0" align="center" text="1 of 2"/>
+</group>
+</document>

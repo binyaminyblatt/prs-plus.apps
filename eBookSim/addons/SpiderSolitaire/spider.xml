@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.kinoma.com/fskin/1" id="DOCUMENT">
+
+<assets>
+	<import href="../AppAssets/AppAssets.xml"/>
+
+	<behavior id="cardSprite">
+		<script on="mouseUp" params="event">
+				this.bubble("doCardClick",this);
+			</script>
+	</behavior>
+	
+	<style font="Swis721 BT">
+		<style id="swis24gry" size="24" style="" color="#6D6D6D"/>
+		<style id="touchText" size="12" style="bold" color="#000000"/>
+	</style>
+	
+	<texture href="spiderskins/deck.png">
+		<cutout id="cards" x="0" y="0" width="55" height="107" columns="55"/> // for 300/505 columns should be a multiply of 8
+	</texture>
+
+	<skin id="touchText" styles="touchText"/>	
+	<skin id="swis24gry" styles="swis24gry"/>			
+	<skin id="card" 	 cutouts="cards"/>
+</assets>
+
+<code>
+    <function id="runJs" params="path,target">
+        try {
+            var f = new Stream.File(path);
+            var fn = new Function("target", f.toString());
+            fn(target);
+            delete fn;
+        }
+        catch(e)
+        {
+        }
+    </function>
+    <function id="loadScript">
+        if (!this.hasOwnProperty('_scriptLoaded'))
+            this._scriptLoaded = false;
+        if (!this._scriptLoaded)
+        {
+	   		if(kbook.autoRunRoot.path==undefined){
+				path = this.getBaseURI().slice(7);
+				kbook.model=this;
+			}else{
+				path = kbook.autoRunRoot.path;
+			}
+            var index = path.lastIndexOf('/');
+            if (index > 0)
+               path = path.substring(0, index + 1);
+            this.driveroot = path.substring(0,2);
+            var target = this.AUTORUN_GROUP.AUTORUN;
+            target.driveroot = this.driveroot;
+		    target.spiderRoot = path;
+
+            this.runJs(path+"spider.js",target);
+        }
+        this._scriptLoaded = true;
+    </function>
+    <function id="modelChanged">
+		arguments.callee.grammar.call(this);
+        var state = this.getVariable("STATE");
+
+        var target;
+
+        if (this.state != state) {
+            this.focus(true)
+            this.AUTORUN_GROUP.show(false)
+            switch(state) {
+            case "AUTORUN":
+                this.loadScript();
+                this.AUTORUN_GROUP.show(true);
+                target = this.AUTORUN_GROUP.AUTORUN;
+                break;
+            }
+            this.state = state;
+            target.init();
+             if (target.isEnabled())
+                {
+                target.focus(true);
+                };
+        }
+    </function>
+</code>
+
+<group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
+	<panel skin="AppMainSkin" left="0" right="0" top="0" bottom="0"/>
+    <group id="AUTORUN" width="600" top="70" bottom="33">
+	   	<sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="38" v="1" active="false" canFocus="false"/>   
+		<label id="appTitle" skin="title" left="70" right="0" top="-70" height="70" align="left" text="MineSweeper"/>
+		<code>
+			<function id="doRoot">	this.exitQuit(); </function>
+        </code>
+	
+		<sprite skin='card' id='card000'><behave like="cardSprite"/></sprite><sprite skin='card' id='card001'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card002'><behave like="cardSprite"/></sprite><sprite skin='card' id='card003'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card004'><behave like="cardSprite"/></sprite><sprite skin='card' id='card005'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card006'><behave like="cardSprite"/></sprite><sprite skin='card' id='card007'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card008'><behave like="cardSprite"/></sprite><sprite skin='card' id='card009'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card010'><behave like="cardSprite"/></sprite><sprite skin='card' id='card011'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card012'><behave like="cardSprite"/></sprite><sprite skin='card' id='card013'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card014'><behave like="cardSprite"/></sprite><sprite skin='card' id='card015'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card016'><behave like="cardSprite"/></sprite><sprite skin='card' id='card017'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card018'><behave like="cardSprite"/></sprite><sprite skin='card' id='card019'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card020'><behave like="cardSprite"/></sprite><sprite skin='card' id='card021'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card022'><behave like="cardSprite"/></sprite><sprite skin='card' id='card023'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card024'><behave like="cardSprite"/></sprite><sprite skin='card' id='card025'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card026'><behave like="cardSprite"/></sprite><sprite skin='card' id='card027'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card028'><behave like="cardSprite"/></sprite><sprite skin='card' id='card029'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card030'><behave like="cardSprite"/></sprite><sprite skin='card' id='card031'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card032'><behave like="cardSprite"/></sprite><sprite skin='card' id='card033'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card034'><behave like="cardSprite"/></sprite><sprite skin='card' id='card035'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card036'><behave like="cardSprite"/></sprite><sprite skin='card' id='card037'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card038'><behave like="cardSprite"/></sprite><sprite skin='card' id='card039'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card040'><behave like="cardSprite"/></sprite><sprite skin='card' id='card041'><behave like="cardSprite"/></sprite>		
+		<sprite skin='card' id='card042'><behave like="cardSprite"/></sprite><sprite skin='card' id='card043'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card044'><behave like="cardSprite"/></sprite><sprite skin='card' id='card045'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card046'><behave like="cardSprite"/></sprite><sprite skin='card' id='card047'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card048'><behave like="cardSprite"/></sprite><sprite skin='card' id='card049'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card050'><behave like="cardSprite"/></sprite><sprite skin='card' id='card051'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card052'><behave like="cardSprite"/></sprite><sprite skin='card' id='card053'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card054'><behave like="cardSprite"/></sprite><sprite skin='card' id='card055'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card056'><behave like="cardSprite"/></sprite><sprite skin='card' id='card057'><behave like="cardSprite"/></sprite>	
+		<sprite skin='card' id='card058'><behave like="cardSprite"/></sprite><sprite skin='card' id='card059'><behave like="cardSprite"/></sprite>	
+
+		<button id="btn_Undo"	  active="true" text="Undo" left="10" width="70" bottom="15" height="45" do="doUndoClick"/>
+		<button id="btn_Options"  active="true" text="Options" left="90" width="100" bottom="15" height="45" do="doOptionsClick"/>
+		
+	    <text id='helpText' skin='helpText' left='5' right='10' top='5' bottom='15' active='false' visible='false'/>	
+	
+	<!--label id='btn_hint_prev'      skin='touchText' left=  '0' width='120' bottom='2' height='15' align='center' text='Previous'/>
+	 	<label id='btn_hint_next'      skin='touchText' left='120' width='120' bottom='2' height='15' align='center' text='Next'/>
+	 	<label id='btn_hint_prev_next' skin='touchText' left=  '0' width='240' bottom='2' height='15' align='center'/-->
+		<label id='btn_hint_home'      skin='touchText' left='240' width='120' bottom='2' height='15' align='center' text='Quit'/>
+	<!--label id='btn_hint_size'      skin='touchText' left='360' width='120' bottom='2' height='15' align='center' text='Size'/>
+		<label id='btn_hint_option'    skin='touchText' left='480' width='129' bottom='2' height='15' align='center' text='Option'/-->
+			 
+		<label skin="swis24gry" left="0" right="0" bottom="80" height="30" align="center" text="WORK in PROGRESS" />
+	   	<label skin="swis24gry" left="0" right="0" bottom="50" height="30" align="center" text="not functional" /> 
+	</group>
+</group>
+
+</document>

@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.kinoma.com/fskin/1" id="eBookSim" title="eBookSim"  width="1000" height="979">
+ <!--  
+ 	derived from eBookUpdaterMain.xml
+ 	Author : Mark Nord
+ 			 2010-05-19		initial release
+ 			 2010-05-31		part.key (credits to m-land)
+ 			 2010-06-03		all buttons orientated on top
+ 			 2010-06-13		keyboard enabled - NumKey + ArrowKeys +PgUp + PgDn + Enter, +ALT = doHold (credits to m-land)
+			 2010-06-18		right mouse click => doHold
+			 2010-06-19		managed to load PRS+ Core-functionality :-)
+			 2010-06-20		system-menu, about & help - dialog, 
+							patched fskin.dll to have some more methodes scriptable [7C .. .. 0C 0C -> 7C .. .. 0C 04]
+			 2010-06-22		Core- & Help-Path relative to Simulator-Path
+			 2010-07-24 	SimMenu, App's are set via EINK.VIEW.setURI()
+			 2010-08-15		"compiled" Core.system.getSoValue permits use of unpatched fskin.dll; 
+			 				Core.system.cloneObj enabled;
+			 2010-10-03		"Compiled" Core and mapped _Core functions  
+			 2010-12-04		505 / x50 Skin, Buttons enabled accordingly, to be set via system-menu
+			 2011-06-02		corrected hold-prev = doFirst; hold-next = doLast
+			 2011-07-23		moved setView() to external file
+ -->
+	<assets>
+		<import href="../assets/simAssets/simAssets.xml"/>
+		<import href="../assets/simAssets/behaviors/buttonBehavior.xml"/>
+		<import href="../assets/simAssets/kbookAssets.xml"/> 
+
+		<skin id="text-dialog"
+				cutouts="null,null,null,null,null,null,null,null,null" 
+				styles="label-l,label-l,label-l,label-l"/>
+	</assets>
+
+	<model>
+		<variable id="STATE" value="AUTORUN"/>
+		<variable id="TRACER" value="Tracelog:"/>
+	</model>
+	   
+	<!--clock callbacksPerSecond="30"/-->
+	<clock/>
+	<background left="0" right="0" top="0" bottom="0"/>
+	<growBorder left="0" right="0" top="0" bottom="0"/>
+	<dragBar left="4" right="4" top="4" height="1000"/>
+	<tip/>
+
+	<code>
+		<function id="initialized">
+			try {
+				var path = this.getBaseURI().slice(7); 				
+				path=path.substring(0,path.indexOf('/eBookSim/')+10);
+					
+				if(FileSystem.getFileInfo(path.concat('prsp.js'))) {
+					var f = new Stream.File(path.concat('prsp.js'));
+					try {					
+						var fn = prsp.compile("target,root",f.toString());			 				
+						var theRoot = fn(this,path);
+						delete fn;
+					} catch (e1) { 
+						this.bubble("tracelog","error run compiled func: "+e);
+					} finally {
+						f.close();		
+					}
+				}
+			} catch(e2) {this.bubble("tracelog","error compile func: "+e);}
+
+			/* replicate Core into sandbox  */
+			try {
+				if(FileSystem.getFileInfo(path.concat('_PRSPlus.js'))) {
+					var f = new Stream.File(path.concat('_PRSPlus.js'));
+					try {					
+						var fn = new Function("target", "root", "theRoot", f.toString());	
+						fn(this,path,theRoot);
+						delete fn;
+					} catch(e) {
+						this.bubble("tracelog","error run _PRSPlus.js: "+e);
+					} finally {
+						f.close();
+					}
+				}
+			} catch(e2) {this.bubble("tracelog","outer Error _PRSPlus: "+e2);}
+
+			/* load external setView()  */
+			try {
+				if(FileSystem.getFileInfo(path.concat('/scripts/setView.js'))) {
+					var f = new Stream.File(path.concat('/scripts/setView.js'));
+					try {					
+						this.setView = new Function("app", f.toString());	
+					} catch(e) {
+						this.bubble("tracelog","error load setView.js: "+e);
+					} finally {
+						f.close();
+					}
+				}
+			} catch(e2) {this.bubble("tracelog","outer Error load setView: "+e2);}
+			
+	   /* initialize global functions and variables */
+  		 try {
+			this.setView("Menu");					
+			//this.setView("TestApp");		
+  		    fnPageScroll = _Core.system.getSoValue(this.TRACER, 'scrollPage');
+			touch = !_Core.config.compat.hasNumericButtons;
+		 	this.changeInterface(touch);
+		 	var items = _Core.system.getSoValue(this,"root.window.systemBox.menu.items");
+			items[6].check(touch); 
+			} 	catch(e3) {this.bubble("tracelog","error init global vars: "+e3);}	
+		</function>  
+
+    <function id="modelChanged">
+		arguments.callee.grammar.call(this);
+        var state = this.getVariable("STATE");   
+    </function>
+     
+		<function id="tracelog" params="msg">
+			this.setVariable("TRACER",this.getVariable("TRACER").concat(String.fromCharCode(10)).concat(msg));
+		    try {
+		       fnPageScroll.call(this.TRACER, true, 1);
+			    }
+		    catch (e) {
+    	    //   this.myLog('Err:' + e);
+	    	}
+		</function>	
+		
+		<function id="internalNumKey" params="num">
+			var part=new Object;
+			part.key=num;
+			this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doDigit", part);
+		</function>
+
+		<function id="internalNumKeyHold" params="num">
+			this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doHold"+ num);
+		</function>
+		
+		<function id="keyDown" params="ev">
+			<![CDATA[ /*
+			this.bubble('tracelog', 'keyDown.key:'+ev.key);
+			this.bubble('tracelog', 'keyDown.keyCode:'+ev.keyCode);
+			this.bubble('tracelog', 'keyDown.altKey:'+ev.altKey);
+			this.bubble('tracelog', 'keyDown.shiftKey:'+ev.shiftKey);
+			this.bubble('tracelog', 'keyDown.controlKey:'+ev.controlKey);
+			this.bubble('tracelog', 'keyDown.functionKey:'+ev.functionKey);
+			this.bubble('tracelog', 'keyDown.x:'+ev.x);
+			this.bubble('tracelog', 'keyDown.y:'+ev.y);
+			this.bubble('tracelog', 'keyDown.time:'+ev.time);
+			this.bubble('tracelog', 'keyDown.clickCount:'+ev.clickCount);
+			this.bubble('tracelog', 'keyDown.contextual:'+ev.contextual);
+			this.bubble('tracelog', 'keyDown-');  */
+			if ((ev.key >='0') && (ev.key<='9')){
+				if(ev.altKey){
+					this.internalNumKeyHold(ev.key);
+				}else{
+					this.internalNumKey(ev.key);
+				}
+			}
+			else switch (ev.keyCode) {
+			 case 113: 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doRoot");	//q
+ 			 			break;
+			 case 30 : 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doUp");
+ 			 			break;
+			 case 31 : 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doDown");
+ 			 			break;
+			 case 27 : 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doMenu");		// Esc
+ 			 			break;
+			 case 28 : 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doLeft");
+ 			 			break;			 
+			 case 29 : 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doRight");			 
+ 			 			break;
+ 			 case 13 : 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doCenter");	// Enter
+  			 			break;
+ 			 case 11 : 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doPrevious"); // PgUp
+  			 			break;
+ 			 case 12 : 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doNext");		// PgDn
+  			 			break;  			 			  			 			
+ 			} 
+			]]>
+		</function>	
+		
+		<function id="internalMouseUp" params="ev, key">
+			<![CDATA[
+			if ((key >=0) && (key <=9)) {
+				if (ev.contextual) { 					// rightClick
+				//  this.bubble('tracelog', 'RClick:');
+				//  this.bubble("internalNumKeyHold",key);
+					this.internalNumKeyHold(key);
+				}	
+				if (!ev.contextual) { 					// lefClick
+				//  this.bubble('tracelog', 'LClick:');
+				//  this.bubble("internalNumKey",key);				
+					this.internalNumKey(key);				
+				}	
+			}
+			else {
+					if	(!ev.contextual) {
+						this.bubble('tracelog', key);
+						this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble(key);
+					}	
+					if	(ev.contextual) {
+						switch (key) {
+							case "doNext":		this.bubble('tracelog', "doLast");
+												this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doLast");
+												break;
+							case "doPrevious":	this.bubble('tracelog', "doFirst");
+												this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doFirst");
+											 	break;
+							case "doRoot":		this.bubble('tracelog', "doMenu");
+												this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doMenu");									
+											 	break;
+							default:			this.bubble('tracelog', key.substring(0,2).concat('Hold').concat(key.substring(2)));
+											    this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble(key.substring(0,2).concat('Hold').concat(key.substring(2)));
+						}
+					 }	
+				}	 
+			]]>
+			</function>	
+			
+  		
+    		<!--function id="setView" params="app">
+				2011-07-23 Mark Nord - moved to external file setView.js
+    		</function-->		
+    		
+			<function id="doAbout">
+				this.ABOUT_DIALOG.open()
+			</function>
+			
+			<function id="doHelp">
+		//		this.bubble("tracelog","doHelp calling this.HELP_DIALOG.open() ");
+				this.HELP_DIALOG.open();
+			</function>
+		
+			<function id="canHelp" >
+				return true;
+			</function>		
+			
+			<function id="canChangeInterface" >
+			//	this.bubble("tracelog",this.MAIN.EINK.VIEW.getURI());
+				return this.MAIN.EINK.VIEW.getURI()=="SimMenu.xml";
+			</function>	
+			
+			<function id="changeInterface" params="touch" >
+				this.MASK505.show(!touch);
+ 				this.MASKx50.show(touch);
+				var o = this;
+				for (var prop in o) {
+					try {
+						var oprop = o[prop];
+						if (prop.search(/^505/)==0) {
+							oprop.enable(!touch);
+							}
+						else {
+						 	if (prop.search(/^X50/)==0) {
+							oprop.enable(touch);
+							}
+						}
+					} catch (ignore) {}
+				}	
+			</function>					
+
+			<function id="doInterface" params="sender">
+				touch = !touch;
+			 	sender.check(touch);
+			 	_Core.config.compat.hasNumericButtons = !touch;
+				this.changeInterface(touch);
+			</function>		
+   		
+	</code>
+		
+	 <group id="MAIN" visible="true" left="0" right="0" top="0" bottom="0">
+	 	<text id="TRACER" skin="fileText" active="false" left="830" top="37" width="350" height="800" variable="TRACER"/>
+		<scrollbar scroller="TRACER" left="1180" top="37" height="800" />
+		<panel id="EINK" skin="panel" left="81" top="37" width="600" height="800"> //E-Ink Display 600x800 
+			<view id="VIEW" left="0" top="0" right="0" bottom="0"/>  // App is set via setView()
+		</panel> 
+	</group> 
+	
+	<panel id="MASK505" skin="PRS505background" left="0" top="0" width="806" height="971" visible="true"/> 
+	<panel id="MASKx50" skin="PRSx50background" left="0" top="0" width="806" height="971" visible="false"/> 
+
+	<systemBox left="16" width="20" top="6">
+		<menu>
+			<item title="Restore" alt="R" do="doZoom" can="canZoom"/>
+			<item title="Move" alt="M" do="doMove" can="canMove"/>
+			<item title="Size" alt="S" do="doSize" can="canSize"/>
+			<item title="Minimize" alt="n" do="doCollapse" can="canCollapse"/>
+			<item title="Maximize" alt="x" do="doZoom" can="canZoom"/>
+			<separator/>
+			<item title="TouchInterface" alt="t" do="doInterface" can="canChangeInterface"/>
+			<separator/>
+			<item title="Help" alt="H" do="doHelp" can="canHelp" />			
+			<item title="About" alt="A" do="doAbout" can="canAbout"/>
+			<separator/>
+			<item title="Close" alt="C" do="doClose" can="canClose"/>
+		</menu>
+	</systemBox>
+	<collapseBox width="20" left="700" top="6" height="20"/>
+	<closeBox width="20" left="720" top="6" height="20"/>
+	<growBox width="20" right="5" bottom="5" height="20"/> 
+	
+ 	<!-- invisible Buttons to simulate PRS-505 keyboard-action -->	 	
+		<button id="505_CENT" active="true" text="" left="635" width="40" top="885" height="40" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doCenter");		
+			</function>			
+		</code>
+	</button>
+	<button id="505_UP" active="true" text="" left="635" width="40" top="845" height="40" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doUp");		
+			</function>			
+		</code>
+	</button>
+	<button id="505_DOWN" active="true" text="" left="635" width="40" top="925" height="40" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doDown");		
+			</function>			
+		</code>
+	</button>	
+	<button id="505_LEFT" active="true" text="" left="595" width="40" top="885" height="40" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doLeft");		
+			</function>			
+		</code>
+	</button>
+	<button id="505_RIGHT" active="true" text="" left="675" width="40" top="885" height="40" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doRight");		
+			</function>			
+		</code>
+	</button>
+	<button id="505_MENU" active="true" text="" left="685" width="40" top="845" height="40" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doMenu");		
+			</function>			
+		</code>
+	</button>	
+	<button id="505_NEXT" active="true" left="755" top="545" width="40" height="80" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doNext");		
+			</function>			
+		</code>
+	</button>	
+	<button id="505_PREVIOUS" active="true" left="755" top="645" width="40" height="80" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doPrevious");		
+			</function>			
+		</code>
+	</button>
+	<button id="505_L_NEXT" active="true" left="160" top="875" width="40" height="40" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doNext");		
+			</function>			
+		</code>
+	</button>	
+	<button id="505_L_PREVIOUS" active="true" left="100" top="915" width="40" height="40" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doPrevious");		
+			</function>			
+		</code>		
+	</button>	
+	<button id="505_BOOKMARK" active="true" left="190" top="925" width="40" height="40" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doMark");		
+			</function>			
+		</code>		
+	</button>		
+	<button id="505_ZOOM" active="true" left="70" top="855" width="40" height="40" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doSize");		
+			</function>					
+		</code>		
+	</button>			
+	<button id="X50_PRIVIOUS_BUTTON" active="false" left="70" top="900" width="120" height="25" visible="false" >
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doPrevious");		
+			</function>					
+		</code>		
+	</button>
+	<button id="X50_NEXT_BUTTON" active="false" left="195" top="900" width="120" height="25" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doNext");		
+			</function>					
+		</code>		
+	</button>
+	<button id="X50_HOME_BUTTON" active="false" left="320" top="900" width="120" height="25" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doRoot");		
+			</function>					
+		</code>		
+	</button>
+	<button id="X50_ZOOM_BUTTON" active="false" left="445" top="900" width="120" height="25" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doSize");		
+			</function>					
+		</code>		
+	</button>
+	<button id="X50_OPTION_BUTTON" active="false" left="570" top="900" width="120" height="25" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,"doOption");		
+			</function>					
+		</code>		
+	</button>	
+	<button id="505_BUTTON1" active="true" text="1" left="715" top="105" width="30" height="60" visible="false">
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,1);		
+			</function>	
+		</code>	
+	</button>	
+	<button id="505_BUTTON2" active="true" text="2" left="715" top="185" width="30" height="60" visible="false">		
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,2);		
+			</function>	
+		</code>
+	</button>	
+	<button id="505_BUTTON3" active="true" text="3" left="715" top="250" width="30" height="60" visible="false">		
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,3);		
+			</function>	
+		</code>
+	</button>	
+	<button id="505_BUTTON4" active="true" text="4" left="715" top="325" width="30" height="60" visible="false">		
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,4);		
+			</function>	
+		</code>
+	</button>	
+	<button id="505_BUTTON5" active="true" text="5" left="715" top="390" width="30" height="60" visible="false">		
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,5);		
+			</function>	
+		</code>
+	</button>	
+	<button id="505_BUTTON6" active="true" text="6" left="715" top="465" width="30" height="60" visible="false">		
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,6);		
+			</function>	
+		</code>
+	</button>	
+	<button id="505_BUTTON7" active="true" text="7" left="715" top="535" width="30" height="60" visible="false">		
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,7);		
+			</function>	
+		</code>
+	</button>	
+	<button id="505_BUTTON8" active="true" text="8" left="715" top="605" width="30" height="60" visible="false">		
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,8);		
+			</function>	
+		</code>
+	</button>	
+	<button id="505_BUTTON9" active="true" text="9" left="715" top="675" width="30" height="60" visible="false">		
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,9);		
+			</function>	
+		</code>
+	</button>	
+	<button id="505_BUTTON0" active="true" text="0" left="715" top="750" width="30" height="60" visible="false">	
+		<code>
+			<function id="mouseDown" params='ev' />
+			<function id="mouseUp" params='ev' >
+					this.bubble('internalMouseUp',ev,0);		
+					//this.container.internalMouseUp(ev,0);
+			</function>	
+		</code>
+	</button>
+
+	<dialog id="ABOUT_DIALOG"  width="550" height="250">
+		<code>
+			<function id="doOK">
+				this.show(false)
+			</function>
+			<function id="open">
+				this.show(true)
+			</function>
+		</code>
+		<background skin="background" left="0" right="0" top="0" bottom="0"/>
+		<label skin="simpleText" text="About PRS-Sim" left="11" right="11" top="1" height="21"/>
+		<panel skin="panel-titleBarLine" left="0" right="0" top="22" height="2"/> 
+		<label skin="simpleText" active="false" text="Sony-PRS-Simulator" align="center" left="28" right="28" top="40" height="28"/>
+		<label skin="simpleText" active="false" text="FSK Test-Environment for Autorun Applications under MS-Windows" align="center" left="28" right="28" top="80" height="28"/>
+		<label skin="simpleText" active="false" text="derived from eBookUpdaterMain.xml" align="center" left="28" right="28" top="120" height="28"/>
+		<label skin="simpleText" active="false" text="2010 by Mark Nord" left="28" right="28" top="140" align="center" height="28"/>
+		<label skin="simpleText" active="false" text="using work from kartu &amp; m-land" left="28" align="center" right="28" top="160" height="28"/>
+		<default-button id="OK" text="Ok" width="130" right="17" bottom="10" do="doOK"/>
+	</dialog>	
+
+	<dialog id="HELP_DIALOG" width="870" height="450">
+		<code>
+			<function id="open">
+				var path = this.getBaseURI().slice(7); 				
+				path=path.substring(0,path.indexOf('/eBookSim/')+10);
+				this.hText.setValue(_Core.io.getFileContent(path.concat('help.txt'),'help.txt missing')); 
+				this.show(true)
+			</function>
+			<function id="doOK">
+				this.show(false)
+			</function>
+		</code>	
+		<background skin="background" left="0" right="0" top="0" bottom="0"/>
+		<label skin="simpleText" text="PRS-505-Sim - Help" left="11" right="11" top="1" height="21"/>
+		<panel skin="panel-titleBarLine" left="0" right="0" top="22" height="2"/> 		
+		<text skin="helpText" active="false" id="hText" left="28" top="28" right="48" bottom="58"/>
+		<scrollbar scroller="hText" right="28" width="20" top="28" bottom="58"/>
+		<default-button id="OK" text="Ok" width="130" right="28" bottom="10" do="doOK"/>
+	</dialog>	
+	
+</document>

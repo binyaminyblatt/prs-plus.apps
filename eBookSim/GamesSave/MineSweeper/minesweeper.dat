@@ -1,0 +1,12 @@
+gameFormat:Beginner
+cMaxBombs:10
+cMaxY:8
+cMaxX:8
+openRemaining:false
+useFirstClickUseful:true
+useMacroOpen:true
+useQuestionMarks:true
+CustomBestTime:999
+ExpertBestTime:999
+IntermediateBestTime:999
+BeginnerBestTime:999

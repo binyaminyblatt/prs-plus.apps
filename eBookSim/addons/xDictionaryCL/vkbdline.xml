@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.kinoma.com/fskin/1" id="kbdLine">
+	<!--<code>
+	</code>-->
+
+	<!--<clock/>-->
+	<group id="KBD_LINE_GROUP" left="0" right="0" top="0" bottom="0" visible="true">
+		<label id="lineName" skin="kbdButton" left="50" width="30" top="0" height="20"	/>
+		<button id="col1" skin="kbdButton" left="90" width="49" top="0"		/>
+		<button id="col2" skin="kbdButton" left="140" width="49" top="0"		/>
+		<button id="col3" skin="kbdButton" left="190" width="49" top="0"		/>
+		<button id="col4" skin="kbdButton" left="240" width="49" top="0"		/>
+		<button id="col5" skin="kbdButton" left="290" width="49" top="0"		/>
+		<button id="col6" skin="kbdButton" left="340" width="49" top="0"		/>
+		<button id="col7" skin="kbdButton" left="390" width="49" top="0"		/>
+		<button id="col8" skin="kbdButton" left="440" width="49" top="0"		/>
+		<button id="col9" skin="kbdButton" left="490" width="49" top="0"		/>
+		<button id="col0" skin="kbdButton" left="540" width="49" top="0"		/>
+	</group>
+</document>
+
