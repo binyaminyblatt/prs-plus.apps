@@ -17,6 +17,7 @@
 // 2011-07-24 Ben Chenoweth - Various bug fixes; new weekly event now shows day of clicked date.
 // 2011-08-13 Ben Chenoweth - Added Western keyboard (for touch readers) for editing event descriptions.
 // 2011-08-13 Ben Chenoweth - Keyboard now works for non-touch readers.
+// 2011-08-20 Ben Chenoweth - Changed graphics file into 1 line and added more icons; keyboard in shifted form initially.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -60,7 +61,7 @@ var tmp = function () {
 	var maxEventMonth = 12;
 	var maxEventDay;
 	var maxEventYear = 2100;
-	var maxEventIcon = 14;
+	var maxEventIcon = 17; // Change this when adding icons
 	var tempEvents = [];
 	var tempEventsNum = [];
 	var currentTempEvent;
@@ -385,6 +386,9 @@ var tmp = function () {
 		
 		//target.eventsText.enable(true);
 		target.BUTTON_EDT.enable(false);
+		
+		//keyboard keys in shifted form
+		this.doShift();
 		return;
 	}
 
@@ -1216,6 +1220,12 @@ var tmp = function () {
 			target.EVENTS_DIALOG.eventMonth.show(true);
 			target.EVENTS_DIALOG.eventDay.show(true);			
 			target.EVENTS_DIALOG.btn_Delete.enable(false);
+			
+			if (!shifted) {
+				shifted=true;
+				symbols=false;
+				this.refreshKeys();
+			}
 		} else {
 			// put first event information into textboxes
 			currentTempEvent=0;
