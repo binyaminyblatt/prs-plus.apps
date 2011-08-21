@@ -49,8 +49,8 @@
         <texture href="calendarSkins/calendarGraphics.png">
             <cutout id="selectcalsquare" x="0" y="0" width="70" height="70"/>
 			<cutout id="highlightcalsquare" x="70" y="0" width="70" height="70"/>
-			<cutout id="calendarsquare" x="0" y="70" width="70" height="70" columns="70"/>
-			<cutout id="null32h" x="370" y="32" width="1" height="32" lines="1"/>
+			<cutout id="calendarsquare" x="140" y="0" width="70" height="70" columns="70"/>
+			<cutout id="null32h" x="0" y="75" width="1" height="32" lines="1"/>
         </texture>
 		
         <skin id="klWeis" 		styles="klWeis"/>
