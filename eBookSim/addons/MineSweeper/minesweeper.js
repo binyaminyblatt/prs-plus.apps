@@ -1274,14 +1274,15 @@ var updateClock = function() {
      }		     
      if (tempClock == -1) { tempClock = 0; }
      digit = tempClock % 10;
-     target.time1s.u = digit;
-     target.time1s.v = v;
+     target.time1s.u = digit + v*11;
+     //target.time1s.v = v;
      digit = Math.floor(tempClock / 10 % 10);
-     target.time10s.u = digit;
-     target.time10s.v = v;
+     target.time10s.u = digit + v*11;
+     //target.time10s.v = v;
      digit = Math.floor(tempClock / 100 % 10);
-     target.time100s.u = digit;
-     target.time100s.v = v;}
+     target.time100s.u = digit  + v*11;
+     //target.time100s.v = v;
+     }
 
 
 // Updates the display w/ the current number of bombs left.
@@ -1298,7 +1299,9 @@ var updateNumBombs = function() {
       digit = Math.floor(Math.abs(maxNumBombs-bombsFlagged) / 100 % 10);
       target.bomb100s.u = digit;
       if (maxNumBombs < bombsFlagged)
-         target.bomb100s.u = 10; } }
+         target.bomb100s.u = 10; 
+      } 
+      }
 
 //
 // TIME functions begin here...
