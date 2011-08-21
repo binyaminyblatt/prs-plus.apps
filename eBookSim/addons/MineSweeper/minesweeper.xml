@@ -50,24 +50,24 @@
 	<style id="dialog" background="#80000000"/>
 
 <texture href="msskins/ms_labels.png">
-	<cutout id="square_c" x="0" y="0" width="32" height="32"/>
-	<cutout id="smilie_c" x="0" y="32" width="52" height="52"/>
+	<cutout id="square_c" x="50" y="0" width="32" height="32"/>
+	<cutout id="smilie_c" x="50" y="32" width="52" height="52"/>
 	<cutout id="sevensgment_c" x="0" y="83" width="26" height="46"/>
 
-	<cutout id="frame-tl" x="315" y="32" width="21" height="21"/>
- 	<cutout id="frame-tc" x="336" y="32" width="5" height="21"/>
-	<cutout id="frame-tr" x="342" y="32" width="21" height="21"/> 	
-	<cutout id="frame-jl" x="315" y="52" width="21" height="21"/>
- 	<cutout id="frame-jc" x="336" y="52" width="5" height="21"/>
-	<cutout id="frame-jr" x="342" y="52" width="21" height="21"/> 	
-	<cutout id="frame-ml" x="315" y="72" width="21" height="5"/>	
-	<cutout id="frame-mc" x="336" y="72" width="5" height="5"/>
-	<cutout id="frame-mr" x="342" y="72" width="21" height="5"/>
-	<cutout id="frame-bl" x="315" y="80" width="21" height="21"/>
-	<cutout id="frame-bc" x="336" y="80" width="5" height="21"/>
-	<cutout id="frame-br" x="342" y="80" width="21" height="21"/>
+	<cutout id="frame-tl" x= "0" y= "0" width="21" height="21"/>
+ 	<cutout id="frame-tc" x="21" y= "0" width="5" height="21"/>
+	<cutout id="frame-tr" x="27" y= "0" width="21" height="21"/> 	
+	<cutout id="frame-jl" x= "0" y="20" width="21" height="21"/>
+ 	<cutout id="frame-jc" x="21" y="20" width="5" height="21"/>
+	<cutout id="frame-jr" x="27" y="20" width="21" height="21"/> 	
+	<cutout id="frame-ml" x= "0" y="40" width="21" height="5"/>	
+	<cutout id="frame-mc" x="22" y="40" width="5" height="5"/>
+	<cutout id="frame-mr" x="27" y="40" width="21" height="5"/>
+	<cutout id="frame-bl" x= "0" y="48" width="21" height="21"/>
+	<cutout id="frame-bc" x="21" y="48" width="5" height="21"/>
+	<cutout id="frame-br" x="27" y="48" width="21" height="21"/>
 	
-	<cutout id="null" x="370" y="32" width="1" height="1" lines="1"/>
+	<cutout id="null" x="0" y="70" width="1" height="1" lines="1"/>
 	<cutout id="null32h" x="370" y="32" width="1" height="32" lines="1"/>
 </texture>
 
