@@ -29,6 +29,7 @@
 //  2011-06-11 Ben Chenoweth - Added pop-up puzzle panel! 30 checkmate in 2 moves; 30 checkmate in 3 moves; 15 checkmate in 4 moves.
 //  2011-06-12 Ben Chenoweth - Added (white) move counter during puzzles.
 //  2011-06-14 Ben Chenoweth - Added more puzzles: total of 90 checkmate in 2 moves; 180 checkmate in 3 moves; 45 checkmate in 4 moves.
+//  2011-08-23 Ben Chenoweth - Changed the way puzzles are loaded.
 
 var tmp = function () {
 	var sMovesList;
@@ -849,7 +850,7 @@ var tmp = function () {
 	}
 	
 	target.doMark = function (sender) {
-		this.loadGame(datPath, false);
+		this.loadGame(datPath);
 		return;
 	}
 	
@@ -1096,7 +1097,7 @@ var tmp = function () {
 			return;
 		}
 		if (n == "LOA") {
-			this.loadGame(datPath, false);
+			this.loadGame(datPath);
 			return;
 		}
 		if (n == "SAV") {
@@ -1127,7 +1128,7 @@ var tmp = function () {
 		} catch (e) { this.checkStatus.setValue("Game save failed"); }	
 	}
 	
-	target.loadGame = function (filePath, isPuzzle) {
+	target.loadGame = function (filePath) {
 		try {
 			if (FileSystem.getFileInfo(filePath)) {
 				var stream = new Stream.File(filePath);
@@ -1154,7 +1155,7 @@ var tmp = function () {
 				}
 				moveno = stream.readLine();
 				
-				if (isPuzzle) {
+				/*if (isPuzzle) {
 					// load extra information
 					tempstring = stream.readLine(); //blank line
 					var puzzleName = stream.readLine();
@@ -1164,12 +1165,12 @@ var tmp = function () {
 					puzzleMoves=0;
 					doingPuzzle = true;
 					this.puzzleMoves.setValue(puzzleMoves);
-				} else {
-					this.puzzleName.setValue("");
-					this.puzzleSource.setValue("");
-					this.puzzleMoves.setValue("");
-					doingPuzzle = false;
-				}
+				} else {*/
+				this.puzzleName.setValue("");
+				this.puzzleSource.setValue("");
+				this.puzzleMoves.setValue("");
+				doingPuzzle = false;
+				//}
 				
 				stream.close();
 
@@ -2120,27 +2121,19 @@ var tmp = function () {
 		var cMateIn4 = parseInt(target.getVariable("checkmate_4"));
 		
 		if (t == "2") {
-			if (cMateIn2<10) {
-				fileToLoad = puzPath+"mate_in_two_moves_0"+cMateIn2+".dat"
-			} else {
-				fileToLoad = puzPath+"mate_in_two_moves_"+cMateIn2+".dat"
-			}
+				fileToLoad = puzPath+"mate_in_two_moves.dat";
+				puzzleToLoad = parseInt(cMateIn2);
 		}
 		if (t == "3") {
-			if (cMateIn3<10) {
-				fileToLoad = puzPath+"mate_in_three_moves_0"+cMateIn3+".dat"
-			} else {
-				fileToLoad = puzPath+"mate_in_three_moves_"+cMateIn3+".dat"
-			}
+				fileToLoad = puzPath+"mate_in_three_moves.dat";
+				puzzleToLoad = parseInt(cMateIn3);
 		}
 		if (t == "4") {
-			if (cMateIn4<10) {
-				fileToLoad = puzPath+"mate_in_four_moves_0"+cMateIn4+".dat"
-			} else {
-				fileToLoad = puzPath+"mate_in_four_moves_"+cMateIn4+".dat"
-			}
+				fileToLoad = puzPath+"mate_in_four_moves.dat";
+				puzzleToLoad = parseInt(cMateIn4);
 		}
-		
+		//this.bubble("tracelog","load puzzle "+fileToLoad+": "+puzzleToLoad);
+
 		// save current puzzle numbers to puzDatPath
 		try {
 			if (FileSystem.getFileInfo(puzDatPath)) FileSystem.deleteFile(puzDatPath);
@@ -2149,10 +2142,108 @@ var tmp = function () {
 			stream.writeLine(cMateIn3);
 			stream.writeLine(cMateIn4);
 			stream.close();
-		} catch (e) { }	
-		
-		//this.bubble("tracelog","load puzzle "+fileToLoad);
-		this.loadGame(fileToLoad, true);
+		} catch (e) { }
+
+		// load puzzle
+		try {
+			if (FileSystem.getFileInfo(fileToLoad)) {
+				var stream = new Stream.File(fileToLoad);
+				var puzzleData = [];
+				var inpLine;
+				
+				for (var numpuzzle=1; numpuzzle<=puzzleToLoad; numpuzzle++)
+				{
+					// read through puzzle file until you come to the desired puzzle
+					inpLine = stream.readLine();
+				}
+				
+				stream.close();
+				
+				puzzleData = inpLine.split(";");
+				var dataItemNum = 0;
+				
+				// load board from save file
+				for (t=22; t<=99; t++)
+				{
+					if (t % 10 > 1) {
+						tempnum = puzzleData[dataItemNum];
+						dataItemNum++;
+						etc.aBoard[t] = Math.floor(tempnum); // convert string to integer
+						if (etc.aBoard[t] == 18) kings[0] = t;
+						if (etc.aBoard[t] == 26) kings[1] = t;
+					}
+				}
+				tempboolean = puzzleData[dataItemNum];
+				dataItemNum++;
+				if (tempboolean=="true") {
+					etc.bBlackSide = true;
+					flagWhoMoved = 0;
+					this.messageStatus.setValue("Black's turn");
+				} else {
+					etc.bBlackSide = false;
+					flagWhoMoved = 8;
+					this.messageStatus.setValue("White's turn");
+				}
+				moveno = puzzleData[dataItemNum];
+				dataItemNum++;
+				
+				// load extra information
+				var puzzleName = puzzleData[dataItemNum];
+				dataItemNum++;
+				var puzzleSource = puzzleData[dataItemNum];
+				dataItemNum++;
+				this.puzzleName.setValue(puzzleName);
+				this.puzzleSource.setValue(puzzleSource);
+				puzzleMoves=0;
+				doingPuzzle = true;
+				this.puzzleMoves.setValue(puzzleMoves);
+				
+				// update board
+				this.writePieces();
+
+				// reset undo
+				currundo=0;
+				this.updateUndo();
+				
+				// update AI board
+				z = 0;
+				for (y = 20; y < 100; y += 10) {
+					for (x = 1; x < 9; x++) {
+						z = etc.aBoard[y + x + 1];
+						if (z == 25) z = 1;
+						if (z == 29) z = 2;
+						if (z == 27) z = 3;
+						if (z == 28) z = 4;
+						if (z == 30) z = 5;
+						if (z == 26) z = 6;
+						if (z == 17) z = 9;
+						if (z == 21) z = 10;
+						if (z == 19) z = 11;
+						if (z == 20) z = 12;
+						if (z == 22) z = 13;
+						if (z == 18) z = 14;
+						newy = 110 - y;
+						board[newy + x] = z;
+						// update the position of the kings in the special king array
+						if (z == 6) kp[0] = newy + x;
+						if (z == 14) kp[1] = newy + x;
+					}
+				}
+				this.prepare(); // get stuff ready for next move
+			
+				// remove what moved highlights
+				this['selection1'].changeLayout(0, 0, uD, 0, 0, uD);
+				this['selection2'].changeLayout(0, 0, uD, 0, 0, uD);
+				this['selection3'].changeLayout(0, 0, uD, 0, 0, uD);
+
+				// check for checkmate/stalemate
+				flagWhoMoved ^= 8;
+				etc.bBlackSide = !etc.bBlackSide;
+				this.getInCheckPieces();
+				flagWhoMoved ^= 8;
+				etc.bBlackSide = !etc.bBlackSide;
+			}
+		} catch (e) { this.checkStatus.setValue("Puzzle load failed"); }	
 		return;
 	};
 };
