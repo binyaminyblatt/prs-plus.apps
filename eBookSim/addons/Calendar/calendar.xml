@@ -399,7 +399,10 @@
 		  
 		  <text id='eventsText' skin='eventText' left='48' right='55' top='510' bottom='30' active='false' visible='true' />  
 		  <button id="BUTTON_EDT" active="true" text="Edit Events"  left="394" width="150" top="460" height="40" do="doButtonClick"/>
-
+		  <button id="BUTTON_UPP" active="true" text="U"  left="550" width="40" top="516" height="40" do="doButtonClick"/>
+		  <button id="BUTTON_DWN" active="true" text="D"  left="550" width="40" top="626" height="40" do="doButtonClick"/>
+			<label id='nonTouch9'   skin='touchText'    left='550' width='40' top="516" height='40' align='left' text='8: U'/>
+			<label id='nonTouch0'   skin='touchText'    left='550' width='40' top='626' height='40' align='left' text='9: D'/>
 		  <button id="btn_Exit" left="0" top="-70" height="70" width="70" active="true" visible="false" do="doRoot"/>
 		  
 			<!--Settings pop-up panel-->
