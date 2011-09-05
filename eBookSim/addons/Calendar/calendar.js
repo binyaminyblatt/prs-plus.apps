@@ -813,7 +813,7 @@ var tmp = function () {
 		this.eventsText.setValue(theevent);
 		currentNumEvents = tempEvents.length;
 		currentOffset = offset;
-		target.bubble("tracelog","currentNumEvents="+currentNumEvents+", currentOffset="+currentOffset);
+		//target.bubble("tracelog","currentNumEvents="+currentNumEvents+", currentOffset="+currentOffset);
 		if (offset > 0) {
 			target.BUTTON_UPP.enable(true);
 			upenabled=true;
