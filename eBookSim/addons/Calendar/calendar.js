@@ -18,6 +18,7 @@
 // 2011-08-13 Ben Chenoweth - Added Western keyboard (for touch readers) for editing event descriptions.
 // 2011-08-13 Ben Chenoweth - Keyboard now works for non-touch readers.
 // 2011-08-20 Ben Chenoweth - Changed graphics file into 1 line and added more icons; keyboard in shifted form initially.
+// 2011-09-05 Ben Chenoweth - Added ability to scroll events textbox if there are more than 6 events on a particular day.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -74,6 +75,10 @@ var tmp = function () {
 	var keys = [];
 	var kbdPath = target.calendarRoot;
 	FileSystem.ensureDirectory(kbdPath);
+	var currentNumEvents = 0;
+	var currentOffset = 0;
+	var upenabled = false;
+	var downenabled = false;
 		
 	// variables to be saved to a file
 	target.settings = {	
@@ -372,6 +377,8 @@ var tmp = function () {
 			this.BUTTON_NMN.show(false);
 			this.BUTTON_NYR.show(false);
 			this.BUTTON_EDT.show(false);
+			this.BUTTON_UPP.show(false);
+			this.BUTTON_DWN.show(false);
 		} else {
 			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);			
 			this.nonTouch1.show(false);
@@ -382,10 +389,18 @@ var tmp = function () {
 			this.nonTouch6.show(false);
 			this.nonTouch7.show(false);
 			this.nonTouch8.show(false);
+			this.nonTouch9.show(false);
+			this.nonTouch0.show(false);
 		}
 		
 		//target.eventsText.enable(true);
 		target.BUTTON_EDT.enable(false);
+		target.BUTTON_UPP.enable(false);
+		upenabled=false;
+		downenabled=false;
+		target.BUTTON_DWN.enable(false);
+		this.nonTouch9.setValue('');
+		this.nonTouch0.setValue('');
 		
 		//keyboard keys in shifted form
 		this.doShift();
@@ -413,6 +428,12 @@ var tmp = function () {
 		// hide events
 		this.eventsText.setValue("");
 		target.BUTTON_EDT.enable(false);
+		target.BUTTON_UPP.enable(false);
+		target.BUTTON_DWN.enable(false);
+		upenabled=false;
+		downenabled=false;
+		this.nonTouch9.setValue('');
+		this.nonTouch0.setValue('');		
 		
 		// hide cursor on Touch
 		if (!hasNumericButtons) {
@@ -451,7 +472,7 @@ var tmp = function () {
 
 			if (this.checkevents(selectionDate,monthNum,yearNum,y,x)) {
 				// events in selection square
-				this.showevents(selectionDate,monthNum,yearNum,y,x);
+				this.showevents(selectionDate,monthNum,yearNum,y,x,0);
 			} else {
 				this.eventsText.setValue("");
 			}
@@ -582,11 +603,7 @@ var tmp = function () {
 	altdayofweek = dayofweek+1;
 	if (altdayofweek==8) altdayofweek=1;
 	
-	// reset the temporary array
-	if (tempEvents.length>0) {
-		tempEvents.length=0;
-		tempEventsNum.length=0;
-	}
+
 	
 		for (var i = 0; i < events.length; i++) {
 			if (events[i][0] == "W") {
@@ -695,13 +712,20 @@ var tmp = function () {
 		return 3;
 	}
 	
-	target.showevents = function (day,month,year,week,dayofweek) {
+	target.showevents = function (day,month,year,week,dayofweek,offset) {
 	var theevent = "";
 	var floater = 0;
 	var altdayofweek;
+	var preoffset = 0;
 
 		altdayofweek = dayofweek+1;
 		if (altdayofweek==8) altdayofweek=1;
+		
+		// reset the temporary array
+		if (tempEvents.length>0) {
+			tempEvents.length=0;
+			tempEventsNum.length=0;
+		}
 	
 		for (var i = 0; i < events.length; i++) {
 			// First we'll process recurring events (if any):
@@ -713,28 +737,32 @@ var tmp = function () {
 					}
 					if (weekBeginsWith=="Sun") {
 						if ((events[i][3] == dayofweek)) {
-							theevent += events[i][5] + '\n';
+							preoffset++;
+							if (preoffset > offset) { theevent += events[i][5] + '\n'; }
 							tempEvents=tempEvents.concat(events.slice(i,i+1));
-							tempEventsNum.push(i);						
+							tempEventsNum.push(i);
 						}
 					} else {
 						if ((events[i][3] == altdayofweek)) {
-							theevent += events[i][5] + '\n';
+							preoffset++;
+							if (preoffset > offset) { theevent += events[i][5] + '\n'; }
 							tempEvents=tempEvents.concat(events.slice(i,i+1));
-							tempEventsNum.push(i);						
+							tempEventsNum.push(i);
 						}
 					}						
 				}
 				if (events[i][0] == "M") {
 					if ((events[i][2] == day) && (events[i][3] <= year)) {
-						theevent += events[i][5] + '\n';
+						preoffset++;
+						if (preoffset > offset) { theevent += events[i][5] + '\n'; }
 						tempEvents=tempEvents.concat(events.slice(i,i+1));
 						tempEventsNum.push(i);
 					}
 				}
 				if ((events[i][0] == "Y") || (events[i][0] == "C") || (events[i][0] == "B") || (events[i][0] == "V") || (events[i][0] == "A")) {
 					if ((events[i][2] == day) && (events[i][1] == month) && (events[i][3] <= year)) {
-						theevent += events[i][5] + '\n';
+						preoffset++;
+						if (preoffset > offset) { theevent += events[i][5] + '\n'; }
 						tempEvents=tempEvents.concat(events.slice(i,i+1));
 						tempEventsNum.push(i);
 					}
@@ -742,25 +770,29 @@ var tmp = function () {
 				if (events[i][0] == "F") {
 					if ((events[i][1] == 3) && (events[i][2] == 0) && (events[i][3] == 0) ) {
 						if (easterday == day && eastermonth == month) {
-							theevent += events[i][5] + '\n';
+							preoffset++;
+							if (preoffset > offset) { theevent += events[i][5] + '\n'; }
 							tempEvents=tempEvents.concat(events.slice(i,i+1));
-							tempEventsNum.push(i);							
+							tempEventsNum.push(i);
 						} 
 					} else {
 						floater = this.floatingholiday(year,events[i][1],events[i][2],events[i][3]);
 
 						if ((month == 5) && (events[i][1] == 5) && (events[i][2] == 4) && (events[i][3] == 2)) {
 							if ((floater + 7 <= 31) && (day == floater + 7)) {
-								theevent += events[i][5] + '\n';
+								preoffset++;
+								if (preoffset > offset) { theevent += events[i][5] + '\n'; }
 								tempEvents=tempEvents.concat(events.slice(i,i+1));
 								tempEventsNum.push(i);
 							} else if ((floater + 7 > 31) && (day == floater)) {
-								theevent += events[i][5] + '\n';
+								preoffset++;
+								if (preoffset > offset) { theevent += events[i][5] + '\n'; }
 								tempEvents=tempEvents.concat(events.slice(i,i+1));
-								tempEventsNum.push(i);								
+								tempEventsNum.push(i);
 							}
 						} else if ((events[i][1] == month) && (floater == day)) {
-							theevent += events[i][5] + '\n';
+							preoffset++;
+							if (preoffset > offset) { theevent += events[i][5] + '\n'; }
 							tempEvents=tempEvents.concat(events.slice(i,i+1));
 							tempEventsNum.push(i);
 						}
@@ -770,14 +802,36 @@ var tmp = function () {
 			// Now we'll process any One Time events happening on the matching month, day, year:
 			else if ((events[i][2] == day) && (events[i][1] == month) && (events[i][3] == year)) {
 				// one-off event
-				theevent += events[i][5] + '\n';
+				preoffset++;
+				if (preoffset > offset) { theevent += events[i][5] + '\n'; }
 				tempEvents=tempEvents.concat(events.slice(i,i+1));
-				tempEventsNum.push(i);				
+				tempEventsNum.push(i);
 			}
 		}
 			
-		//target.bubble("tracelog","events="+theevent+"numEvents="+tempEvents.length);
+		//target.bubble("tracelog","events="+theevent+", numEvents="+tempEvents.length);
 		this.eventsText.setValue(theevent);
+		currentNumEvents = tempEvents.length;
+		currentOffset = offset;
+		target.bubble("tracelog","currentNumEvents="+currentNumEvents+", currentOffset="+currentOffset);
+		if (offset > 0) {
+			target.BUTTON_UPP.enable(true);
+			upenabled=true;
+			this.nonTouch9.setValue('8: U');
+		} else {
+			target.BUTTON_UPP.enable(false);
+			upenabled=false;
+			this.nonTouch9.setValue('');
+		}
+		if (tempEvents.length > offset + 6) {
+			target.BUTTON_DWN.enable(true);
+			downenabled=true;
+			this.nonTouch0.setValue('9: D');
+		} else {
+			target.BUTTON_DWN.enable(false);
+			downenabled=false;
+			this.nonTouch0.setValue('');
+		}
 		return;
 	}
 
@@ -858,8 +912,42 @@ var tmp = function () {
 			this.doEditEvents();
 			return;
 		}
+		if (n == "UPP") {
+			// scroll events textbox up
+			currentOffset = currentOffset - 6;
+			if (currentOffset < 0) { currentOffset=0; }
+			this.showevents(selectionDate,monthNum,yearNum,y,x,currentOffset);
+			return;
+		}
+		if (n == "DWN") {
+			// scroll events textbox down
+			var oldCurrentOffset = currentOffset;
+			currentOffset = currentOffset + 6;
+			if (currentOffset > currentNumEvents) { currentOffset=oldCurrentOffset; }
+			this.showevents(selectionDate,monthNum,yearNum,y,x,currentOffset);
+			return;
+		}		
 	}
 
+	target.digitF = function (key) {
+		if ((key==8) && upenabled) {
+			// scroll events textbox up
+			currentOffset = currentOffset - 6;
+			if (currentOffset < 0) { currentOffset=0; }
+			this.showevents(selectionDate,monthNum,yearNum,y,x,currentOffset);
+			return;
+		}
+		if ((key==9) && downenabled) {
+			// scroll events textbox down
+			var oldCurrentOffset = currentOffset;			
+			currentOffset = currentOffset + 6;
+			if (currentOffset > currentNumEvents) { currentOffset=oldCurrentOffset; }
+			this.showevents(selectionDate,monthNum,yearNum,y,x,currentOffset);
+			return;
+		}
+		return;
+	}
+	
 	target.doSquareClick = function (sender) {
 		var id, n, x, y;
 		id = getSoValue(sender, "id");
@@ -895,7 +983,7 @@ var tmp = function () {
 		
 		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)) {
 			// events in square that was clicked
-			this.showevents(selectionDate,monthNum,yearNum,y,x);
+			this.showevents(selectionDate,monthNum,yearNum,y,x,0);
 		} else {
 			this.eventsText.setValue("");
 		}
@@ -2254,7 +2342,7 @@ var tmp = function () {
 		}
 		this.createCalendar();
 		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)) {
-			this.showevents(selectionDate,monthNum,yearNum,y,x);
+			this.showevents(selectionDate,monthNum,yearNum,y,x,0);
 		} else {
 			this.eventsText.setValue("");
 		}		
@@ -2266,7 +2354,7 @@ var tmp = function () {
 		events.splice(tempEventsNum[currentTempEvent], 1);
 		this.createCalendar();
 		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)) {
-			this.showevents(selectionDate,monthNum,yearNum,y,x);
+			this.showevents(selectionDate,monthNum,yearNum,y,x,0);
 		} else {
 			this.eventsText.setValue("");
 		}
