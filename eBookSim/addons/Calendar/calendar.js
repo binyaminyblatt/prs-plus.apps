@@ -20,6 +20,7 @@
 // 2011-08-20 Ben Chenoweth - Changed graphics file into 1 line and added more icons; keyboard in shifted form initially.
 // 2011-09-05 Ben Chenoweth - Added ability to scroll events textbox if there are more than 6 events on a particular day.
 // 2011-09-06 Ben Chenoweth - Changed order of precedence for event icon selection; show number of events in calendar (if more than one).
+// 2011-09-06 Ben Chenoweth - Fixed: events text box was not updating when adding new event.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -436,47 +437,41 @@ var tmp = function () {
 		this.nonTouch9.setValue('');
 		this.nonTouch0.setValue('');		
 		
-		// hide cursor on Touch
-		if (!hasNumericButtons) {
-			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);
-			this.createCalendar();			
-		} else {
-			if (selectionDate > numbDays) selectionDate=numbDays;
-			var daycounter = 0;
-			thisDate = 1;
-			var x = -1;
-			var y = -1;
-			for (var i = 1; i <= 6; i++) {
-				for (var j = 1; j <= 7; j++) {
-					if (weekBeginsWith=="Sun") {
-						daycounter = (thisDate - firstDay)+1;
-					} else {
-						daycounter = (thisDate - firstDay)+2;
-						if (firstDay==1) daycounter -= 7;
-					}
-					if (selectionDate==daycounter) {
-						x=j;
-						y=i;
-						selectionDay=i;
-					}
-					thisDate++;
+		if (selectionDate > numbDays) selectionDate=numbDays;
+		var daycounter = 0;
+		thisDate = 1;
+		var x = -1;
+		var y = -1;
+		for (var i = 1; i <= 6; i++) {
+			for (var j = 1; j <= 7; j++) {
+				if (weekBeginsWith=="Sun") {
+					daycounter = (thisDate - firstDay)+1;
+				} else {
+					daycounter = (thisDate - firstDay)+2;
+					if (firstDay==1) daycounter -= 7;
 				}
+				if (selectionDate==daycounter) {
+					x=j;
+					y=i;
+					selectionDay=i;
+				}
+				thisDate++;
 			}
-			thisDate = 1;
-			
-			this.createCalendar();
-			
-			if (selectionDate>0) {
-				//place selection square
-				this.gridCursor.changeLayout((x-1)*70+50, 70, uD, (y-1)*70+80, 70, uD);
-			}
-			
-			if (this.checkevents(selectionDate,monthNum,yearNum,y,x)>0) {
-				// events in selection square
-				this.showevents(selectionDate,monthNum,yearNum,y,x,0);
-			} else {
-				this.eventsText.setValue("");
-			}
+		}
+		thisDate = 1;
+		
+		this.createCalendar();
+		
+		if ((selectionDate>0) && (hasNumericButtons)) {
+			//place selection square
+			this.gridCursor.changeLayout((x-1)*70+50, 70, uD, (y-1)*70+80, 70, uD);
+		}
+		
+		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)>0) {
+			// events in selection square
+			this.showevents(selectionDate,monthNum,yearNum,y,x,0);
+		} else {
+			this.eventsText.setValue("");
 		}
 		
 		//target.bubble("tracelog","monthNum="+monthNum+", yearNum="+yearNum+", numbDays="+numbDays);
@@ -890,30 +885,35 @@ var tmp = function () {
 		if (n == "TDY") {
 			monthNum=todaysMonth;
 			yearNum=todaysYear;
+			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);			
 			this.dateChanged();			
 			return;
 		}
 		if (n == "PYR") {
 			// previous year
 			yearNum--;
+			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);
 			this.dateChanged();
 			return;
 		}
 		if (n == "PMN") {
 			// previous month
 			monthNum--;
+			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);			
 			this.dateChanged();
 			return;
 		}
 		if (n == "NMN") {
 			// next month
 			monthNum++;
+			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);			
 			this.dateChanged();
 			return;
 		}
 		if (n == "NYR") {
 			// next year
 			yearNum++;
+			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);			
 			this.dateChanged();
 			return;
 		}
@@ -1009,6 +1009,9 @@ var tmp = function () {
 	target.doNext = function (sender) {
 		// next month
 		monthNum++;
+		if (!hasNumericButtons) {
+			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);
+		}
 		this.dateChanged();	
 		return;
 	}
@@ -1016,6 +1019,9 @@ var tmp = function () {
 	target.doPrev = function (sender) {
 		// previous month
 		monthNum--;
+		if (!hasNumericButtons) {
+			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);
+		}		
 		this.dateChanged();	
 		return;
 	}
@@ -1059,6 +1065,9 @@ var tmp = function () {
 	target.doLast = function () {
 		// next year
 		yearNum++;
+		if (!hasNumericButtons) {
+			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);
+		}		
 		this.dateChanged();	
 		return;
 	}
@@ -1066,6 +1075,9 @@ var tmp = function () {
 	target.doFirst = function () {
 		// last year
 		yearNum--;
+		if (!hasNumericButtons) {
+			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);
+		}		
 		this.dateChanged();	
 		return;
 	}
@@ -1222,6 +1234,9 @@ var tmp = function () {
 			this.labelSat.setValue(wordDays[6]);
 			todaysDay = today.getDay() + 1;
 		}
+		if (!hasNumericButtons) {
+			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);
+		}		
 		this.dateChanged();
 		return;
 	}
@@ -2350,12 +2365,9 @@ var tmp = function () {
 			var replaceWith=[eventTypeCode, eventMonth, eventDay, eventYear, eventIcon, eventDescription];
 			events.splice(tempEventsNum[currentTempEvent],1,replaceWith);
 		}
-		this.createCalendar();
-		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)>0) {
-			this.showevents(selectionDate,monthNum,yearNum,y,x,0);
-		} else {
-			this.eventsText.setValue("");
-		}		
+
+		this.dateChanged();
+		return;
 	}
 
 	target.doDeleteEvent = function () {
@@ -2368,6 +2380,7 @@ var tmp = function () {
 		} else {
 			this.eventsText.setValue("");
 		}
+		return;
 	}
 	
 	target.refreshKeys = function () {
