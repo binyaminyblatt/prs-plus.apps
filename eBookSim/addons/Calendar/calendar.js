@@ -19,7 +19,7 @@
 // 2011-08-13 Ben Chenoweth - Keyboard now works for non-touch readers.
 // 2011-08-20 Ben Chenoweth - Changed graphics file into 1 line and added more icons; keyboard in shifted form initially.
 // 2011-09-05 Ben Chenoweth - Added ability to scroll events textbox if there are more than 6 events on a particular day.
-// 2011-09-06 Ben Chenoweth - Changed order of precedence for event icon selection; show number of events in calendar.
+// 2011-09-06 Ben Chenoweth - Changed order of precedence for event icon selection; show number of events in calendar (if more than one).
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -513,7 +513,7 @@ var tmp = function () {
 		} else {
 			this['day' + id].setValue(date);
 		}
-		if (numevents>0) {
+		if (numevents>1) {
 			this['events' + id].setValue(numevents);
 		} else {
 			this['events' + id].setValue("");
