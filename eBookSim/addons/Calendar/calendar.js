@@ -19,6 +19,7 @@
 // 2011-08-13 Ben Chenoweth - Keyboard now works for non-touch readers.
 // 2011-08-20 Ben Chenoweth - Changed graphics file into 1 line and added more icons; keyboard in shifted form initially.
 // 2011-09-05 Ben Chenoweth - Added ability to scroll events textbox if there are more than 6 events on a particular day.
+// 2011-09-06 Ben Chenoweth - Changed order of precedence for event icon selection; show number of events in calendar.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -469,8 +470,8 @@ var tmp = function () {
 				//place selection square
 				this.gridCursor.changeLayout((x-1)*70+50, 70, uD, (y-1)*70+80, 70, uD);
 			}
-
-			if (this.checkevents(selectionDate,monthNum,yearNum,y,x)) {
+			
+			if (this.checkevents(selectionDate,monthNum,yearNum,y,x)>0) {
 				// events in selection square
 				this.showevents(selectionDate,monthNum,yearNum,y,x,0);
 			} else {
@@ -503,7 +504,7 @@ var tmp = function () {
 	easterday = day;
 	}
 
-	target.setSquare = function (row, column, type, date) {
+	target.setSquare = function (row, column, type, date, numevents) {
 		var id;
 		id=(row - 1) * 7 + (column - 1);
 		this['square' + id].u = type;
@@ -511,6 +512,11 @@ var tmp = function () {
 			this['day' + id].setValue("");
 		} else {
 			this['day' + id].setValue(date);
+		}
+		if (numevents>0) {
+			this['events' + id].setValue(numevents);
+		} else {
+			this['events' + id].setValue("");
 		}
 		return;
 	}
@@ -535,30 +541,31 @@ var tmp = function () {
 				thisDate++;
 				if ((daycounter > numbDays) || (daycounter < 1)) {
 					// square not used by current month
-					this.setSquare(i,x,0,"0");
+					this.setSquare(i,x,0,"0",0);
 				} else {
-					if (this.checkevents(daycounter,monthNum,yearNum,i,x) || ((todaysDay == x) && (todaysDate == daycounter) && (todaysMonth == monthNum))){
+					var numevents=this.checkevents(daycounter,monthNum,yearNum,i,x);
+					if (numevents>0 || ((todaysDay == x) && (todaysDate == daycounter) && (todaysMonth == monthNum))){
 						if ((todaysDay == x) && (todaysDate == daycounter) && (todaysMonth == monthNum)) {
 							// today
-							if (this.checkevents(daycounter,monthNum,yearNum,i,x)) {
+							if (numevents>0) {
 								// event on this day
 								eventtype=this.getevent(daycounter,monthNum,yearNum,i,x);
-								this.setSquare(i,x,eventtype,daycounter);
+								this.setSquare(i,x,eventtype,daycounter,numevents);
 							} else {
 								// blank day
 								if (weekBeginsWith=="Sun") {
 									if ((x==1) || (x==7)) {
 										// weekend
-										this.setSquare(i,x,2,daycounter);
+										this.setSquare(i,x,2,daycounter,0);
 									} else {
-										this.setSquare(i,x,1,daycounter);
+										this.setSquare(i,x,1,daycounter,0);
 									}
 								} else {
 									if ((x==6) || (x==7)) {
 										// weekend
-										this.setSquare(i,x,2,daycounter);
+										this.setSquare(i,x,2,daycounter,0);
 									} else {
-										this.setSquare(i,x,1,daycounter);
+										this.setSquare(i,x,1,daycounter,0);
 									}
 								}
 							}
@@ -568,23 +575,23 @@ var tmp = function () {
 						else	{
 							// event on this day
 							eventtype=this.getevent(daycounter,monthNum,yearNum,i,x);
-							this.setSquare(i,x,eventtype,daycounter);
+							this.setSquare(i,x,eventtype,daycounter,numevents);
 						}
 					} else {
 						// blank day
 						if (weekBeginsWith=="Sun") {
 							if ((x==1) || (x==7)) {
 								// weekend
-								this.setSquare(i,x,2,daycounter);
+								this.setSquare(i,x,2,daycounter,0);
 							} else {
-								this.setSquare(i,x,1,daycounter);
+								this.setSquare(i,x,1,daycounter,0);
 							}
 						} else {
 							if ((x==6) || (x==7)) {
 								// weekend
-								this.setSquare(i,x,2,daycounter);
+								this.setSquare(i,x,2,daycounter,0);
 							} else {
-								this.setSquare(i,x,1,daycounter);
+								this.setSquare(i,x,1,daycounter,0);
 							}
 						}
 					}
@@ -637,11 +644,13 @@ var tmp = function () {
 			}
 		}
 
-		if (numevents == 0) {
+		/*if (numevents == 0) {
 			return false;
 		} else {
 			return true;
-		}
+		}*/
+		
+		return numevents;
 	}
 
 	target.getevent = function (day,month,year,week,dayofweek) {
@@ -682,6 +691,14 @@ var tmp = function () {
 				}
 			}
 		}
+		// one off events are next
+		for ( i = 0; i < events.length; i++) {
+			if (events[i][0] == "") {
+				if ((events[i][2] == day) && (events[i][1] == month) && (events[i][3] == year)) {
+					return events[i][4];
+				}
+			}
+		}		
 		// monthly events are next
 		for ( i = 0; i < events.length; i++) {
 			if (events[i][0] == "M") {
@@ -690,7 +707,7 @@ var tmp = function () {
 				}
 			}
 		}
-		// weekly events are next
+		// weekly events are last
 		for ( i = 0; i < events.length; i++) {
 			if (events[i][0] == "W") {
 				if (weekBeginsWith=="Sun") {
@@ -700,14 +717,7 @@ var tmp = function () {
 				}				
 			}
 		}
-		// one off events
-		for ( i = 0; i < events.length; i++) {
-			if (events[i][0] == "") {
-				if ((events[i][2] == day) && (events[i][1] == month) && (events[i][3] == year)) {
-					return events[i][4];
-				}
-			}
-		}
+
 		// default event icon
 		return 3;
 	}
@@ -981,7 +991,7 @@ var tmp = function () {
 			target.BUTTON_EDT.enable(true);
 		}
 		
-		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)) {
+		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)>0) {
 			// events in square that was clicked
 			this.showevents(selectionDate,monthNum,yearNum,y,x,0);
 		} else {
@@ -2341,7 +2351,7 @@ var tmp = function () {
 			events.splice(tempEventsNum[currentTempEvent],1,replaceWith);
 		}
 		this.createCalendar();
-		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)) {
+		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)>0) {
 			this.showevents(selectionDate,monthNum,yearNum,y,x,0);
 		} else {
 			this.eventsText.setValue("");
@@ -2353,7 +2363,7 @@ var tmp = function () {
 		eventsDlgOpen = false;
 		events.splice(tempEventsNum[currentTempEvent], 1);
 		this.createCalendar();
-		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)) {
+		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)>0) {
 			this.showevents(selectionDate,monthNum,yearNum,y,x,0);
 		} else {
 			this.eventsText.setValue("");
