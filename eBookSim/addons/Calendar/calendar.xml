@@ -34,7 +34,7 @@
 			<style id="swis24gry" size="24" style="" right="15" halign="right" top="5" color="#6D6D6D"/>
 			<style id="swis32blk" size="32" style="" color="#000000"/>
 			<style id="swis24blk" size="24" style="" right="20" halign="right" top="5" color="#000000"/>
-			<style id="swis16blk" size="16" style="" color="#000000"/>		
+			<style id="swis16blk" size="16" style="bold" color="#000000"/>		
         </style>
 
 		<style id="dialog" background="#80000000"/>			
@@ -512,9 +512,13 @@
 				<function id="doUp">      	this.container.moveCursor("up");    </function>
 				<function id="doDown">		this.container.moveCursor("down");  </function>	        
 				<function id="doCenter">	this.container.doCenterF();  </function>
+				<function id="doMark">		this.container.doMark(); </function>
+				<function id="doSize">		this.container.doSize(); </function>
 			</code>
 			<background skin="dlg_background" left="0" right="0" top="0" bottom="0"/>
 			<label skin="swis32blk" active="false" text="Events" align="center" left="28" right="28" top="20" height="38"/>
+			<label id="ntEventSize" skin="swis16blk" active="false" text="[Size] OK" align="left" left="0" right="0" bottom="30" height="20"/>
+			<label id="ntEventMark" skin="swis16blk" active="false" text="[Mark] Cancel" align="left" left="0" right="0" bottom="10" height="20"/>
 
 			<label skin="swis24blk" active="false" text="Event: " left="40" width="100" top="67" align="left" height="32"/>
 			<text id="eventNum" skin="eventText" active="false" variable="event_num" left="190" width="62" top="67" height="41"/>
