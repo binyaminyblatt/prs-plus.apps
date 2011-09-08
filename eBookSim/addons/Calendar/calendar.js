@@ -21,6 +21,7 @@
 // 2011-09-05 Ben Chenoweth - Added ability to scroll events textbox if there are more than 6 events on a particular day.
 // 2011-09-06 Ben Chenoweth - Changed order of precedence for event icon selection; show number of events in calendar (if more than one).
 // 2011-09-06 Ben Chenoweth - Fixed: events text box was not updating when adding new event.
+// 2011-09-08 Ben Chenoweth - Added OK and Cancel using physical buttons for non-touch on event editor.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -393,6 +394,8 @@ var tmp = function () {
 			this.nonTouch8.show(false);
 			this.nonTouch9.show(false);
 			this.nonTouch0.show(false);
+			this.EVENTS_DIALOG.ntEventSize.show(false);
+			this.EVENTS_DIALOG.ntEventMark.show(false);
 		}
 		
 		//target.eventsText.enable(true);
@@ -1167,11 +1170,23 @@ var tmp = function () {
 	}
 	
 	target.doMark = function () {
-		monthNum=todaysMonth;
-		yearNum=todaysYear;
-		this.dateChanged();			
+		if (eventsDlgOpen) {
+			target.EVENTS_DIALOG.btn_Cancel.click();
+		} else {
+			monthNum=todaysMonth;
+			yearNum=todaysYear;
+			this.dateChanged();
+		}
 		return;
 	}
+	
+	target.doSize = function () {
+		if (eventsDlgOpen) {
+			target.EVENTS_DIALOG.btn_Ok.click();
+		}
+		return;
+	}
+	
 	
 	// Settings pop-up panel stuff
     target.doOption = function(sender) {
