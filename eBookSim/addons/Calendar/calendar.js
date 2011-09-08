@@ -22,6 +22,8 @@
 // 2011-09-06 Ben Chenoweth - Changed order of precedence for event icon selection; show number of events in calendar (if more than one).
 // 2011-09-06 Ben Chenoweth - Fixed: events text box was not updating when adding new event.
 // 2011-09-08 Ben Chenoweth - Added OK and Cancel using physical buttons for non-touch on event editor.
+// 2011-09-08 Ben Chenoweth - Removed "Space" label; fixed error with event numbers.
+// 2011-09-08 Ben Chenoweth - Replaced "Shft", "unSh", "Back" with arrow symbols.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -409,6 +411,11 @@ var tmp = function () {
 		
 		//keyboard keys in shifted form
 		this.doShift();
+		
+		//simplify some keyboard labels
+		setSoValue(target.EVENTS_DIALOG.BACK, 'text', "\u2190"); // left arrow
+		setSoValue(target.EVENTS_DIALOG.SPACE, 'text', "");
+		setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', "\u2193"); // down arrow	
 		return;
 	}
 
@@ -728,13 +735,13 @@ var tmp = function () {
 
 		altdayofweek = dayofweek+1;
 		if (altdayofweek==8) altdayofweek=1;
-		
+
 		// reset the temporary array
 		if (tempEvents.length>0) {
 			tempEvents.length=0;
 			tempEventsNum.length=0;
 		}
-	
+		
 		for (var i = 0; i < events.length; i++) {
 			// First we'll process recurring events (if any):
 			if (events[i][0] != "") {
@@ -993,6 +1000,12 @@ var tmp = function () {
 			this.gridCursor.changeLayout((x-1)*70+50, 70, uD, (y-1)*70+80, 70, uD);
 			target.BUTTON_EDT.enable(true);
 		}
+		
+		// reset the temporary array
+		if (tempEvents.length>0) {
+			tempEvents.length=0;
+			tempEventsNum.length=0;
+		}		
 		
 		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)>0) {
 			// events in square that was clicked
@@ -1317,7 +1330,7 @@ var tmp = function () {
 	
 	// events popup stuff
     target.doEditEvents = function () {
-		//target.bubble("tracelog","Number of events="+tempEvents.length);
+		target.bubble("tracelog","Number of events="+tempEvents.length);
 		// reset labels
 		maxEventNum=tempEvents.length+1; // need to add +1 if a blank event can be added
 		maxEventDay=numbDays;
@@ -2382,6 +2395,7 @@ var tmp = function () {
 		}
 
 		this.dateChanged();
+		target.BUTTON_EDT.enable(true);
 		return;
 	}
 
@@ -2389,7 +2403,15 @@ var tmp = function () {
 		//target.bubble("tracelog","Delete event "+tempEventsNum[currentTempEvent]);
 		eventsDlgOpen = false;
 		events.splice(tempEventsNum[currentTempEvent], 1);
+		
+		// reset the temporary array
+		if (tempEvents.length>0) {
+			tempEvents.length=0;
+			tempEventsNum.length=0;
+		}
+		
 		this.createCalendar();
+		target.BUTTON_EDT.enable(true);		
 		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)>0) {
 			this.showevents(selectionDate,monthNum,yearNum,y,x,0);
 		} else {
@@ -2404,9 +2426,11 @@ var tmp = function () {
 		n = -1;
 		if (shifted) {
 			n = n + shiftOffset;
-			setSoValue(target.EVENTS_DIALOG['SHIFT'], 'text', 'unSh');
+			//setSoValue(target.EVENTS_DIALOG['SHIFT'], 'text', 'unSh');
+			setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', '\u2193'); // down arrow
 		} else {
-			setSoValue(target.EVENTS_DIALOG['SHIFT'], 'text', 'Shft');
+			//setSoValue(target.EVENTS_DIALOG['SHIFT'], 'text', 'Shft');
+			setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', '\u2191'); // up arrow
 		}
 		if (symbols) {
 			n = n + symbolsOffset;
