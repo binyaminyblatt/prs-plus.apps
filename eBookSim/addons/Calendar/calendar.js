@@ -24,6 +24,7 @@
 // 2011-09-08 Ben Chenoweth - Added OK and Cancel using physical buttons for non-touch on event editor.
 // 2011-09-08 Ben Chenoweth - Removed "Space" label; fixed error with event numbers.
 // 2011-09-08 Ben Chenoweth - Replaced "Shft", "unSh", "Back" with arrow symbols.
+// 2011-09-08 Ben Chenoweth - Replaced "U", "D" with arrow symbols.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -412,10 +413,12 @@ var tmp = function () {
 		//keyboard keys in shifted form
 		this.doShift();
 		
-		//simplify some keyboard labels
+		//simplify some labels
 		setSoValue(target.EVENTS_DIALOG.BACK, 'text', "\u2190"); // left arrow
 		setSoValue(target.EVENTS_DIALOG.SPACE, 'text', "");
-		setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', "\u2193"); // down arrow	
+		setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', "\u2193"); // down arrow
+		setSoValue(target.BUTTON_UPP, 'text', "\u2191"); // up arrow
+		setSoValue(target.BUTTON_DWN, 'text', "\u2193"); // down arrow
 		return;
 	}
 
