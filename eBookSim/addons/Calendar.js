@@ -21,6 +21,7 @@ tmp = function() {
 			kbook.autoRunRoot.sandbox.startsWith = Core.text.startsWith;
 			kbook.autoRunRoot.sandbox.gamesSavePath = Core.config.userGamesSavePath;
 			kbook.autoRunRoot.path = Core.config.addonsPath + "Calendar/calendar.xml";
+			kbook.autoRunRoot.sandbox.model = Core.config.model;
 			kbook.autoRunRoot.enterIf(kbook.model);
 		},
 		actions: [{
