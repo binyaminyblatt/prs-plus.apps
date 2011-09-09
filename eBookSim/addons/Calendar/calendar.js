@@ -26,6 +26,7 @@
 // 2011-09-08 Ben Chenoweth - Replaced "Shft", "unSh", "Back" with arrow symbols.
 // 2011-09-08 Ben Chenoweth - Replaced "U", "D" with arrow symbols.
 // 2011-09-09 Ben Chenoweth - Moved strings into variables to handle missing characters in the fonts on the 600.
+// 2011-09-09 Ben Chenoweth - Fix to get it working again!
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -93,16 +94,6 @@ var tmp = function () {
 	var strBack = "\u2190"; //left arrow
 	var strUp = "\u2191";
 	var strDown = "\u2193";
-	
-	if (!kbook.simEnviro) {
-		if (Core.config.model=="600") {
-			strShift = "Shft";
-			strUnShift = "unSh";
-			strBack = "Back";
-			strUp = "U";
-			strDown = "D";
-		}
-	}
 	
 	// variables to be saved to a file
 	target.settings = {	
@@ -427,14 +418,24 @@ var tmp = function () {
 		target.BUTTON_DWN.enable(false);
 		this.nonTouch9.setValue('');
 		this.nonTouch0.setValue('');
+
+		if (!kbook.simEnviro) {
+			if (kbook.autoRunRoot.model=="600") {
+				strShift = "Shft";
+				strUnShift = "unSh";
+				strBack = "Back";
+				strUp = "U";
+				strDown = "D";
+			}
+		}
 		
 		//keyboard keys in shifted form
-		this.doShift();
-		
+		//this.doShift();
+	
 		//simplify some labels
 		setSoValue(target.EVENTS_DIALOG.BACK, 'text', strBack);
 		setSoValue(target.EVENTS_DIALOG.SPACE, 'text', "");
-		setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', strUnShift);
+		//setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', strUnShift);
 		setSoValue(target.BUTTON_UPP, 'text', strUp);
 		setSoValue(target.BUTTON_DWN, 'text', strDown);
 		return;
