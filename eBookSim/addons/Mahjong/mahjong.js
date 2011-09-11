@@ -13,6 +13,7 @@
 //  2011-05-15 Ben Chenoweth - Added remember last layout; reordered existing layouts and added new layout (Aztec); hid test layout.
 //  2011-05-28 Ben Chenoweth - Added new layout (BigHole).
 //  2011-07-06 Ben Chenoweth - Added ability to click on congratulations message to make it disappear.
+//  2011-09-11 Ben Chenoweth - Selection now passes to new tile if tile does not complete a pair; numCurrent now correct at start of game.
 
 var tmp = function () {
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
@@ -76,7 +77,19 @@ var tmp = function () {
 	target.weg = 0;
 	target.mark = 0;
 	target.BAK1 = [];
+	target.OLDBAK1 = [];
 	target.BAK2 = [];
+
+	var cloneObject = function (obj){
+		var newObj = (obj instanceof Array) ? [] : {};
+		for (var i in obj) {
+			if (obj[i] && typeof obj[i] == "object" ) 
+				newObj[i] = cloneObject(obj[i]);
+			else
+				newObj[i] = obj[i];
+		}
+		return newObj;
+	}
 
 	target.init = function () {
 		this.appIcon.u = kbook.autoRunRoot._icon;
@@ -124,6 +137,7 @@ var tmp = function () {
 		this.helpText.setValue(getFileContent(this.mahjongroot.concat('MahJong_Help_EN.txt'),'help.txt missing')); 
 		this.helpText.show(false);
 		
+		this.suchDopp();
 		return;		
 	};
 
@@ -196,10 +210,14 @@ var tmp = function () {
 		var mJ = this.mahJong,
 			xyLg, xG, yG, aeh, uD = undefined;
 		var leeRand = (mJ.length > 0) * 1 + '' + this.mark;
+		this.bubble("tracelog","this.leeRand="+leeRand);
 		xG = this.L0 + 8 + pX * this.curDX;
 		yG = this.T0 + 6 + pY * this.curDY;
 		switch (leeRand) {
 		case '00':
+			if (!hasNumericButtons) {
+				this.gridCursor.show(false);
+			}		
 			break;
 		case '01':
 			aeh = this.mJall[pX][pY];
@@ -216,7 +234,7 @@ var tmp = function () {
 			if (!hasNumericButtons) {
 				this.gridCursor.show(false);
 			}
-			this.numCurrent.setValue(mJ);
+			this.numCurrent.setValue(mJ);		
 			break;
 		case '11':
 			aeh = this['maJ' + this.mJall[pX][pY][0]].u;
@@ -226,6 +244,7 @@ var tmp = function () {
 				this['maJ' + aeh].changeLayout(-100, 65, uD, uD, 71, uD);
 				aeh = this.mJall[pX][pY][0];
 				this['maJ' + aeh].changeLayout(-100, 65, uD, uD, 71, uD);
+				this.OLDBAK1 = cloneObject(this.BAK1);
 				this.BAK2 = [aeh, pX, pY, this.mJall[pX][pY].length];
 				this.mJall[pX][pY].shift();
 				this.mJall[mJ[2]][mJ[3]].shift();
@@ -239,6 +258,7 @@ var tmp = function () {
 				if (!hasNumericButtons) {
 					this.gridCursor.show(false);
 				}
+				this.suchDopp();
 			} else {
 				this.marker2.changeLayout(-100, 57, uD, 0, 63, uD);
 				mJ.length = 0;
@@ -246,10 +266,12 @@ var tmp = function () {
 					this.gridCursor.show(false);
 				}
 				this.numCurrent.setValue(mJ);
+				// start new pair using currently selected item
+				this.doMahJong(pX, pY);
 			}
-			this.suchDopp();
 			break;
 		}
+		return;
 	};
 	target.suchDopp = function () {
 		var aeh = 0,
@@ -283,13 +305,13 @@ var tmp = function () {
 			this.congratulations.changeLayout(94,411,uD,250,142,uD);
 		}
 	};
-	target.undoDel = function (BAK1, BAK2) {
-		if (BAK1.length > 0 & BAK2.length > 0) {
-			this.mJall[BAK1[1]][BAK1[2]].unshift(BAK1[0]);
+	target.undoDel = function (OLDBAK1, BAK2) {
+		if (OLDBAK1.length > 0 & BAK2.length > 0) {
+			this.mJall[OLDBAK1[1]][OLDBAK1[2]].unshift(OLDBAK1[0]);
 			this.mJall[BAK2[1]][BAK2[2]].unshift(BAK2[0]);
-			this['maJ' + BAK1[0]].changeLayout(this.L0 - ((this.mJall[BAK1[1]][BAK1[2]].length - 1) * 8) + BAK1[1] * this.curDX, 65, uD, this.T0 - ((this.mJall[BAK1[1]][BAK1[2]].length - 1) * 7) + BAK1[2] * this.curDY, 71, uD);
+			this['maJ' + OLDBAK1[0]].changeLayout(this.L0 - ((this.mJall[OLDBAK1[1]][OLDBAK1[2]].length - 1) * 8) + OLDBAK1[1] * this.curDX, 65, uD, this.T0 - ((this.mJall[OLDBAK1[1]][OLDBAK1[2]].length - 1) * 7) + OLDBAK1[2] * this.curDY, 71, uD);
 			this['maJ' + BAK2[0]].changeLayout(this.L0 - ((this.mJall[BAK2[1]][BAK2[2]].length - 1) * 8) + BAK2[1] * this.curDX, 65, uD, this.T0 - ((this.mJall[BAK2[1]][BAK2[2]].length - 1) * 7) + BAK2[2] * this.curDY, 71, uD);
-			BAK1.length = 0;
+			OLDBAK1.length = 0;
 			BAK2.length = 0;
 			this.restL += 2;
 			this.suchDopp();
@@ -488,6 +510,7 @@ var tmp = function () {
 		var id, n, found;
 		id = getSoValue(sender, "id");
 		n = id.substring(3, 6);
+		this.bubble("tracelog","n="+n);
 		found = false;
 		loop1: for (var i = 0; i < 8; i++) {
 			for (var j = 0; j < 9; j++) {
@@ -505,6 +528,7 @@ var tmp = function () {
 			this.drawGridCursor(this.posX, this.posY);
 			this.doMahJong(this.posX, this.posY);
 		}
+		return;
 	};
 
 	target.doButtonClick = function (sender) {
@@ -544,10 +568,10 @@ var tmp = function () {
 		} */
 	};
 
-        target.showHelp = function () {
-            displayHelp = !displayHelp;
-            this.helpText.show(displayHelp);
-        }
+    target.showHelp = function () {
+		displayHelp = !displayHelp;
+		this.helpText.show(displayHelp);
+    }
 
 	target.quitGame = function () {
 		try {
