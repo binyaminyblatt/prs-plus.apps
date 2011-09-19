@@ -16,14 +16,13 @@
 // 2011-03-30 Ben Chenoweth - Added new first step to AI: look for multi-step jump
 // 2011-03-31 Ben Chenoweth - Change board format for kings (to make regular and ai representations the same)
 // 2011-04-03 Ben Chenoweth - Moved all labels around slightly
+// 2011-09-19 Ben Chenoweth - Added setting: pawns can capture backwards
 
 var tmp = function () {
-	
-	/* Core workaround 
-	var newEvent = prsp.compile("param", "return new Event(param)");
+
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
-	var getSoValue = kbook.autoRunRoot.getSoValue; */
-	var getSoValue, hasNumericButtons, newEvent;	
+	var getSoValue = kbook.autoRunRoot.getSoValue;
+	var getFileContent = kbook.autoRunRoot.getFileContent;
 
 	var undoboard;
 	var currundo;
@@ -56,31 +55,67 @@ var tmp = function () {
 	var templength;
 	var tempboard = [[],[],[],[],[],[],[],[],[],[]];
 	
+	var datPath0 = kbook.autoRunRoot.gamesSavePath+'Draughts/';
+	FileSystem.ensureDirectory(datPath0);  
+	var settingsPath = datPath0 + 'settings.dat';
+	var settingsDlgOpen = false;
+	var PawnsCaptureBackwards = "NO";
+	var mouseLeave = getSoValue( target.SETTINGS_DIALOG.btn_Cancel,'mouseLeave');
+	var mouseEnter = getSoValue( target.SETTINGS_DIALOG.btn_Cancel,'mouseEnter');
+
+	// variables to be saved to a file
+	target.settings = {	
+		PawnsCaptureBackwards : "NO"
+	};        
+
+	// reads values of target.settings.xx from file
+	target.loadSettings = function () {
+		var stream, inpLine;
+		var values = [];
+      	try {
+      		if (FileSystem.getFileInfo(settingsPath)) {
+      			stream = new Stream.File(settingsPath);    			
+		      	while (stream.bytesAvailable) {
+      				inpLine = stream.readLine();
+      				values = inpLine.split(':');
+      				if ((values[1] == 'true') || (values[1] == 'false')) {   					
+ 					target.settings[values[0]] = values[1] == 'true';
+      				} else {
+      					target.settings[values[0]]=values[1];  
+      				}
+      			}
+      		}	
+      		stream.close();
+      	} catch (e) {}	
+	}         
+
+	// writes values of target.settings.xx to file         
+	target.saveSettings = function () { 
+		var o, stream;
+      	try {
+      		if (FileSystem.getFileInfo(settingsPath)) FileSystem.deleteFile(settingsPath);
+      		stream = new Stream.File(settingsPath, 1);
+      		for (o in target.settings) {
+      			stream.writeLine(o+':'+target.settings[o]);
+      		}
+      		stream.close();
+      	} catch (e) { }         
+    } 
+
+	// Load settings from save file once at startup
+	target.loadSettings();
+	
+	// assign model-variables
+	with (target.settings) {
+		PawnsCaptureBackwards = PawnsCaptureBackwards;
+		target.setVariable("pawns_capture_backwards",PawnsCaptureBackwards);
+	}
+	
 	target.init = function () {
 		var i;
 		this.appTitle.setValue(kbook.autoRunRoot._title);
 		this.appIcon.u = kbook.autoRunRoot._icon;		
-		/* temporary Core workaround  for PRS+ v1.1.3 */
-	
-		if (!kbook || !kbook.autoRunRoot || !kbook.autoRunRoot.getSoValue) {
-			if (kbook.simEnviro) { /*Sim without handover code */
-				getSoValue = _Core.system.getSoValue;
-				hasNumericButtons = _Core.config.compat.hasNumericButtons;
-			} else { /* PRS-505 */
-				getSoValue = function (obj, propName) {
-					return FskCache.mediaMaster.getInstance.call(obj, propName);
-				};
-				hasNumericButtons = true;
-			}
-			try {
-				var compile = getSoValue(prsp, "compile");
-				newEvent = compile("param", "return new Event(param)");
-			} catch (ignore) {}
-		} else { /* code is ok with PRS-600 */
-			getSoValue = kbook.autoRunRoot.getSoValue;
-			// newEvent = prsp.compile("param", "return new Event(param)"); // no menu no need for newEvent
-			hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
-		}
+
 	
 		// hide unwanted graphics
 		this.congratulations.changeLayout(0, 0, uD, 0, 0, uD);
@@ -88,8 +123,6 @@ var tmp = function () {
 		this.selection2.changeLayout(0, 0, uD, 0, 0, uD);
 		this.selection3.changeLayout(0, 0, uD, 0, 0, uD);
 		this.sometext1.show(false);
-		this.touchButtons2.show(false);
-		this.nonTouch3.show(false);
 		this.nonTouch5.show(false);
 		this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
 		this.jumpText.show(false);
@@ -101,10 +134,12 @@ var tmp = function () {
 			this.touchButtons3.show(false);
 			this.touchButtons4.show(false);
 			this.touchButtons1.show(false);
+			this.touchButtons2.show(false);
 		} else {
 			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);
 			this.nonTouch.show(false);
 			this.nonTouch2.show(false);
+			this.nonTouch3.show(false);			
 			this.nonTouch4.show(false);
 			this.nonTouch6.show(false);
 			this.nonTouch_colHelp.show(false);
@@ -363,6 +398,80 @@ var tmp = function () {
 								this.jumpTextBox.changeLayout(130, 350, uD, 24, 35, uD);
 								this.jumpText.show(true);
 								double_jump=true;							
+							} else {
+								lastEnd_x=x;
+								lastEnd_y=y;
+								black_turn=true;
+								piece_toggled=false;
+								double_jump=false;
+								this.updateUndo();
+								this.writePieces();
+								this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
+								this.jumpText.show(false);
+								if (!game_is_over) {
+									this.messageStatus.setValue("Black's turn");
+									if (auto_mode) {
+										FskUI.Window.update.call(kbook.model.container.getWindow());
+										this.autoMove();
+									}
+								}							
+							}
+						}
+					}
+					if ((y==curr_y+2) && (PawnsCaptureBackwards=="YES")) {
+						if ((x==curr_x-2) && (board[curr_x-1][curr_y+1]<0) && (board[x][y]==0)) {
+							// jumping a piece
+							board[curr_x][curr_y]=0;
+							board[curr_x-1][curr_y+1]=0;
+							if (y==0) {
+								board[x][y]=1.1;
+							} else {
+								board[x][y]=1;
+							}
+							this.squareFocus(curr_x, curr_y, false);
+							check_for_double_jump=true;
+						} else if ((x==curr_x+2) && (board[curr_x+1][curr_y+1]<0) && (board[x][y]==0)) {
+							// jumping a piece
+							board[curr_x][curr_y]=0;
+							board[curr_x+1][curr_y+1]=0;
+							if (y==0) {
+								board[x][y]=1.1;
+							} else {
+								board[x][y]=1;
+							}
+							this.squareFocus(curr_x, curr_y, false);
+							check_for_double_jump=true;
+						}
+						if (check_for_double_jump) {	
+							// check for more possible jumps
+							if ((y>1) && (x>1) && (((board[x-1][y-1]<0) && (board[x-2][y-2]==0)) || ((board[x+1][y-1]<0) && (board[x+2][y-2]==0)))) {
+								this.squareFocus(x, y, true);
+								curr_x=x;
+								curr_y=y;
+								this.jumpTextBox.changeLayout(130, 350, uD, 24, 35, uD);
+								this.jumpText.show(true);
+								double_jump=true;
+							} else if ((y>1) && ((board[x+1][y-1]<0) && (board[x+2][y-2]==0))) {
+								this.squareFocus(x, y, true);
+								curr_x=x;
+								curr_y=y;
+								this.jumpTextBox.changeLayout(130, 350, uD, 24, 35, uD);
+								this.jumpText.show(true);
+								double_jump=true;
+							} else if ((y<6) && (x>1) && (((board[x-1][y+1]<0) && (board[x-2][y+2]==0)) || ((board[x+1][y+1]<0) && (board[x+2][y+2]==0)))) {
+								this.squareFocus(x, y, true);
+								curr_x=x;
+								curr_y=y;
+								this.jumpTextBox.changeLayout(130, 350, uD, 24, 35, uD);
+								this.jumpText.show(true);
+								double_jump=true;
+							} else if ((y<6) && ((board[x+1][y+1]<0) && (board[x+2][y+2]==0))) {
+								this.squareFocus(x, y, true);
+								curr_x=x;
+								curr_y=y;
+								this.jumpTextBox.changeLayout(130, 350, uD, 24, 35, uD);
+								this.jumpText.show(true);
+								double_jump=true;
 							} else {
 								lastEnd_x=x;
 								lastEnd_y=y;
@@ -664,6 +773,75 @@ var tmp = function () {
 							}
 						}
 					}
+					if ((y==curr_y-2) && (PawnsCaptureBackwards=="YES")) {
+						if ((x==curr_x-2) && (board[curr_x-1][curr_y-1]>0) && (board[x][y]==0)) {
+							// jumping a piece
+							board[curr_x][curr_y]=0;
+							board[curr_x-1][curr_y-1]=0;
+							if (y==7) {
+								board[x][y]=-1.1;
+							} else {
+								board[x][y]=-1;
+							}
+							this.squareFocus(curr_x, curr_y, false);
+							check_for_double_jump=true;
+						} else if ((x==curr_x+2) && (board[curr_x+1][curr_y-1]>0) && (board[x][y]==0)) {
+							// jumping a piece
+							board[curr_x][curr_y]=0;
+							board[curr_x+1][curr_y-1]=0;
+							if (y==7) {
+								board[x][y]=-1.1;
+							} else {
+								board[x][y]=-1;
+							}
+
+							this.squareFocus(curr_x, curr_y, false);
+							check_for_double_jump=true;
+						}
+						if (check_for_double_jump) {	
+							// check for more possible jumps
+							if ((y<6) && (x>1) && (((board[x-1][y+1]>0) && (board[x-2][y+2]==0)) || ((board[x+1][y+1]>0) && (board[x+2][y+2]==0)))) {
+								this.squareFocus(x, y, true);
+								curr_x=x;
+								curr_y=y;
+								this.jumpTextBox.changeLayout(130, 350, uD, 24, 35, uD);
+								this.jumpText.show(true);
+								double_jump=true;
+							} else if ((y<6) && ((board[x+1][y+1]>0) && (board[x+2][y+2]==0))) {
+								this.squareFocus(x, y, true);
+								curr_x=x;
+								curr_y=y;
+								this.jumpTextBox.changeLayout(130, 350, uD, 24, 35, uD);
+								this.jumpText.show(true);
+								double_jump=true;
+							} else if ((y>1) && (x>1) && (((board[x-1][y-1]>0) && (board[x-2][y-2]==0)) || ((board[x+1][y-1]>0) && (board[x+2][y-2]==0)))) {
+								this.squareFocus(x, y, true);
+								curr_x=x;
+								curr_y=y;
+								this.jumpTextBox.changeLayout(130, 350, uD, 24, 35, uD);
+								this.jumpText.show(true);
+								double_jump=true;
+							} else if ((y>1) && ((board[x+1][y-1]>0) && (board[x+2][y-2]==0))) {
+								this.squareFocus(x, y, true);
+								curr_x=x;
+								curr_y=y;
+								this.jumpTextBox.changeLayout(130, 350, uD, 24, 35, uD);
+								this.jumpText.show(true);
+								double_jump=true;
+							} else {
+								lastEnd_x=x;
+								lastEnd_y=y;
+								black_turn=false;
+								piece_toggled=false;
+								double_jump=false;
+								this.updateUndo();
+								this.writePieces();
+								this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
+								this.jumpText.show(false);
+								this.messageStatus.setValue("White's turn");								
+							}
+						}
+					}
 				}
 				if (board[curr_x][curr_y]==-1.1) {
 					// trying to move a king
@@ -876,6 +1054,10 @@ var tmp = function () {
 	}
 	
 	target.moveCursor = function (dir) {
+		if (settingsDlgOpen) {
+			this.SETTINGS_DIALOG.moveCursor(dir);
+			return;
+		}	
 		switch (dir) {
 		case "down":
 			{
@@ -914,6 +1096,9 @@ var tmp = function () {
 	}
 	
 	target.cursorClick = function () {
+		if (settingsDlgOpen) {
+			this.SETTINGS_DIALOG.doCenterF();
+		}	
 		var x, y, iPosition, sMove;
 		x = cursorX / 75; // find column
 		y = (cursorY - 70) / 75; // find row
@@ -983,10 +1168,6 @@ var tmp = function () {
 			this.moveCursor("right");
 			return;
 		}
-		return;
-	}
-
-	target.doSize = function () {
 		return;
 	}
 	
@@ -1743,6 +1924,121 @@ var tmp = function () {
 		//this.bubble("tracelog","returning true!");
 		return true;
 	}
+	
+	target.doCenterF = function () {
+		if (settingsDlgOpen) {
+			this.SETTINGS_DIALOG.doCenterF();
+		}
+		return;
+	}
+	
+	target.doMenu = function () {
+		this.doOption();
+		return;
+	}
+
+	// Settings pop-up panel stuff
+    target.doOption = function(sender) {
+		target.SETTINGS_DIALOG.pawns_capture.setValue("Pawns capture backwards:");	
+		if (PawnsCaptureBackwards=="NO") {
+			target.setVariable("pawns_capture_backwards","1");
+		} else {
+			target.setVariable("pawns_capture_backwards","2");
+		}
+		if (hasNumericButtons) {
+			custSel = 0;
+			this.ntHandleSettingsDlg();
+		} else {
+			//target.SETTINGS_DIALOG.pawns_capture.enable(true);
+		}
+		settingsDlgOpen = true;
+		target.SETTINGS_DIALOG.show(true);
+		return;
+    }
+	
+	target.closeDlg = function () {
+		settingsDlgOpen = false;
+		eventsDlgOpen = false;
+		return;
+	}
+
+	target.changeSettings = function () {
+		settingsDlgOpen = false;
+		var t = target.getVariable("pawns_capture_backwards");
+		//target.bubble("tracelog","t="+t);
+		
+		if (t == "1") {
+			PawnsCaptureBackwards="NO";
+		}
+		if (t == "2") {
+			PawnsCaptureBackwards="YES";
+		}
+		
+		// save current settings to settingsDatPath
+		target.settings.PawnsCaptureBackwards = PawnsCaptureBackwards;
+		this.saveSettings();
+		return;
+	}
+	
+	target.ntHandleSettingsDlg = function () {
+		if (custSel === 0) {
+			target.SETTINGS_DIALOG.pawns_capture.enable(true);
+			mouseLeave.call(target.SETTINGS_DIALOG.btn_Ok);
+		}
+		if (custSel === 1) {
+			target.SETTINGS_DIALOG.pawns_capture.enable(false);	
+			mouseLeave.call(target.SETTINGS_DIALOG.btn_Cancel);
+			mouseEnter.call(target.SETTINGS_DIALOG.btn_Ok);
+		}		
+		if (custSel === 2) {				 		
+			mouseLeave.call(target.SETTINGS_DIALOG.btn_Ok);
+			mouseEnter.call(target.SETTINGS_DIALOG.btn_Cancel);	
+		}
+		return;
+	}
+
+	target.SETTINGS_DIALOG.moveCursor = function (direction) {
+	switch (direction) {
+		case "up" : {
+			if (custSel>0) {
+				custSel--;
+				target.ntHandleSettingsDlg();
+			}
+			break
+		}
+		case "down" : {
+			if (custSel<2) {
+				custSel++;
+				target.ntHandleSettingsDlg();
+			}
+			break
+		}
+		case "left" : {
+			if (custSel==0) {
+				target.setVariable("pawns_capture_backwards","1");
+			}
+			break
+		}		
+		case "right" : {
+			if (custSel==0) {
+				target.setVariable("pawns_capture_backwards","2");
+			}
+			break
+		}
+		return;
+	  }	
+	}
+	
+	target.SETTINGS_DIALOG.doCenterF = function () {
+		if (custSel === 1) target.SETTINGS_DIALOG.btn_Ok.click();	
+		if (custSel === 2) target.SETTINGS_DIALOG.btn_Cancel.click();
+		return;
+	}
+
+	target.SETTINGS_DIALOG.settingsType = function (t) {
+		return;
+	}
+	
 };
 tmp();
 tmp = undefined;
