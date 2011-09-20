@@ -17,6 +17,7 @@
 // 2011-03-31 Ben Chenoweth - Change board format for kings (to make regular and ai representations the same)
 // 2011-04-03 Ben Chenoweth - Moved all labels around slightly
 // 2011-09-19 Ben Chenoweth - Added setting: pawns can capture backwards
+// 2011-09-20 Ben Chenoweth - Added setting: compulsory jumping
 
 var tmp = function () {
 
@@ -60,12 +61,14 @@ var tmp = function () {
 	var settingsPath = datPath0 + 'settings.dat';
 	var settingsDlgOpen = false;
 	var PawnsCaptureBackwards = "NO";
+	var CompulsoryJumping = "NO";
 	var mouseLeave = getSoValue( target.SETTINGS_DIALOG.btn_Cancel,'mouseLeave');
 	var mouseEnter = getSoValue( target.SETTINGS_DIALOG.btn_Cancel,'mouseEnter');
 
 	// variables to be saved to a file
 	target.settings = {	
-		PawnsCaptureBackwards : "NO"
+		PawnsCaptureBackwards : "NO",
+		CompulsoryJumping : "NO"
 	};        
 
 	// reads values of target.settings.xx from file
@@ -79,14 +82,16 @@ var tmp = function () {
       				inpLine = stream.readLine();
       				values = inpLine.split(':');
       				if ((values[1] == 'true') || (values[1] == 'false')) {   					
- 					target.settings[values[0]] = values[1] == 'true';
+						target.settings[values[0]] = values[1] == 'true';
       				} else {
       					target.settings[values[0]]=values[1];  
       				}
       			}
       		}	
       		stream.close();
-      	} catch (e) {}	
+      	} catch (e) {}
+		CompulsoryJumping=target.settings.CompulsoryJumping;
+		PawnsCaptureBackwards=target.settings.PawnsCaptureBackwards;
 	}         
 
 	// writes values of target.settings.xx to file         
@@ -109,6 +114,7 @@ var tmp = function () {
 	with (target.settings) {
 		PawnsCaptureBackwards = PawnsCaptureBackwards;
 		target.setVariable("pawns_capture_backwards",PawnsCaptureBackwards);
+		target.setVariable("compulsory_jumping",CompulsoryJumping);
 	}
 	
 	target.init = function () {
@@ -191,12 +197,16 @@ var tmp = function () {
 						this['piece' + pieceId].u = 0;
 						num_white++;
 						
-						// check to see if white man has a valid move
+						// check to see if white pawn has a valid move
 						if (!white_moves) {
 							if ((y>0) && (x>0) && (board[x-1][y-1]==0)) white_moves=true;
 							if ((y>0) && (board[x+1][y-1]==0)) white_moves=true;
 							if ((y>1) && (x>1) && (board[x-1][y-1]<0) && (board[x-2][y-2]==0)) white_moves=true;
 							if ((y>1) && (board[x+1][y-1]<0) && (board[x+2][y-2]==0)) white_moves=true;
+							if (PawnsCaptureBackwards=="YES") {
+								if ((y<6) && (x>1) && (board[x-1][y+1]<0) && (board[x-2][y+2]==0)) white_moves=true;
+								if ((y<6) && (board[x+1][y+1]<0) && (board[x+2][y+2]==0)) white_moves=true;
+							}
 						}
 					}
 					if (sqrContent==1.1) {
@@ -219,12 +229,16 @@ var tmp = function () {
 						this['piece' + pieceId].u = 2;
 						num_black++;
 						
-						// check to see if black man has a valid move
+						// check to see if black pawn has a valid move
 						if (!black_moves) {
 							if ((y<7) && (x>0) && (board[x-1][y+1]==0)) black_moves=true;
 							if ((y<7) && (board[x+1][y+1]==0)) black_moves=true;
 							if ((y<6) && (x>1) && (board[x-1][y+1]>0) && (board[x-2][y+2]==0)) black_moves=true;
 							if ((y<6) && (board[x+1][y+1]>0) && (board[x+2][y+2]==0)) black_moves=true;
+							if (PawnsCaptureBackwards=="YES") {
+								if ((y>1) && (x>1) && (board[x-1][y-1]>0) && (board[x-2][y-2]==0)) black_moves=true;
+								if ((y>1) && (board[x+1][y-1]>0) && (board[x+2][y-2]==0)) black_moves=true;
+							}
 						}
 					}
 					if (sqrContent==-1.1) {
@@ -297,9 +311,14 @@ var tmp = function () {
 	
 	target.makeSelection = function (x,y) {
 		var check_for_double_jump=false;
+		var white_jump=false;
+		var black_jump=false;
+		var i,j,sqrContent;
+		
 		if (game_is_over) {
 			return;
 		}
+		
 		if (!black_turn) {
 			// white's turn
 			if ((board[x][y]>0) && (!double_jump)) {
@@ -329,34 +348,65 @@ var tmp = function () {
 						}
 					}
 				}
-			
+				// if compulsory jumping, check for possible jump first
+				if (CompulsoryJumping=="YES") {
+					for (i=0; i<8; i++) {
+						for (j=0; j<8; j++) {
+							sqrContent = board[i][j];
+							if (sqrContent==1) {
+								// check to see if white pawn has a jump
+								if (!white_jump) {
+									if ((j>1) && (i>1) && (board[i-1][j-1]<0) && (board[i-2][j-2]==0)) white_jump=true;
+									if ((j>1) && (board[i+1][j-1]<0) && (board[i+2][j-2]==0)) white_jump=true;
+									if (PawnsCaptureBackwards=="YES") {
+										if ((i>1) && (board[i-1][j+1]<0) && (board[i-2][j+2]==0)) white_jump=true;
+										if ((board[i+1][j+1]<0) && (board[i+2][j+2]==0)) white_jump=true;
+									}
+								}
+							}
+							if (sqrContent==1.1) {
+								// check to see if white king has a jump
+								if (!white_jump) {
+									if ((j>1) && (i>1) && (board[i-1][j-1]<0) && (board[i-2][j-2]==0)) white_jump=true;
+									if ((j>1) && (board[i+1][j-1]<0) && (board[i+2][j-2]==0)) white_jump=true;
+									if ((i>1) && (board[i-1][j+1]<0) && (board[i-2][j+2]==0)) white_jump=true;
+									if ((board[i+1][j+1]<0) && (board[i+2][j+2]==0)) white_jump=true;
+								}
+							}
+						}
+					}
+				}
 				// check for valid move
 				if (board[curr_x][curr_y]==1) {
-					// trying to move a man
+					// trying to move a pawn
 					if ((y==curr_y-1) && ((x==curr_x-1) || (x==curr_x+1)) && (board[x][y]==0) && (!double_jump)) {
 						// single move into free square (not possible during double jump)
-						board[curr_x][curr_y]=0;
-						if (y==0) {
-							board[x][y]=1.1;
+						if ((CompulsoryJumping=="YES") && white_jump) {
+							
 						} else {
-							board[x][y]=1;
-						}
-						this.squareFocus(curr_x, curr_y, false);
-						lastEnd_x=x;
-						lastEnd_y=y;
-						black_turn=true;
-						piece_toggled=false;
-						this.updateUndo();
-						this.writePieces();
-						this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
-						this.jumpText.show(false);
-						if (!game_is_over) {
-							this.messageStatus.setValue("Black's turn");
-							if (auto_mode) {
-								FskUI.Window.update.call(kbook.model.container.getWindow());
-								this.autoMove();
+							board[curr_x][curr_y]=0;
+							if (y==0) {
+								board[x][y]=1.1;
+							} else {
+								board[x][y]=1;
 							}
-						}						
+							this.squareFocus(curr_x, curr_y, false);
+							lastEnd_x=x;
+							lastEnd_y=y;
+							black_turn=true;
+							piece_toggled=false;
+							this.updateUndo();
+							this.writePieces();
+							this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
+							this.jumpText.show(false);
+							if (!game_is_over) {
+								this.messageStatus.setValue("Black's turn");
+								if (auto_mode) {
+									FskUI.Window.update.call(kbook.model.container.getWindow());
+									this.autoMove();
+								}
+							}
+						}
 					}
 					if (y==curr_y-2) {
 						if ((x==curr_x-2) && (board[curr_x-1][curr_y-1]<0) && (board[x][y]==0)) {
@@ -497,45 +547,53 @@ var tmp = function () {
 					// trying to move a king
 					if ((y==curr_y-1) && ((x==curr_x-1) || (x==curr_x+1)) && (board[x][y]==0) && (!double_jump)) {
 						// single move into free square (not possible during double jump)
-						board[curr_x][curr_y]=0;
-						board[x][y]=1.1;
-						this.squareFocus(curr_x, curr_y, false);
-						lastEnd_x=x;
-						lastEnd_y=y;
-						black_turn=true;
-						piece_toggled=false;
-						this.updateUndo();
-						this.writePieces();
-						this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
-						this.jumpText.show(false);
-						if (!game_is_over) {
-							this.messageStatus.setValue("Black's turn");
-							if (auto_mode) {
-								FskUI.Window.update.call(kbook.model.container.getWindow());
-								this.autoMove();
+						if ((CompulsoryJumping=="YES") && white_jump) {
+							
+						} else {
+							board[curr_x][curr_y]=0;
+							board[x][y]=1.1;
+							this.squareFocus(curr_x, curr_y, false);
+							lastEnd_x=x;
+							lastEnd_y=y;
+							black_turn=true;
+							piece_toggled=false;
+							this.updateUndo();
+							this.writePieces();
+							this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
+							this.jumpText.show(false);
+							if (!game_is_over) {
+								this.messageStatus.setValue("Black's turn");
+								if (auto_mode) {
+									FskUI.Window.update.call(kbook.model.container.getWindow());
+									this.autoMove();
+								}
 							}
-						}					
+						}
 					}
 					if ((y==curr_y+1) && ((x==curr_x-1) || (x==curr_x+1)) && (board[x][y]==0) && (!double_jump)) {
 						// single move into free square (not possible during double jump)
-						board[curr_x][curr_y]=0;
-						board[x][y]=1.1;
-						this.squareFocus(curr_x, curr_y, false);
-						lastEnd_x=x;
-						lastEnd_y=y;
-						black_turn=true;
-						piece_toggled=false;
-						this.updateUndo();
-						this.writePieces();
-						this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
-						this.jumpText.show(false);
-						if (!game_is_over) {
-							this.messageStatus.setValue("Black's turn");
-							if (auto_mode) {
-								FskUI.Window.update.call(kbook.model.container.getWindow());
-								this.autoMove();
+						if ((CompulsoryJumping=="YES") && white_jump) {
+							
+						} else {
+							board[curr_x][curr_y]=0;
+							board[x][y]=1.1;
+							this.squareFocus(curr_x, curr_y, false);
+							lastEnd_x=x;
+							lastEnd_y=y;
+							black_turn=true;
+							piece_toggled=false;
+							this.updateUndo();
+							this.writePieces();
+							this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
+							this.jumpText.show(false);
+							if (!game_is_over) {
+								this.messageStatus.setValue("Black's turn");
+								if (auto_mode) {
+									FskUI.Window.update.call(kbook.model.container.getWindow());
+									this.autoMove();
+								}
 							}
-						}						
+						}
 					}					
 					if (y==curr_y-2) {
 						if ((x==curr_x-2) && (board[curr_x-1][curr_y-1]<0) && (board[x][y]==0)) {
@@ -695,28 +753,59 @@ var tmp = function () {
 					this.jumpText.show(false);
 					this.messageStatus.setValue("White's turn");				
 				}
-			
+				// if compulsory jumping, check for possible jump first
+				if (CompulsoryJumping=="YES") {
+					for (i=0; i<8; i++) {
+						for (j=0; j<8; j++) {
+							sqrContent = board[i][j];
+							if (sqrContent==-1) {
+								// check to see if black pawn has a jump
+								if (!black_jump) {
+									if ((i>1) && (board[i-1][j+1]>0) && (board[i-2][j+2]==0)) black_jump=true;
+									if ((board[i+1][j+1]>0) && (board[i+2][j+2]==0)) black_jump=true;
+									if (PawnsCaptureBackwards=="YES") {
+										if ((j>1) && (i>1) && (board[i-1][j-1]>0) && (board[i-2][j-2]==0)) black_jump=true;
+										if ((j>1) && (board[i+1][j-1]>0) && (board[i+2][j-2]==0)) black_jump=true;
+									}
+								}
+							}
+							if (sqrContent==-1.1) {
+								// check to see if black king has a jump
+								if (!black_jump) {
+									if ((j>1) && (i>1) && (board[i-1][j-1]>0) && (board[i-2][j-2]==0)) black_jump=true;
+									if ((j>1) && (board[i+1][j-1]>0) && (board[i+2][j-2]==0)) black_jump=true;
+									if ((j<6) && (i>1) && (board[i-1][j+1]>0) && (board[i-2][j+2]==0)) black_jump=true;
+									if ((j<6) && (board[i+1][j+1]>0) && (board[i+2][j+2]==0)) black_jump=true;
+								}
+							}
+						}
+					}
+				}
 				// check for valid move
 				if (board[curr_x][curr_y]==-1) {
-					// trying to move a man
+					// trying to move a pawn
 					if ((y==curr_y+1) && ((x==curr_x-1) || (x==curr_x+1)) && (board[x][y]==0) && (!double_jump)) {
 						// single move into free square (not possible during double jump)
-						board[curr_x][curr_y]=0;
-						if (y==7) {
-							board[x][y]=-1.1;
+						if ((CompulsoryJumping=="YES") && black_jump) {
+							
 						} else {
-							board[x][y]=-1;
+							board[curr_x][curr_y]=0;
+							if (y==7) {
+								board[x][y]=-1.1;
+							} else {
+								board[x][y]=-1;
+							}
+							this.squareFocus(curr_x, curr_y, false);
+							lastEnd_x=x;
+							lastEnd_y=y;
+							black_turn=false;
+							piece_toggled=false;
+							this.updateUndo();
+							this.writePieces();
+							this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
+							this.jumpText.show(false);
+							this.messageStatus.setValue("White's turn");
 						}
-						this.squareFocus(curr_x, curr_y, false);
-						lastEnd_x=x;
-						lastEnd_y=y;
-						black_turn=false;
-						piece_toggled=false;
-						this.updateUndo();
-						this.writePieces();
-						this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
-						this.jumpText.show(false);
-						this.messageStatus.setValue("White's turn");
 					}
 					if (y==curr_y+2) {
 						if ((x==curr_x-2) && (board[curr_x-1][curr_y+1]>0) && (board[x][y]==0)) {
@@ -847,32 +936,40 @@ var tmp = function () {
 					// trying to move a king
 					if ((y==curr_y-1) && ((x==curr_x-1) || (x==curr_x+1)) && (board[x][y]==0) && (!double_jump)) {
 						// single move into free square (not possible during double jump)
-						board[curr_x][curr_y]=0;
-						board[x][y]=-1.1;
-						this.squareFocus(curr_x, curr_y, false);
-						lastEnd_x=x;
-						lastEnd_y=y;
-						black_turn=false;
-						piece_toggled=false;
-						this.updateUndo();
-						this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
-						this.jumpText.show(false);
-						this.messageStatus.setValue("White's turn");
+						if ((CompulsoryJumping=="YES") && black_jump) {
+							
+						} else {
+							board[curr_x][curr_y]=0;
+							board[x][y]=-1.1;
+							this.squareFocus(curr_x, curr_y, false);
+							lastEnd_x=x;
+							lastEnd_y=y;
+							black_turn=false;
+							piece_toggled=false;
+							this.updateUndo();
+							this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
+							this.jumpText.show(false);
+							this.messageStatus.setValue("White's turn");
+						}
 					}
 					if ((y==curr_y+1) && ((x==curr_x-1) || (x==curr_x+1)) && (board[x][y]==0) && (!double_jump)) {
 						// single move into free square (not possible during double jump)
-						board[curr_x][curr_y]=0;
-						board[x][y]=-1.1;
-						this.squareFocus(curr_x, curr_y, false);
-						lastEnd_x=x;
-						lastEnd_y=y;
-						black_turn=false;
-						piece_toggled=false;
-						this.updateUndo();
-						this.writePieces();
-						this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
-						this.jumpText.show(false);
-						this.messageStatus.setValue("White's turn");
+						if ((CompulsoryJumping=="YES") && black_jump) {
+							
+						} else {
+							board[curr_x][curr_y]=0;
+							board[x][y]=-1.1;
+							this.squareFocus(curr_x, curr_y, false);
+							lastEnd_x=x;
+							lastEnd_y=y;
+							black_turn=false;
+							piece_toggled=false;
+							this.updateUndo();
+							this.writePieces();
+							this.jumpTextBox.changeLayout(0, 0, uD, 0, 0, uD);
+							this.jumpText.show(false);
+							this.messageStatus.setValue("White's turn");
+						}
 					}					
 					if (y==curr_y-2) {
 						if ((x==curr_x-2) && (board[curr_x-1][curr_y-1]>0) && (board[x][y]==0)) {
@@ -1335,7 +1432,7 @@ var tmp = function () {
 			return false;
 		}
 		if ((this.integ(piece) == piece) && (this.sign(piece) == this.sign(distance.y))) {
-			//this.bubble("tracelog","error: man piece - problem with signs!");
+			//this.bubble("tracelog","error: pawn piece - problem with signs!");
 			return false;
 		}
 		//this.bubble("tracelog","move is legal!");
@@ -1373,7 +1470,7 @@ var tmp = function () {
 			return false;
 		}
 		if ((this.integ(piece) == piece) && (this.sign(piece) == this.sign(distance.y))) {
-			//this.bubble("tracelog","error: man piece - problem with signs!");
+			//this.bubble("tracelog","error: pawn piece - problem with signs!");
 			return false;
 		}
 		//this.bubble("tracelog","move is legal!");
@@ -1502,24 +1599,26 @@ var tmp = function () {
 		}
 		//this.bubble("tracelog","step two passed: no jumps to prevent by jumping");
 
-		// step three - prevent any jumps by moving
-		for(var j=0;j<8;j++) {
-			for(var i=0;i<8;i++) {
-				if (this.integ(board[i][j]) == 1) {
-					//this.bubble("tracelog","Potential jumper at i="+i+", j="+j);
-					if ((j>1) && (this.legal_move(this.coord(i,j),this.coord(i+2,j-2))) && (this.prevent(this.coord(i+2,j-2),this.coord(i+1,j-1)))) {
-						return true;
+		// step three - prevent any jumps by moving (skip if compulsory jumping)
+		if (CompulsoryJumping=="NO") {
+			for(var j=0;j<8;j++) {
+				for(var i=0;i<8;i++) {
+					if (this.integ(board[i][j]) == 1) {
+						//this.bubble("tracelog","Potential jumper at i="+i+", j="+j);
+						if ((j>1) && (this.legal_move(this.coord(i,j),this.coord(i+2,j-2))) && (this.prevent(this.coord(i+2,j-2),this.coord(i+1,j-1)))) {
+							return true;
+						}
+						if ((i>1) && (j>1) && (this.legal_move(this.coord(i,j),this.coord(i-2,j-2))) && (this.prevent(this.coord(i-2,j-2),this.coord(i-1,j-1)))) {
+							return true;
+						}
 					}
-					if ((i>1) && (j>1) && (this.legal_move(this.coord(i,j),this.coord(i-2,j-2))) && (this.prevent(this.coord(i-2,j-2),this.coord(i-1,j-1)))) {
-						return true;
-					}
-				}
-				if (board[i][j] == 1.1) {
-					if ((i>1) && (this.legal_move(this.coord(i,j),this.coord(i-2,j+2))) && (this.prevent(this.coord(i-2,j+2),this.coord(i-1,j+1)))) {
-						return true;
-					}
-					if ((this.legal_move(this.coord(i,j),this.coord(i+2,j+2))) && (this.prevent(this.coord(i+2,j+2),this.coord(i+1,j+1)))) {
-						return true;
+					if (board[i][j] == 1.1) {
+						if ((i>1) && (this.legal_move(this.coord(i,j),this.coord(i-2,j+2))) && (this.prevent(this.coord(i-2,j+2),this.coord(i-1,j+1)))) {
+							return true;
+						}
+						if ((this.legal_move(this.coord(i,j),this.coord(i+2,j+2))) && (this.prevent(this.coord(i+2,j+2),this.coord(i+1,j+1)))) {
+							return true;
+						}
 					}
 				}
 			}
@@ -1572,7 +1671,7 @@ var tmp = function () {
 		}
 		//this.bubble("tracelog","step six passed: no safe single spaces for a king to make");
 
-		// step seven - look for man in row 5 that can safely move to row 6
+		// step seven - look for pawn in row 5 that can safely move to row 6
 		for(var i=0;i<8;i++) {
 			if (board[i][5]==-1) {
 				// black piece in 2 rows above king row
@@ -1699,7 +1798,7 @@ var tmp = function () {
 			if ((i>1) && (this.templegal_move(this.coord(i,j),this.coord(i-2,j+2)))) {
 				if ((j==5) && (tempboard[i][j]==-1)) {
 					this.tempmove_comp(this.coord(i,j),this.coord(i-2,j+2));	
-					//this.jump(i-2,j+2); a man can't continue jumping after becoming a king			
+					//this.jump(i-2,j+2); a pawn can't continue jumping after becoming a king			
 					return true;
 				} else {
 					this.tempmove_comp(this.coord(i,j),this.coord(i-2,j+2));			
@@ -1710,7 +1809,7 @@ var tmp = function () {
 			if (this.templegal_move(this.coord(i,j),this.coord(i+2,j+2))) {
 				if ((j==5) && (tempboard[i][j]==-1)) {
 					this.tempmove_comp(this.coord(i,j),this.coord(i+2,j+2));
-					// this.jump(i+2,j+2); a man can't continue jumping after becoming a king
+					// this.jump(i+2,j+2); a pawn can't continue jumping after becoming a king
 					return true;
 				} else {
 					this.tempmove_comp(this.coord(i,j),this.coord(i+2,j+2));					
@@ -1739,7 +1838,7 @@ var tmp = function () {
 			if ((i>1) && (this.legal_move(this.coord(i,j),this.coord(i-2,j+2)))) {
 				if ((j==5) && (board[i][j]==-1)) {
 					this.move_comp(this.coord(i,j),this.coord(i-2,j+2));
-					//this.jump(i-2,j+2); a man can't continue jumping after becoming a king
+					//this.jump(i-2,j+2); a pawn can't continue jumping after becoming a king
 					return true;
 				} else {
 					this.move_comp(this.coord(i,j),this.coord(i-2,j+2));
@@ -1750,7 +1849,7 @@ var tmp = function () {
 			if (this.legal_move(this.coord(i,j),this.coord(i+2,j+2))) {
 				if ((j==5) && (board[i][j]==-1)) {
 					this.move_comp(this.coord(i,j),this.coord(i+2,j+2));
-					// this.jump(i+2,j+2); a man can't continue jumping after becoming a king
+					// this.jump(i+2,j+2); a pawn can't continue jumping after becoming a king
 					return true;
 				} else {
 					this.move_comp(this.coord(i,j),this.coord(i+2,j+2));
@@ -1939,17 +2038,21 @@ var tmp = function () {
 
 	// Settings pop-up panel stuff
     target.doOption = function(sender) {
-		target.SETTINGS_DIALOG.pawns_capture.setValue("Pawns capture backwards:");	
+		target.SETTINGS_DIALOG.pawns_capture.setValue("Pawns capture backwards:");
+		target.SETTINGS_DIALOG.compulsory_jump.setValue("Compulsory jumping:");
 		if (PawnsCaptureBackwards=="NO") {
 			target.setVariable("pawns_capture_backwards","1");
 		} else {
 			target.setVariable("pawns_capture_backwards","2");
 		}
+		if (CompulsoryJumping=="NO") {
+			target.setVariable("compulsory_jumping","1");
+		} else {
+			target.setVariable("compulsory_jumping","2");
+		}
 		if (hasNumericButtons) {
 			custSel = 0;
 			this.ntHandleSettingsDlg();
-		} else {
-			//target.SETTINGS_DIALOG.pawns_capture.enable(true);
 		}
 		settingsDlgOpen = true;
 		target.SETTINGS_DIALOG.show(true);
@@ -1965,7 +2068,6 @@ var tmp = function () {
 	target.changeSettings = function () {
 		settingsDlgOpen = false;
 		var t = target.getVariable("pawns_capture_backwards");
-		//target.bubble("tracelog","t="+t);
 		
 		if (t == "1") {
 			PawnsCaptureBackwards="NO";
@@ -1974,8 +2076,17 @@ var tmp = function () {
 			PawnsCaptureBackwards="YES";
 		}
 		
+		t = target.getVariable("compulsory_jumping");
+		if (t == "1") {
+			CompulsoryJumping="NO";
+		}
+		if (t == "2") {
+			CompulsoryJumping="YES";
+		}
+		
 		// save current settings to settingsDatPath
 		target.settings.PawnsCaptureBackwards = PawnsCaptureBackwards;
+		target.settings.CompulsoryJumping = CompulsoryJumping;
 		this.saveSettings();
 		return;
 	}
@@ -1983,14 +2094,21 @@ var tmp = function () {
 	target.ntHandleSettingsDlg = function () {
 		if (custSel === 0) {
 			target.SETTINGS_DIALOG.pawns_capture.enable(true);
+			target.SETTINGS_DIALOG.compulsory_jump.enable(false);
 			mouseLeave.call(target.SETTINGS_DIALOG.btn_Ok);
+			mouseLeave.call(target.SETTINGS_DIALOG.btn_Cancel);
 		}
 		if (custSel === 1) {
-			target.SETTINGS_DIALOG.pawns_capture.enable(false);	
+			target.SETTINGS_DIALOG.pawns_capture.enable(false);
+			target.SETTINGS_DIALOG.compulsory_jump.enable(true);
+			mouseLeave.call(target.SETTINGS_DIALOG.btn_Ok);
+		}
+		if (custSel === 2) {
+			target.SETTINGS_DIALOG.compulsory_jump.enable(false);	
 			mouseLeave.call(target.SETTINGS_DIALOG.btn_Cancel);
 			mouseEnter.call(target.SETTINGS_DIALOG.btn_Ok);
 		}		
-		if (custSel === 2) {				 		
+		if (custSel === 3) {				 		
 			mouseLeave.call(target.SETTINGS_DIALOG.btn_Ok);
 			mouseEnter.call(target.SETTINGS_DIALOG.btn_Cancel);	
 		}
@@ -2007,7 +2125,7 @@ var tmp = function () {
 			break
 		}
 		case "down" : {
-			if (custSel<2) {
+			if (custSel<3) {
 				custSel++;
 				target.ntHandleSettingsDlg();
 			}
@@ -2017,11 +2135,17 @@ var tmp = function () {
 			if (custSel==0) {
 				target.setVariable("pawns_capture_backwards","1");
 			}
+			if (custSel==1) {
+				target.setVariable("compulsory_jumping","1");
+			}
 			break
 		}		
 		case "right" : {
 			if (custSel==0) {
 				target.setVariable("pawns_capture_backwards","2");
+			}
+			if (custSel==1) {
+				target.setVariable("compulsory_jumping","2");
 			}
 			break
 		}
@@ -2030,8 +2154,8 @@ var tmp = function () {
 	}
 	
 	target.SETTINGS_DIALOG.doCenterF = function () {
-		if (custSel === 1) target.SETTINGS_DIALOG.btn_Ok.click();	
-		if (custSel === 2) target.SETTINGS_DIALOG.btn_Cancel.click();
+		if (custSel === 2) target.SETTINGS_DIALOG.btn_Ok.click();	
+		if (custSel === 3) target.SETTINGS_DIALOG.btn_Cancel.click();
 		return;
 	}
 

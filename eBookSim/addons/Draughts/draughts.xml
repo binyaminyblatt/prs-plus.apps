@@ -71,6 +71,7 @@
 
 	<model>
 		<variable id="pawns_capture_backwards" value="1"/>
+		<variable id="compulsory_jumping" value="1"/>
 	</model>
 
     <code>
@@ -439,7 +440,10 @@
 			<label skin="swis32blk" active="false" text="Draughts Settings" align="center" left="28" right="28" top="20" height="38"/>
 			<text skin="customText" id="pawns_capture" active="false" left="0" width="340" top="70" align="left" height="44"/>
 			<radio id="NO" variable="pawns_capture_backwards" on="1" active="true" text="No" left="350" width="50" top="75" height="30" do="settingsType"/>
-			<radio id="YES" variable="pawns_capture_backwards" on="2" active="true" text="Yes" left="400" width="50" top="75" height="30" do="settingsType"/> 
+			<radio id="YES" variable="pawns_capture_backwards" on="2" active="true" text="Yes" left="400" width="50" top="75" height="30" do="settingsType"/>
+			<text skin="customText" id="compulsory_jump" active="false" left="0" width="340" top="110" align="left" height="44"/>
+			<radio id="NO" variable="compulsory_jumping" on="1" active="true" text="No" left="350" width="50" top="115" height="30" do="settingsType"/>
+			<radio id="YES" variable="compulsory_jumping" on="2" active="true" text="Yes" left="400" width="50" top="115" height="30" do="settingsType"/>
 			<default-button id="btn_Ok" text="OK" width="70" bottom="10" do="doOK"/>
 			<button id="btn_Cancel" text="Cancel" width="100" left ="270" bottom="10" do="doClose"/>		
 		</dialog>
