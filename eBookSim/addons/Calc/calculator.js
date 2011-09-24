@@ -86,12 +86,13 @@ var tmp = function () {
 		["BUTTON_NOT","BUTTON_LSH","BUTTON_RSH","BUTTON_A","BUTTON_B","BUTTON_C","BUTTON_D","BUTTON_E","BUTTON_F"]
 	];	
 	
-	var getSoValue = kbook.autoRunRoot.getSoValue;
+	var getSoValue = kbook.autoRunRoot.getSoValue,
+	    L = kbook.autoRunRoot.L;
 	// END GLOBAL VARIABLES */
 	
 	target.init = function () {
 		/* set translated appTitle and appIcon */
-		this.appTitle.setValue(kbook.autoRunRoot._title);
+		this.appTitle.setValue(L("TITLE"));
 		this.appIcon.u = kbook.autoRunRoot._icon;
 		this.showTime();
 		freshstart();
