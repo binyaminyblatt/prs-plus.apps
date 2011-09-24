@@ -5,9 +5,10 @@
 
 tmp = function() {
 	var appIcon = "DATE";
+	var L = Core.lang.getLocalizer("Calendar");
 	var Calendar = {
 		name: "Calendar",
-		title: "Calendar",
+		title: L("TITLE"),
 		description: "Calendar app",
 		comment: "and Events",
 		icon: appIcon,			
@@ -20,6 +21,7 @@ tmp = function() {
 			kbook.autoRunRoot.sandbox.getFileContent = Core.io.getFileContent;
 			kbook.autoRunRoot.sandbox.startsWith = Core.text.startsWith;
 			kbook.autoRunRoot.sandbox.gamesSavePath = Core.config.userGamesSavePath;
+			kbook.autoRunRoot.sandbox.L = L;
 			kbook.autoRunRoot.path = Core.config.addonsPath + "Calendar/calendar.xml";
 			kbook.autoRunRoot.sandbox.model = Core.config.model;
 			kbook.autoRunRoot.enterIf(kbook.model);
@@ -27,6 +29,7 @@ tmp = function() {
 		actions: [{
 			name: "Calendar",
 			group: "Games",
+			title: L("TITLE"),
 			icon: appIcon,
 			action: function () {
 				Calendar.activate();

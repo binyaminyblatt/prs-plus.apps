@@ -50,7 +50,7 @@ var tmp = function() {
 			// Load core js		
 			PARAMS.loadCore();
 			// Load PRS+ strings
-			langFile = Core.config.corePath + "lang/" + prspLanguages[currentLang];
+			langFile = Core.config.corePath + "lang/" +  currentLang + ".js";
 			Core.lang.init(langFile);
 	/*		
 			// FIXME localize date strings

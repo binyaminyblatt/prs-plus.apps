@@ -6,6 +6,7 @@
 //	2010-10-03 Mark Nord - initial release
 // 	2011-03-20 Mark Nord - fix for Core.String => Core.text
 //	2011-04-01 Mark Nord - adjustments for lang and compat
+//	2011-09-24 Mark Nord - copied Core.lang source into "sandbox" _Core.lang
 
 // Started at, in milliseconds
 var startedAt = (new Date()).getTime();
@@ -133,6 +134,28 @@ _Core.debug.dumpToString = function (o, prefix, depth) {
 
 // silly 1:1  assignment
 
+_Core.system.callScript = function (path, log) {
+			try {
+				if (FileSystem.getFileInfo(path)) {
+					var f = new Stream.File(path);
+					try {
+						var fn = new Function("_Core", f.toString(), path, 1);
+						var result = fn(_Core);
+						delete fn;
+						return result;
+					} finally {
+						f.close();
+					}
+				}
+			} catch (e) {
+				var msg = "Error calling " + path + ": " + e;
+				if (log) {
+					log.error(msg);
+				}
+				throw msg;
+
+			}
+		}
 _Core.system.cloneObj = getSoValue(theRoot,'Core.system.cloneObj');
 _Core.system.compile = prsp.compile;
 _Core.system.setSoValue = prsp.setSoValue;
@@ -180,11 +203,167 @@ _Core.log.createLogger = getSoValue(theRoot,'Core.log.createLogger');
 _Core.log.loggers = getSoValue(theRoot,'Core.log.loggers');
 //target.bubble('tracelog','done log');
 
-_Core.lang.lang  = getSoValue(theRoot,'Core.lang.lang');
+/* calling _Core.lang.getLocalizer throws an error
 _Core.lang.LX  = getSoValue(theRoot,'Core.lang.LX');
 _Core.lang.getLocalizer  = getSoValue(theRoot,'Core.lang.getLocalizer');
 _Core.lang.getStrings  = getSoValue(theRoot,'Core.lang.getStrings');
+*/
+
+
+tmp = function() {
+	var _strings, _X; // whatever is loaded from lang/<language>.js file
+	var isDebug, createLocalizer, x_func, initXFunc, getXFunc;
+
+	createLocalizer = function(str, prefix) {
+		var f;
+		f = function(key) {
+			if (str.hasOwnProperty(key)) {
+				try {
+					return str[key];
+				} catch (ignore) {
+				}
+			}
+			if (isDebug) {
+				log.trace("Missing translation " + prefix + key);
+			}
+			return key;
+		};
+		return f;
+	};
+
+	initXFunc = function (lang) {
+		x_func = getXFunc (lang);
+	};
+	
+	// Initializes language specific "x of something" function
+	getXFunc = function (lang) {
+		var result;
+		switch (lang) {
+			case "cs": // Czech
+				result = function (s, n) {
+					if (n > 4) {
+						return n + " " + s[0];
+					}
+					if (n >= 2 && n <= 4) {
+						return n + " " + s[1];
+					}
+					if (n === 1) {
+						return s[2];
+					}
+					return s[3];
+				};
+				break;
+			case "ka": // Georgian
+				result = function (s, n) {
+					if (n > 0) {
+						return n + " " + s[0];
+					}
+					return s[1];
+				};
+				break;
+			case "ru": // fallthrough // Russian
+			case "ua": // Ukrainian
+				var _x_cache = [];
+				var _x_cases = [2, 0, 1, 1, 1, 2];
+				result = function (s, n) {
+					if (!n) {
+						return s[3];
+					}
+					if (!_x_cache[n]) {
+						_x_cache[n] = (n % 100 > 4 && n % 100 < 20) ? 2 : _x_cases[Math.min(n % 10, 5)];
+					}
+					return n + " " + s[_x_cache[n]];
+				};
+				break;
+			default:
+				 result = function (s, n) {
+					if (n > 1) {
+						return n + " " + s[0];
+					}
+					if (n === 1) {
+						return s[1];
+					}
+					return s[2];
+				};
+				break;
+		}
+		return result;
+	};
+	
+	_Core.lang = {
+		/**
+		* Should be called prior to getLocalizer calls
+		* 
+		* @param langFile - full path to the actual language js file (e.g. en.js)
+		*/
+		init: function (langFile) {
+			try {
+				isDebug = false; //_Core.log.isDebugEnabled();
+				try {
+					// translation strings
+					_strings = _Core.system.callScript(langFile, log);
+					
+					// translation strings, passed to functions
+					_X = _strings.X;
+					
+					// Extract lang name
+					var idx = langFile.lastIndexOf("/");
+					var len = langFile.length;
+					
+					this.lang = langFile.substring(idx + 1, len -3);
+					initXFunc(this.lang); // init language specific "x books" function
+				} catch (e0) {
+					log.error("Failed to load strings from file " + langFile, e0);
+				}
+				
+				coreL = this.getLocalizer("Core"); // defined in core
+				this.L = coreL;
+			} catch (e) {
+				log.error("in Core.lang.init: " + e);
+			}
+		},
+
+		getStrings: function (category, strings) {
+			try {
+				if (strings === undefined) {
+					strings = _strings;
+				}
+
+				if (strings !== undefined && strings[category] !== undefined) {
+					return strings[category];
+				} else {
+					log.warn("Cannot find strings for category: " + category);
+					return {};
+				}
+			} catch (e) {
+				log.error("in getStrings: " + e);
+			}
+		},
+
+		getLocalizer: function (category, strings) {
+			return createLocalizer(this.getStrings(category, strings), category + ".");
+		},
+		
+		LX: function (category, param) {
+			try {
+				return x_func(_X[category], param);
+			} catch (e) {
+				return "error: " + e;
+			}
+		},
+		
+		getXFunc: getXFunc
+	};
+};
+
+try {
+	tmp();
+} catch (e) {
+	target.bubble("Error initializing _core-lang"+ e);
+}
 //target.bubble('tracelog','done lang');
+
+
 _Core.config.compat.NodeKinds = getSoValue(theRoot,'Core.config.compat.NodeKinds');
 _Core.config.compat.NodeKinds.getIcon = getSoValue(theRoot,'Core.config.compat.NodeKinds.getIcon');
 
@@ -194,7 +373,6 @@ var sb = getSoValue(theRoot,'sandbox._Core.sandbox');
 target.bubble('tracelog',dump(sb,'sandbox.'),'tR.SB',2);
 target.bubble('tracelog',_Core.debug.dumpToString(_Core,'_Core.',1));
 */
-
 
 var userConfig = _Core.config.root + "user.config";
 if (FileSystem.getFileInfo(userConfig)) {
@@ -207,3 +385,19 @@ if (FileSystem.getFileInfo(userConfig)) {
 	 } catch(e) {target.bubble('tracelog','error running user.config')}
 //	 target.bubble('tracelog',_Core.debug.dumpToString(_Core.config,'_Core.config.',2))
       }
+
+// initialize _Core.lang
+try {
+	var currentLang, langFile;
+	currentLang = kbook.model.language;
+
+	if (currentLang === undefined) {
+		currentLang = "en";
+	}
+	// Load PRS+ strings
+	langFile = _Core.config.coreRoot + "lang/" +  currentLang + ".js";
+	//target.bubble('tracelog','langfile '+langFile);
+	_Core.lang.init(langFile);
+	//target.bubble('tracelog','_Core.lang.init done');
+ } catch(e) {target.bubble('tracelog','error in _Core.lang.init')}
+		 

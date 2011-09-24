@@ -1,6 +1,6 @@
       // inclucde file to eBookSimMain 
       // define Starter.js exports to sandbox like this: kbook.autoRunRoot.sandbox.Titel = "anything"; in Sim omit sandbox 
-      //this.bubble("tracelog","setView "+app);	
+      this.bubble("tracelog","setView "+app);	
 
       /* exports for all apps*/
       kbook.autoRunRoot.getSoValue = _Core.system.getSoValue;
@@ -10,8 +10,8 @@
       	switch (app) {		
       	 case "Calc" : {
       					kbook.autoRunRoot._icon = _Core.config.compat.NodeKinds.getIcon("CALC",0);
-      					kbook.autoRunRoot._title = "Taschenrechner";
-      					this.bubble("tracelog","setURI");
+      					kbook.autoRunRoot.L = _Core.lang.getLocalizer("Calc");
+      					//this.bubble("tracelog","setURI");
       					this.MAIN.EINK.VIEW.setURI("../addons/Calc/calculator.xml");
       					break;
       					}	
@@ -112,12 +112,16 @@
       					this.MAIN.EINK.VIEW.setURI("SimMenu2.xml");	
       					break;
       					}
-      	 case "Calendar" : {
+      	 case "Calendar" : {		
+      	 				var L = _Core.lang.getLocalizer("Calendar");
       					kbook.autoRunRoot._icon = 22;
-      					kbook.autoRunRoot._title = "Calendar";				
+      					kbook.autoRunRoot._title = L("TITLE");				
       					kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
-						kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;
+					kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;
       					kbook.autoRunRoot.startsWith = _Core.text.startsWith;
+      					kbook.autoRunRoot.L = L;
+					kbook.autoRunRoot.model = _Core.config.model;
+
       					this.MAIN.EINK.VIEW.setURI("../addons/Calendar/calendar.xml");				
       					break;
       					}
