@@ -31,6 +31,7 @@
 // 2011-09-14 Ben Chenoweth - Fix for today marker disappearing on Sundays when in 'week starts with Monday' mode; removed temporary fix for missing arrows.
 // 2011-09-23 Ben Chenoweth - Strings can now be translated; Prev/Next Month for 300 (but now there is no Prev/Next Year).
 // 2011-09-24 Ben Chenoweth - Minor changes to some label/button sizes to accommodate translation strings; moved year to title bar.
+// 2011-09-25 Ben Chenoweth - Non-touch: pressing mark for 'today' now moves to actual day.
 
 var tmp = function () {
 	var L = kbook.autoRunRoot.L;
@@ -1345,6 +1346,7 @@ var tmp = function () {
 		if (eventsDlgOpen) {
 			target.EVENTS_DIALOG.btn_Cancel.click();
 		} else {
+			selectionDate=todaysDate;
 			monthNum=todaysMonth;
 			yearNum=todaysYear;
 			this.dateChanged();

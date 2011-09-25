@@ -10,7 +10,6 @@ tmp = function() {
 		name: "Calendar",
 		title: L("TITLE"),
 		description: "Calendar app",
-		comment: "and Events",
 		icon: appIcon,			
 		activate: function () {
 			kbook.autoRunRoot.sandbox._icon =  Core.config.compat.NodeKinds.getIcon(appIcon,0);
