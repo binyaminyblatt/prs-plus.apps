@@ -30,6 +30,7 @@
 //  2011-06-12 Ben Chenoweth - Added (white) move counter during puzzles.
 //  2011-06-14 Ben Chenoweth - Added more puzzles: total of 90 checkmate in 2 moves; 180 checkmate in 3 moves; 45 checkmate in 4 moves.
 //  2011-08-23 Ben Chenoweth - Changed the way puzzles are loaded.
+//  2011-09-26 Ben Chenoweth - Fixed a problem with valid moves for kings; added a work-around for rare AI failure.
 
 var tmp = function () {
 	var sMovesList;
@@ -99,6 +100,7 @@ var tmp = function () {
 	var dirs = [10, -10];
 	var level = 2; // "Medium"
 	var automode = true; // reader controls the black pieces
+	var oldlevel;
 	
 	// Undo
 	var undoboard;
@@ -409,6 +411,7 @@ var tmp = function () {
 	
 				if (automode) {
 					FskUI.Window.update.call(kbook.model.container.getWindow());
+					oldlevel=level;
 					this.doSize();
 				}
 			}
@@ -779,8 +782,12 @@ var tmp = function () {
 			etc.aBoard[startSq] = nPiece;
 			etc.aBoard[endSq] = nTarget;
 			if (bKingInCheck) {
-				//this.bubble("tracelog","Invalid move for king");
-				return (false);
+				//exception: if king is moving to take king (even if this places the moving king in check), then this is a valid move
+				nTargetType = nTarget & 7;
+				if (nTargetType!=2) {
+					//this.bubble("tracelog","Invalid move for king");
+					return (false);
+				}
 			}
 		} else {
 			// if piece other than king moves, will king still be in check?
@@ -1491,6 +1498,7 @@ var tmp = function () {
 			}
 			this.writePieces();
 			this.updateUndo();
+			level=oldlevel;
 
 			// check for checkmate / stalemate
 			this.getInCheckPieces();
@@ -1505,6 +1513,7 @@ var tmp = function () {
 			// black needs to do an automove if game not over and in automode
 			if ((bGameNotOver) && (automode) && (etc.bBlackSide)) {
 				FskUI.Window.update.call(kbook.model.container.getWindow());
+				oldlevel=level;
 				this.doSize();
 			}
 	
@@ -1519,6 +1528,21 @@ var tmp = function () {
 				this.getInCheckPieces();
 				flagWhoMoved ^= 8;
 				etc.bBlackSide = !etc.bBlackSide;
+			}
+			if (bGameNotOver) {
+				// try to find move at lesser level
+				level--;
+				if (level==0) {
+					level=oldlevel;
+					// output AI failure message
+					this.checkStatus.setValue("AI failed. Sorry!");
+					return;
+				} else {
+					this.prepare();
+					this.doSize();
+					level=oldlevel;
+					return;
+				}
 			}
 		}
 		return;
@@ -1640,7 +1664,7 @@ var tmp = function () {
 		} else {
 			bmove = 0;
 		}
-		//this.bubble("tracelog","Finding a move for "+bmove);
+		//this.bubble("tracelog","Finding a move for "+bmove+", level="+level);
 		themove = this.treeclimber(level, bmove, 0, 120, 120, Al, Bt, ep);
 		pn = themove[0];
 		s = themove[1];
@@ -1685,7 +1709,6 @@ var tmp = function () {
 			test = test || (s == t[1] && e == t[2]);
 		}
 		if (!test) {
-			going = 0;
 			this.messageStatus.setValue("No such move...");
 			return 0;
 		}
@@ -1695,15 +1718,18 @@ var tmp = function () {
 		// now see whether in check after this move, by getting the best reply.  
 		board[e] = S;
 		board[s] = 0;
-		p = pieces[bmove];
+		/*p = pieces[bmove];
 		for (z = 0; z < p.length; z++) {
 			if (p[z][1] == s) p[z][1] = e;
-		}
+		}*/
 	
 		themove = this.treeclimber(0, 8 - bmove, 0, 120, 120, Al, Bt, ep);
+		//this.bubble("tracelog","got this far: themove="+themove);
 		if (themove[0] > 400) {
 			//this.bubble("tracelog","in check");
-			return false;
+			board[s] = S;
+			board[e] = E;	
+			return 0;
 		}
 	
 		//if got this far, the move is accepted. 
