@@ -4,64 +4,14 @@
 // (utilises code taken from JavaScript Calendar featured on and available at JavaScript Kit: http://www.javascriptkit.com)
 //
 // Initial version: 2011-07-14
-// Changelog:
-// 2011-07-15 Ben Chenoweth - Fixed start-up script; resized "Today" button.
-// 2011-07-17 Ben Chenoweth - Improved layout and event icons; added "Anniversary"; increased event font size; changed event file-format; non-Touch cursor now moves.
-// 2011-07-17 Ben Chenoweth - Added settings popup panel; 'Week starts with' option (Sunday or Monday).
-// 2011-07-18 Ben Chenoweth - Fixed: "today" indicator missing in week-starts-Monday mode.
-// 2011-07-19 Ben Chenoweth - Relocated Edit button; enabled option text on Touch and event text; started event popup panel.
-// 2011-07-20 Ben Chenoweth - Event popup panel working (apart from changing description); delete event; fixed floating events.
-// 2011-07-20 Ben Chenoweth - Event popup panel working for non-Touch; few bug fixes.
-// 2011-07-22 Ben Chenoweth - Monthly/weekly events now work; changed event file format to include icon number; changed event popup panel to include icon; added more icons; weekend shaded slightly.
-// 2011-07-23 Mark Nord - auto-correct dat-file (insert icon-number); allow "#" as rem-character, some code optimisations
-// 2011-07-24 Ben Chenoweth - Various bug fixes; new weekly event now shows day of clicked date.
-// 2011-08-13 Ben Chenoweth - Added Western keyboard (for touch readers) for editing event descriptions.
-// 2011-08-13 Ben Chenoweth - Keyboard now works for non-touch readers.
-// 2011-08-20 Ben Chenoweth - Changed graphics file into 1 line and added more icons; keyboard in shifted form initially.
-// 2011-09-05 Ben Chenoweth - Added ability to scroll events textbox if there are more than 6 events on a particular day.
-// 2011-09-06 Ben Chenoweth - Changed order of precedence for event icon selection; show number of events in calendar (if more than one).
-// 2011-09-06 Ben Chenoweth - Fixed: events text box was not updating when adding new event.
-// 2011-09-08 Ben Chenoweth - Added OK and Cancel using physical buttons for non-touch on event editor.
-// 2011-09-08 Ben Chenoweth - Removed "Space" label; fixed error with event numbers.
-// 2011-09-08 Ben Chenoweth - Replaced "Shft", "unSh", "Back" with arrow symbols.
-// 2011-09-08 Ben Chenoweth - Replaced "U", "D" with arrow symbols.
-// 2011-09-09 Ben Chenoweth - Moved strings into variables to handle missing characters in the fonts on the 600.
-// 2011-09-09 Ben Chenoweth - Fix to get it working again!
-// 2011-09-09 Ben Chenoweth - Temporary fix for missing up/down arrows on 505.
-// 2011-09-14 Ben Chenoweth - Fix for today marker disappearing on Sundays when in 'week starts with Monday' mode; removed temporary fix for missing arrows.
-// 2011-09-23 Ben Chenoweth - Strings can now be translated; Prev/Next Month for 300 (but now there is no Prev/Next Year).
-// 2011-09-24 Ben Chenoweth - Minor changes to some label/button sizes to accommodate translation strings; moved year to title bar.
-// 2011-09-25 Ben Chenoweth - Non-touch: pressing mark for 'today' now moves to actual day.
+// Latest update:
+// 2011-09-27 Ben Chenoweth - Code-cleaning; separate changelog.
 
 var tmp = function () {
 	var L = kbook.autoRunRoot.L;
-	var MONTH_JANUARY = L("MONTH_JANUARY");
-	var MONTH_FEBRUARY = L("MONTH_FEBRUARY");
-	var MONTH_MARCH = L("MONTH_MARCH");
-	var MONTH_APRIL = L("MONTH_APRIL");
-	var MONTH_MAY = L("MONTH_MAY");
-	var MONTH_JUNE = L("MONTH_JUNE");
-	var MONTH_JULY = L("MONTH_JULY");
-	var MONTH_AUGUST = L("MONTH_AUGUST");
-	var MONTH_SEPTEMBER = L("MONTH_SEPTEMBER");
-	var MONTH_OCTOBER = L("MONTH_OCTOBER");
-	var MONTH_NOVEMBER = L("MONTH_NOVEMBER");
-	var MONTH_DECEMBER = L("MONTH_DECEMBER");
-	var wordMonth = new Array(MONTH_JANUARY,MONTH_FEBRUARY,MONTH_MARCH,MONTH_APRIL,MONTH_MAY,MONTH_JUNE,MONTH_JULY,MONTH_AUGUST,MONTH_SEPTEMBER,MONTH_OCTOBER,MONTH_NOVEMBER,MONTH_DECEMBER);
-	var ABBRV_SUNDAY = L("ABBRV_SUNDAY");
-	var ABBRV_MONDAY = L("ABBRV_MONDAY");
-	var ABBRV_TUESDAY = L("ABBRV_TUESDAY");
-	var ABBRV_WEDNESDAY = L("ABBRV_WEDNESDAY");
-	var ABBRV_THURSDAY = L("ABBRV_THURSDAY");
-	var ABBRV_FRIDAY = L("ABBRV_FRIDAY");
-	var ABBRV_SATURDAY = L("ABBRV_SATURDAY");
-	var wordDays = new Array(ABBRV_SUNDAY,ABBRV_MONDAY,ABBRV_TUESDAY,ABBRV_WEDNESDAY,ABBRV_THURSDAY,ABBRV_FRIDAY,ABBRV_SATURDAY);
-	var CARDINAL_ONE = L("CARDINAL_ONE");
-	var CARDINAL_TWO = L("CARDINAL_TWO");
-	var CARDINAL_THREE = L("CARDINAL_THREE");
-	var CARDINAL_FOUR = L("CARDINAL_FOUR");
-	var CARDINAL_FIVE = L("CARDINAL_FIVE");
-	var cardinals = new Array(CARDINAL_ONE, CARDINAL_TWO, CARDINAL_THREE, CARDINAL_FOUR, CARDINAL_FIVE);
+	var wordMonth = new Array(L("MONTH_JANUARY"),L("MONTH_FEBRUARY"),L("MONTH_MARCH"),L("MONTH_APRIL"),L("MONTH_MAY"),L("MONTH_JUNE"),L("MONTH_JULY"),L("MONTH_AUGUST"),L("MONTH_SEPTEMBER"),L("MONTH_OCTOBER"),L("MONTH_NOVEMBER"),L("MONTH_DECEMBER"));
+	var wordDays = new Array(L("ABBRV_SUNDAY"),L("ABBRV_MONDAY"),L("ABBRV_TUESDAY"),L("ABBRV_WEDNESDAY"),L("ABBRV_THURSDAY"),L("ABBRV_FRIDAY"),L("ABBRV_SATURDAY"));
+	var cardinals = new Array(L("CARDINAL_ONE"), L("CARDINAL_TWO"), L("CARDINAL_THREE"), L("CARDINAL_FOUR"), L("CARDINAL_FIVE"));
 	var STR_TODAY = L("STR_TODAY");
 	var STR_MONTH = L("STR_MONTH");
 	var STR_YEAR = L("STR_YEAR");
@@ -339,37 +289,9 @@ var tmp = function () {
 		}
 		
 		// put keys on buttons
-		//target.bubble("tracelog","put buttons...");
-		//target.bubble("tracelog","twoDigits(1) "+twoDigits(1));
 		for (i=1; i<=26; i++) {
 			setSoValue(target.EVENTS_DIALOG['key'+twoDigits(i)], 'text', keys[i-1]);
 		}
-	/*	setSoValue(target.EVENTS_DIALOG.key01, 'text', keys[0]);
-		setSoValue(target.EVENTS_DIALOG.key02, 'text', keys[1]);
-		setSoValue(target.EVENTS_DIALOG.key03, 'text', keys[2]);
-		setSoValue(target.EVENTS_DIALOG.key04, 'text', keys[3]);
-		setSoValue(target.EVENTS_DIALOG.key05, 'text', keys[4]);
-		setSoValue(target.EVENTS_DIALOG.key06, 'text', keys[5]);
-		setSoValue(target.EVENTS_DIALOG.key07, 'text', keys[6]);
-		setSoValue(target.EVENTS_DIALOG.key08, 'text', keys[7]);
-		setSoValue(target.EVENTS_DIALOG.key09, 'text', keys[8]);
-		setSoValue(target.EVENTS_DIALOG.key10, 'text', keys[9]);
-		setSoValue(target.EVENTS_DIALOG.key11, 'text', keys[10]);
-		setSoValue(target.EVENTS_DIALOG.key12, 'text', keys[11]);
-		setSoValue(target.EVENTS_DIALOG.key13, 'text', keys[12]);
-		setSoValue(target.EVENTS_DIALOG.key14, 'text', keys[13]);
-		setSoValue(target.EVENTS_DIALOG.key15, 'text', keys[14]);
-		setSoValue(target.EVENTS_DIALOG.key16, 'text', keys[15]);
-		setSoValue(target.EVENTS_DIALOG.key17, 'text', keys[16]);
-		setSoValue(target.EVENTS_DIALOG.key18, 'text', keys[17]);
-		setSoValue(target.EVENTS_DIALOG.key19, 'text', keys[18]);
-		setSoValue(target.EVENTS_DIALOG.key20, 'text', keys[19]);
-		setSoValue(target.EVENTS_DIALOG.key21, 'text', keys[20]);
-		setSoValue(target.EVENTS_DIALOG.key22, 'text', keys[21]);
-		setSoValue(target.EVENTS_DIALOG.key23, 'text', keys[22]);
-		setSoValue(target.EVENTS_DIALOG.key24, 'text', keys[23]);
-		setSoValue(target.EVENTS_DIALOG.key25, 'text', keys[24]);
-		setSoValue(target.EVENTS_DIALOG.key26, 'text', keys[25]); */
 		return; 
 	}
 	
@@ -484,25 +406,6 @@ var tmp = function () {
 		this.nonTouch9.setValue('');
 		this.nonTouch0.setValue('');
 
-		/*if (!kbook.simEnviro) {
-			if (kbook.autoRunRoot.model=="600") {
-				strShift = "Shft";
-				strUnShift = "unSh";
-				strBack = "Back";
-				strUp = "U";
-				strDown = "D";
-			}
-			if (kbook.autoRunRoot.model=="505") {
-				strShift = "Shft";
-				strUnShift = "unSh";
-				strUp = "U";
-				strDown = "D";
-			}			
-		}*/
-		
-		//keyboard keys in shifted form
-		//this.doShift();
-	
 		//simplify some labels
 		setSoValue(target.EVENTS_DIALOG.BACK, 'text', strBack);
 		setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', strShift);
@@ -669,7 +572,6 @@ var tmp = function () {
 	}
 	
 	target.createCalendar = function () {
-		//calendarString = '';
 		var daycounter = 0;
 		var eventtype;
 		thisDate = 1;
@@ -788,12 +690,6 @@ var tmp = function () {
 				numevents++;
 			}
 		}
-
-		/*if (numevents == 0) {
-			return false;
-		} else {
-			return true;
-		}*/
 		
 		return numevents;
 	}
@@ -963,12 +859,10 @@ var tmp = function () {
 				tempEventsNum.push(i);
 			}
 		}
-			
-		//target.bubble("tracelog","events="+theevent+", numEvents="+tempEvents.length);
+
 		this.eventsText.setValue(theevent);
 		currentNumEvents = tempEvents.length;
 		currentOffset = offset;
-		//target.bubble("tracelog","currentNumEvents="+currentNumEvents+", currentOffset="+currentOffset);
 		if (offset > 0) {
 			target.BUTTON_UPP.enable(true);
 			upenabled=true;
@@ -1210,6 +1104,7 @@ var tmp = function () {
 			stream.writeLine("# Special Float-Format: F;3;0;0;Icon;Easter Sunday");
 			stream.writeLine("# Icons: 3=Default, 4=Birthday, 5=Christmas, 6=Two Hearts, 7=Anniversary, 8=Airplane, 9=Car");
 			stream.writeLine("# Icons: 10=St. Patrick's Day, 11=Thanksgiving, 12=New Year's Day, 13=R.I.P., 14=Easter");
+			stream.writeLine("# Icons: 15=Work, 16=School, 17=Meeting");
 			for (var i = 0; i < events.length; i++) {
 				event=events[i][0]+';'+events[i][1]+';'+events[i][2]+';'+events[i][3]+';'+events[i][4]+';'+events[i][5];
 				stream.writeLine(event);
@@ -1336,9 +1231,7 @@ var tmp = function () {
 				}
 			}
 		}
-		//target.bubble("tracelog","Before: selectionDate="+selectionDate);
 		this.dateChanged();
-		//target.bubble("tracelog","After: selectionDate="+selectionDate);
 		return;
 	}
 	
@@ -1390,7 +1283,6 @@ var tmp = function () {
 	target.changeSettings = function () {
 		settingsDlgOpen = false;
 		var t = target.getVariable("week_begins");
-		//target.bubble("tracelog","t="+t);
 		
 		if (t == "1") {
 			weekBeginsWith="Sun";
@@ -1492,7 +1384,6 @@ var tmp = function () {
 	
 	// events popup stuff
     target.doEditEvents = function () {
-		//target.bubble("tracelog","Number of events="+tempEvents.length);
 		// reset labels
 		maxEventNum=tempEvents.length+1; // need to add +1 if a blank event can be added
 		maxEventDay=numbDays;
@@ -1550,7 +1441,6 @@ var tmp = function () {
     }
 
 	target.EVENTS_DIALOG.loadTempEvent = function () {
-			//target.bubble("tracelog","currentTempEvent="+currentTempEvent);
 			target.EVENTS_DIALOG.eventDayText.setValue(STR_DATE + ":");
 			target.EVENTS_DIALOG.eventYearText.setValue(STR_YEAR + ":");	
 			target.EVENTS_DIALOG.weekDay.show(false);
@@ -1645,39 +1535,13 @@ var tmp = function () {
 				} else 
 				if (tempEvents[currentTempEvent][3]>="1" && tempEvents[currentTempEvent][3]<="6" ) {
 					target.EVENTS_DIALOG.weekDay.setValue(wordDays[currentTempEvent[3]-1]);				
-					}
-				/*if (tempEvents[currentTempEvent][3]=="1") {
-					target.EVENTS_DIALOG.weekDay.setValue(wordDays[0]);				
-				} else if (tempEvents[currentTempEvent][3]=="2") {
-					target.EVENTS_DIALOG.weekDay.setValue(wordDays[1]);
-				} else if (tempEvents[currentTempEvent][3]=="3") {
-					target.EVENTS_DIALOG.weekDay.setValue(wordDays[2]);
-				} else if (tempEvents[currentTempEvent][3]=="4") {
-					target.EVENTS_DIALOG.weekDay.setValue(wordDays[3]);
-				} else if (tempEvents[currentTempEvent][3]=="5") {
-					target.EVENTS_DIALOG.weekDay.setValue(wordDays[4]);
-				} else if (tempEvents[currentTempEvent][3]=="6") {
-					target.EVENTS_DIALOG.weekDay.setValue(wordDays[5]);
-				} else if (tempEvents[currentTempEvent][3]=="7") {
-					target.EVENTS_DIALOG.weekDay.setValue(wordDays[6]);
-				}*/
+				}
 				target.EVENTS_DIALOG.cardinalDay.show(true);
 				if (tempEvents[currentTempEvent][2]=="0") {
 					target.EVENTS_DIALOG.cardinalDay.setValue("0");
 				} else if (tempEvents[currentTempEvent][2]>="1" && tempEvents[currentTempEvent][2]<="5" ) {
 					target.EVENTS_DIALOG.weekDay.setValue(cardinals[currentTempEvent[2]-1]);				
-					}
-				/*} else if (tempEvents[currentTempEvent][2]=="1") {
-					target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[0]);				
-				} else if (tempEvents[currentTempEvent][2]=="2") {
-					target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[1]);
-				} else if (tempEvents[currentTempEvent][2]=="3") {
-					target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[2]);
-				} else if (tempEvents[currentTempEvent][2]=="4") {
-					target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[3]);
-				} else if (tempEvents[currentTempEvent][2]=="5") {
-					target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[4]);
-				}*/
+				}
 				target.EVENTS_DIALOG.eventMonth.setValue(tempEvents[currentTempEvent][1]);
 				target.setVariable("event_month",tempEvents[currentTempEvent][1]);
 				target.EVENTS_DIALOG.eventDay.setValue(tempEvents[currentTempEvent][2]);
@@ -1808,7 +1672,6 @@ var tmp = function () {
 							eventYear=selectionDay+1;
 							if (selectionDay==8) selectionDay=1;
 						}
-						//target.bubble("tracelog","In here. eventYear="+eventYear);
 					} else {
 						eventYear=tempEvents[currentTempEvent][3];
 					}
@@ -1818,19 +1681,7 @@ var tmp = function () {
 						target.EVENTS_DIALOG.weekDay.setValue("0");
 					} else if (eventYear>=1 && eventYear<=7) {
 						target.EVENTS_DIALOG.weekDay.setValue(wordDays[eventYear-1]);				
-					} /*else if (eventYear==2) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[1]);
-					} else if (eventYear==3) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[2]);
-					} else if (eventYear==4) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[3]);
-					} else if (eventYear==5) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[4]);
-					} else if (eventYear==6) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[5]);
-					} else if (eventYear==7) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[6]);
-					}*/
+					}
 				} else if (eventType=="5") {
 					// floating event (therefore date becomes cardinal and yearly becomes week day)
 					target.EVENTS_DIALOG.eventDayText.setValue(STR_CARDINAL + ":");
@@ -1854,34 +1705,14 @@ var tmp = function () {
 						target.EVENTS_DIALOG.weekDay.setValue("0");
 					} else if (eventYear>=1 && eventYear<=7) {
 						target.EVENTS_DIALOG.weekDay.setValue(wordDays[eventYear-1]);				
-					} /*else if (eventYear==2) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[1]);
-					} else if (eventYear==3) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[2]);
-					} else if (eventYear==4) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[3]);
-					} else if (eventYear==5) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[4]);
-					} else if (eventYear==6) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[5]);
-					} else if (eventYear==7) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[6]);
-					} */
+					}
 					target.setVariable("event_day",eventDay);
 					target.EVENTS_DIALOG.eventDay.setValue(eventDay);					
 					if (eventDay=="0") {
 						target.EVENTS_DIALOG.cardinalDay.setValue("0");
 					} else if (eventDay>="1" && eventDay<="5") {
 						target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[eventDay-1]);				
-					} /*else if (eventDay=="2") {
-						target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[1]);
-					} else if (eventDay=="3") {
-						target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[2]);
-					} else if (eventDay=="4") {
-						target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[3]);
-					} else if (eventDay=="5") {
-						target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[4]);
-					} */
+					}
 				} else {
 					target.EVENTS_DIALOG.eventDayText.setValue(STR_DATE + ":");
 					target.EVENTS_DIALOG.eventYearText.setValue(STR_YEAR + ":");	
@@ -1954,15 +1785,7 @@ var tmp = function () {
 						target.EVENTS_DIALOG.cardinalDay.setValue("0");
 					} else if (eventDay>="1" && eventDay<="5") {
 						target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[eventDay-1]);				
-					} /*else if (eventDay=="2") {
-						target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[1]);
-					} else if (eventDay=="3") {
-						target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[2]);
-					} else if (eventDay=="4") {
-						target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[3]);
-					} else if (eventDay=="5") {
-						target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[4]);
-					}*/
+					}
 				}
 				break;
 			}
@@ -1990,19 +1813,7 @@ var tmp = function () {
 						target.EVENTS_DIALOG.weekDay.setValue("0");
 					} else if (eventYear>=1 && eventYear<=7) {
 						target.EVENTS_DIALOG.weekDay.setValue(wordDays[eventYear-1]);				
-					} /*else if (eventYear==2) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[1]);
-					} else if (eventYear==3) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[2]);
-					} else if (eventYear==4) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[3]);
-					} else if (eventYear==5) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[4]);
-					} else if (eventYear==6) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[5]);
-					} else if (eventYear==7) {
-						target.EVENTS_DIALOG.weekDay.setValue(wordDays[6]);
-					}*/
+					}
 				}
 				break;
 			}
@@ -2023,7 +1834,6 @@ var tmp = function () {
 	target.ntHandleEventsDlg = function () {
 		// work out direction of movement and check if item is available
 		eventType = parseInt(target.getVariable("event_type"));
-		//target.bubble("tracelog","Before: eventType="+eventType+", prevSel="+prevSel+", custSel="+custSel);
 		if ((eventType=="3") && (custSel==3)) {
 			// no month item
 			if (prevSel==2) custSel=4;
@@ -2041,7 +1851,6 @@ var tmp = function () {
 				if (prevSel==2) custSel=0;
 			}
 		}
-		//target.bubble("tracelog","After: eventType="+eventType+", prevSel="+prevSel+", custSel="+custSel);
 		if (custSel == 0) {
 			target.EVENTS_DIALOG.eventNum.enable(true);
 			target.EVENTS_DIALOG.eventTypeText.enable(false);
@@ -2583,7 +2392,6 @@ var tmp = function () {
 	}
 	
 	target.refreshKeys = function () {
-		//target.bubble("tracelog","symbols="+symbols+", shifted="+shifted);
 		var i,n,key;
 		n = -1;
 		if (shifted) {
