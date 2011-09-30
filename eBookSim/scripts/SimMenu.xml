@@ -112,7 +112,7 @@
 								break;
 							}								
 					case 9 : {
-								this.bubble("setView","Spider");
+								this.bubble("setView","Calendar_nt");
 								break;
 							}															
 					}			
@@ -180,7 +180,7 @@
    		<panel skin="piMenuRow" left="0" bottom="70" right="0" height="70" />
 		<sprite skin="kbookMenuIcon" left="0" width="70" bottom="70" height="70" u="47" v="0" active="false" canFocus="false"/>   
 		<label skin="piRowNum" bottom="70" right="0" width="35" height="70" align="center" text="9" />	
-		<label skin="piRow" bottom="70" right="0" left="70" height="70" text="Spider Solitaire" />
+		<label skin="piRow" bottom="70" right="0" left="70" height="70" text="Calendar_nt" />
 		<button id="9" bottom="70" right="0" left="0" height="70" active="true" visible="false" do="doButtonClick"/>
 
    		<panel skin="piMenuRow" left="0" bottom="0" right="0" height="70" />
