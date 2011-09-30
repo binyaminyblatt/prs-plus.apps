@@ -117,15 +117,28 @@
       					kbook.autoRunRoot._icon = 22;
       					kbook.autoRunRoot._title = L("TITLE");				
       					kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
-					kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;
+						kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;
       					kbook.autoRunRoot.startsWith = _Core.text.startsWith;
       					kbook.autoRunRoot.L = L;
-					kbook.autoRunRoot.model = _Core.config.model;
+						kbook.autoRunRoot.model = _Core.config.model;
 
       					this.MAIN.EINK.VIEW.setURI("../addons/Calendar/calendar.xml");				
       					break;
       					}
-      	 case "Solitaire" : {
+      	 case "Calendar_nt" : {		
+      	 				var L = _Core.lang.getLocalizer("Calendar");
+      					kbook.autoRunRoot._icon = 22;
+      					kbook.autoRunRoot._title = L("TITLE");				
+      					kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
+						kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;
+      					kbook.autoRunRoot.startsWith = _Core.text.startsWith;
+      					kbook.autoRunRoot.L = L;
+						kbook.autoRunRoot.model = _Core.config.model;
+
+      					this.MAIN.EINK.VIEW.setURI("../addons/Calendar_nt/calendar.xml");				
+      					break;
+      					}
+		case "Solitaire" : {
       					kbook.autoRunRoot._icon = _Core.config.compat.NodeKinds.getIcon("FIVEBALLS",0);
       					kbook.autoRunRoot._title = "Solitaire";
 						kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;						
