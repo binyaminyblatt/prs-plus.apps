@@ -5,7 +5,7 @@
 //
 // Initial version: 2011-07-14
 // Latest update:
-// 2011-09-29 Ben Chenoweth - Expanded event popup and added more keys to keyboard; added two more keyboards and a custom keyboard option.
+// 2011-10-01 Ben Chenoweth - Fixed events not updating properly; fixes for 950 layout.
 
 var tmp = function () {
 	var L = kbook.autoRunRoot.L;
@@ -85,6 +85,7 @@ var tmp = function () {
 	var currentKbd = 1;
 	var currentNumEvents = 0;
 	var currentOffset = 0;
+	var offsetDifference = 6; // 600, 350, 650 (950: offsetDifference=15)
 	var upenabled = false;
 	var downenabled = false;
 	
@@ -502,15 +503,10 @@ var tmp = function () {
 		setSoValue(target.EVENTS_DIALOG.btn_Ok, 'text', STR_OK);
 		setSoValue(target.EVENTS_DIALOG.btn_Cancel, 'text', STR_CANCEL);
 		setSoValue(target.EVENTS_DIALOG.btn_Delete, 'text', STR_DELETE);
-		
-		// fix for Prev/Next month for 300
-		if (!kbook.simEnviro) {
-			if (kbook.autoRunRoot.model=="300") {
-				this.nonTouch2.setValue("");
-				this.nonTouch5.setValue("");
-				this.nonTouch3.setValue("[Hold Right] +" + STR_MONTH);
-				this.nonTouch6.setValue("[Hold Left] -" + STR_MONTH);
-			}			
+
+		// 950 can display more events in the event box
+		if (kbook.autoRunRoot.model=="950") {
+			offsetDifference=15;
 		}
 		
 		// look for custom keyboard
@@ -958,7 +954,7 @@ var tmp = function () {
 			upenabled=false;
 			this.nonTouch9.setValue('');
 		}
-		if (tempEvents.length > offset + 6) {
+		if (tempEvents.length > offset + offsetDifference) {
 			target.BUTTON_DWN.enable(true);
 			downenabled=true;
 			this.nonTouch0.setValue('9: '+strDown);
@@ -1054,7 +1050,7 @@ var tmp = function () {
 		}
 		if (n == "UPP") {
 			// scroll events textbox up
-			currentOffset = currentOffset - 6;
+			currentOffset = currentOffset - offsetDifference;
 			if (currentOffset < 0) { currentOffset=0; }
 			this.showevents(selectionDate,monthNum,yearNum,y,x,currentOffset);
 			return;
@@ -1062,7 +1058,7 @@ var tmp = function () {
 		if (n == "DWN") {
 			// scroll events textbox down
 			var oldCurrentOffset = currentOffset;
-			currentOffset = currentOffset + 6;
+			currentOffset = currentOffset + offsetDifference;
 			if (currentOffset > currentNumEvents) { currentOffset=oldCurrentOffset; }
 			this.showevents(selectionDate,monthNum,yearNum,y,x,currentOffset);
 			return;
@@ -1818,8 +1814,13 @@ var tmp = function () {
 			events.splice(tempEventsNum[currentTempEvent],1,replaceWith);
 		}
 
-		this.dateChanged();
-		target.BUTTON_EDT.enable(true);
+		this.createCalendar();
+		target.BUTTON_EDT.enable(true);		
+		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)>0) {
+			this.showevents(selectionDate,monthNum,yearNum,y,x,0);
+		} else {
+			this.eventsText.setValue("");
+		}
 		return;
 	}
 
