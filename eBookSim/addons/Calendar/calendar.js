@@ -5,7 +5,7 @@
 //
 // Initial version: 2011-07-14
 // Latest update:
-// 2011-10-01 Ben Chenoweth - Fixed events not updating properly; fixes for 950 layout.
+// 2011-10-01 Ben Chenoweth - Custom keyboard now generated automatically if not found.
 
 var tmp = function () {
 	var L = kbook.autoRunRoot.L;
@@ -81,7 +81,6 @@ var tmp = function () {
 	var kbdPath = target.calendarRoot;
 	FileSystem.ensureDirectory(kbdPath);
 	var customKbdPath = datPath0 + 'custom.kbd';
-	var customKbd = false;
 	var currentKbd = 1;
 	var currentNumEvents = 0;
 	var currentOffset = 0;
@@ -161,7 +160,7 @@ var tmp = function () {
 		keys[7]="i";
 		keys[8]="o";
 		keys[9]="p";
-		keys[10]="";
+		keys[10]=",";
 		keys[11]="7";
 		keys[12]="8";
 		keys[13]="9";
@@ -174,7 +173,7 @@ var tmp = function () {
 		keys[20]="j";
 		keys[21]="k";
 		keys[22]="l";
-		keys[23]="";
+		keys[23]=".";
 		keys[24]="4";
 		keys[25]="5";
 		keys[26]="6";
@@ -199,10 +198,10 @@ var tmp = function () {
 		keys[45]="I";
 		keys[46]="O";
 		keys[47]="P";
-		keys[48]="";
-		keys[49]="7";
-		keys[50]="8";
-		keys[51]="9";
+		keys[48]=";";
+		keys[49]="&";
+		keys[50]="*";
+		keys[51]="(";
 		keys[52]="A";
 		keys[53]="S";
 		keys[54]="D";
@@ -212,10 +211,10 @@ var tmp = function () {
 		keys[58]="J";
 		keys[59]="K";
 		keys[60]="L";
-		keys[61]="";
-		keys[62]="4";
-		keys[63]="5";
-		keys[64]="6";
+		keys[61]=":";
+		keys[62]="$";
+		keys[63]="%";
+		keys[64]="^";
 		keys[65]="Z";
 		keys[66]="X";
 		keys[67]="C";
@@ -223,10 +222,10 @@ var tmp = function () {
 		keys[69]="B";
 		keys[70]="N";
 		keys[71]="M";
-		keys[72]="0";
-		keys[73]="1";
-		keys[74]="2";
-		keys[75]="3";
+		keys[72]=")";
+		keys[73]="!";
+		keys[74]="@";
+		keys[75]="#";
 		keys[76]="1";
 		keys[77]="2";
 		keys[78]="3";
@@ -303,6 +302,19 @@ var tmp = function () {
 		keys[149]="";
 		keys[150]="";
 		keys[151]="";
+		return;
+	}
+
+	target.saveCustomKeyboard = function () {
+		var o, stream;
+      	try {
+      		if (FileSystem.getFileInfo(customKbdPath)) FileSystem.deleteFile(customKbdPath);
+      		stream = new Stream.File(customKbdPath, 1);
+      		for (o=0; o<=151; o++) {
+      			stream.writeLine(keys[o]);
+      		}
+      		stream.close();
+      	} catch (e) { }   
 		return;
 	}
 	
@@ -511,24 +523,17 @@ var tmp = function () {
 		
 		// look for custom keyboard
 		if (FileSystem.getFileInfo(customKbdPath)) {
-			customKbd=true;
+
 		} else {
-			customKbd=false;
+			this.loadWesternKeys();
+			this.saveCustomKeyboard();			
 		}
 		
 		// load keyboard
 		if (target.settings.CurrentKeyboard=="Custom") {
-			if (customKbd) {
-				this.loadKeyboard(customKbdPath);			
-				target.EVENTS_DIALOG.kbdSelect.setValue("Custom");
-				currentKbd=10;
-			} else {
-				target.settings.CurrentKeyboard="Western";
-				this.loadKeyboard(kbdPath+"western.kbd");
-				target.EVENTS_DIALOG.kbdSelect.setValue("Western");
-				this.saveSettings();
-				currentKbd=1;
-			}
+			this.loadKeyboard(customKbdPath);			
+			target.EVENTS_DIALOG.kbdSelect.setValue("Custom");
+			currentKbd=10;
 		} else if (target.settings.CurrentKeyboard=="Western") {
 			this.loadKeyboard(kbdPath+"western.kbd");			
 			target.EVENTS_DIALOG.kbdSelect.setValue("Western");
@@ -1746,7 +1751,6 @@ var tmp = function () {
 				currentKbd=currentKbd+step;
 				if (currentKbd==4) {
 					currentKbd=10;
-					if (!customKbd) currentKbd=3;
 				} else if (currentKbd==11) {
 					currentKbd=10;
 				} else if (currentKbd==9) {
@@ -1755,17 +1759,9 @@ var tmp = function () {
 					currentKbd=1;
 				}
 				if (currentKbd==10) {
-					// look for custom keyboard
-					if (customKbd) {
-						target.loadKeyboard(customKbdPath);			
-						target.EVENTS_DIALOG.kbdSelect.setValue("Custom");
-						target.settings.CurrentKeyboard="Custom";
-					} else {
-						target.loadKeyboard(kbdPath+"western.kbd");
-						target.EVENTS_DIALOG.kbdSelect.setValue("Western");
-						target.settings.CurrentKeyboard="Western";						
-						currentKbd=1;
-					}
+					target.loadKeyboard(customKbdPath);			
+					target.EVENTS_DIALOG.kbdSelect.setValue("Custom");
+					target.settings.CurrentKeyboard="Custom";
 				} else if (currentKbd==1) {
 					target.loadKeyboard(kbdPath+"western.kbd");			
 					target.EVENTS_DIALOG.kbdSelect.setValue("Western");

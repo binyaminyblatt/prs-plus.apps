@@ -31,3 +31,4 @@ Initial version: 2011-07-14
 2011-09-27 Ben Chenoweth - Code-cleaning; separate changelog.
 2011-09-29 Ben Chenoweth - Expanded event popup and added more keys to keyboard; added two more keyboards and a custom keyboard option.
 2011-10-01 Ben Chenoweth - Fixed events not updating properly; fixes for 950 layout.
+2011-10-01 Ben Chenoweth - Custom keyboard now generated automatically if not found.
