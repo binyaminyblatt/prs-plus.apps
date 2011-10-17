@@ -5,7 +5,7 @@
 //
 // Initial version: 2011-07-14
 // Latest update:
-// 2011-10-01 Ben Chenoweth - Custom keyboard now generated automatically if not found.
+// 2011-10-17 Ben Chenoweth - Today selected automatically on start and on button Today.
 
 var tmp = function () {
 	var L = kbook.autoRunRoot.L;
@@ -447,7 +447,7 @@ var tmp = function () {
 			this.BUTTON_UPP.show(false);
 			this.BUTTON_DWN.show(false);
 		} else {
-			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);			
+			//this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);			
 			this.nonTouch1.show(false);
 			this.nonTouch2.show(false);
 			this.nonTouch3.show(false);
@@ -547,9 +547,47 @@ var tmp = function () {
 			target.EVENTS_DIALOG.kbdSelect.setValue("Georgian");
 			currentKbd=3;
 		}
+		
+		this.selectToday();
+				
 		return;
 	}
 
+	target.selectToday = function() {
+		var daycounter = 0;
+		thisDate = 1;
+		var x = -1;
+		var y = -1;
+		for (var i = 1; i <= 6; i++) {
+			for (var j = 1; j <= 7; j++) {
+				if (weekBeginsWith=="Sun") {
+					daycounter = (thisDate - firstDay)+1;
+				} else {
+					daycounter = (thisDate - firstDay)+2;
+					if (firstDay==1) daycounter -= 7;
+				}
+				if (selectionDate==daycounter) {
+					x=j;
+					y=i;
+					selectionDay=i;
+				}
+				thisDate++;
+			}
+		}
+		thisDate = 1;
+		
+		//place selection square
+		this.gridCursor.changeLayout((x-1)*70+50, 70, uD, (y-1)*70+80, 70, uD);
+
+		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)>0) {
+			// events in selection square
+			this.showevents(selectionDate,monthNum,yearNum,y,x,0);
+		} else {
+			this.eventsText.setValue("");
+		}
+		return;
+	}
+	
 	target.dateChanged = function() {
 		if (monthNum == 0) {
 			monthNum = 12;
@@ -1017,7 +1055,9 @@ var tmp = function () {
 			monthNum=todaysMonth;
 			yearNum=todaysYear;
 			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);			
-			this.dateChanged();			
+			this.dateChanged();
+			selectionDate=todaysDate;
+			this.selectToday();
 			return;
 		}
 		if (n == "PYR") {
