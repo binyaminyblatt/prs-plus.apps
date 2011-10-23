@@ -5,7 +5,7 @@
 //
 // Initial version: 2011-07-14
 // Latest update:
-// 2011-10-17 Ben Chenoweth - Today selected automatically on start and on button Today.
+// 2011-10-23 Ben Chenoweth - Edit Events button now enabled on start and on button Today.
 
 var tmp = function () {
 	var L = kbook.autoRunRoot.L;
@@ -463,7 +463,7 @@ var tmp = function () {
 		}
 		
 		//target.eventsText.enable(true);
-		target.BUTTON_EDT.enable(false);
+		//target.BUTTON_EDT.enable(false);
 		target.BUTTON_UPP.enable(false);
 		upenabled=false;
 		downenabled=false;
@@ -549,7 +549,7 @@ var tmp = function () {
 		}
 		
 		this.selectToday();
-				
+		target.BUTTON_EDT.enable(true);
 		return;
 	}
 
@@ -1058,6 +1058,7 @@ var tmp = function () {
 			this.dateChanged();
 			selectionDate=todaysDate;
 			this.selectToday();
+			target.BUTTON_EDT.enable(true);
 			return;
 		}
 		if (n == "PYR") {
