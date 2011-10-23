@@ -33,3 +33,4 @@ Initial version: 2011-07-14
 2011-10-01 Ben Chenoweth - Fixed events not updating properly; fixes for 950 layout.
 2011-10-01 Ben Chenoweth - Custom keyboard now generated automatically if not found.
 2011-10-17 Ben Chenoweth - Today selected automatically on start and on button Today.
+2011-10-23 Ben Chenoweth - Edit Events button now enabled on start and on button Today.
