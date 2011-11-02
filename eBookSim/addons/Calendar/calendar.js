@@ -5,7 +5,7 @@
 //
 // Initial version: 2011-07-14
 // Latest update:
-// 2011-10-23 Ben Chenoweth - Edit Events button now enabled on start and on button Today.
+// 2011-11-02 Ben Chenoweth - Selected date (not today) used in new event popup.
 
 var tmp = function () {
 	var L = kbook.autoRunRoot.L;
@@ -57,6 +57,8 @@ var tmp = function () {
 	var settingsPath = datPath0 + 'settings.dat';
 	var selectionDate;
 	var selectionDay;
+	var selectionMonth;
+	var selectionYear;
 	var settingsDlgOpen = false;
 	var eventsDlgOpen = false;
 	var weekBeginsWith = "Sun";
@@ -595,7 +597,7 @@ var tmp = function () {
 		}
 		else if (monthNum == 13) {
 			monthNum = 1;
-			yearNum++
+			yearNum++;
 		}
 		
 		this.displayMonth.setValue(wordMonth[monthNum-1]);
@@ -606,6 +608,8 @@ var tmp = function () {
 		numbDays = lastDate.getDate();
 		firstDate = new Date(yearNum, monthNum-1, 1);
 		firstDay = firstDate.getDay() + 1;
+		selectionMonth = monthNum;
+		selectionYear = yearNum;
 
 		// hide events
 		this.eventsText.setValue("");
@@ -1600,8 +1604,8 @@ var tmp = function () {
 					target.EVENTS_DIALOG.eventDay.show(true);
 					if (currentTempEvent==tempEventsNum.length) {
 						// new event
-						eventYear=todaysYear;
-						eventDay=todaysDate;
+						eventYear=selectionYear;
+						eventDay=selectionDate;
 					} else {
 						eventYear=tempEvents[currentTempEvent][3];
 						eventDay=tempEvents[currentTempEvent][2];
@@ -1681,9 +1685,9 @@ var tmp = function () {
 					target.EVENTS_DIALOG.eventDay.show(true);
 					if (currentTempEvent==tempEventsNum.length) {
 						// new event
-						eventYear=todaysYear;
-						eventDay=todaysDate;
-						eventMonth=todaysMonth;
+						eventYear=selectionYear;
+						eventDay=selectionDate;
+						eventMonth=selectionMonth;
 					} else {
 						eventYear=tempEvents[currentTempEvent][3];
 						eventDay=tempEvents[currentTempEvent][2];
