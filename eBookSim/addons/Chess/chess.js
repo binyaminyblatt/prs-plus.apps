@@ -1040,6 +1040,7 @@ var tmp = function () {
 	}
 	
 	target.findNumberOfMoves = function () {
+		flagWhoMoved ^= 8;
 		var iExamX, iExamY, iExamPc;
 		var noOfMoves = 0;
 		var myKing = kings[flagWhoMoved >> 3 ^ 1];
@@ -1069,7 +1070,7 @@ var tmp = function () {
 					iTempX = (iWaySq - 2) % 10;
 					iTempY = Math.floor((iWaySq - 22) / 10);
 					if (this.isValidMove(iExamX, iExamY, iTempX, iTempY, bCheck, pcInCheckColor, false)) {
-						//this.bubble("tracelog","Apparently, this is a valid move.  Piece at X="+iExamX+", Y="+iExamY+", to X="+iTempX+", Y="+iTempY);
+						this.bubble("tracelog","Apparently, this is a valid move.  Piece at X="+iExamX+", Y="+iExamY+", to X="+iTempX+", Y="+iTempY);
 						noOfMoves++;
 						if (noOfMoves>1) break;
 					}
@@ -1077,6 +1078,7 @@ var tmp = function () {
 			}
 		}
 		this.bubble("tracelog","noOfMoves="+noOfMoves);
+		flagWhoMoved ^= 8;
 		return noOfMoves;
 	}
 	
