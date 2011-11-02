@@ -1070,7 +1070,7 @@ var tmp = function () {
 					iTempX = (iWaySq - 2) % 10;
 					iTempY = Math.floor((iWaySq - 22) / 10);
 					if (this.isValidMove(iExamX, iExamY, iTempX, iTempY, bCheck, pcInCheckColor, false)) {
-						this.bubble("tracelog","Apparently, this is a valid move.  Piece at X="+iExamX+", Y="+iExamY+", to X="+iTempX+", Y="+iTempY);
+						//this.bubble("tracelog","Apparently, this is a valid move.  Piece at X="+iExamX+", Y="+iExamY+", to X="+iTempX+", Y="+iTempY);
 						noOfMoves++;
 						if (noOfMoves>1) break;
 					}
