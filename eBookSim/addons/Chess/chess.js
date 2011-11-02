@@ -31,6 +31,7 @@
 //  2011-06-14 Ben Chenoweth - Added more puzzles: total of 90 checkmate in 2 moves; 180 checkmate in 3 moves; 45 checkmate in 4 moves.
 //  2011-08-23 Ben Chenoweth - Changed the way puzzles are loaded.
 //  2011-09-26 Ben Chenoweth - Fixed a problem with valid moves for kings; added a work-around for rare AI failure.
+//  2011-11-02 Ben Chenoweth - Added AI speed-up if there is only one possible move.
 
 var tmp = function () {
 	var sMovesList;
@@ -1038,6 +1039,47 @@ var tmp = function () {
 		return;
 	}
 	
+	target.findNumberOfMoves = function () {
+		var iExamX, iExamY, iExamPc;
+		var noOfMoves = 0;
+		var myKing = kings[flagWhoMoved >> 3 ^ 1];
+		
+		bCheck = this.isThreatened(myKing % 10 - 2, (myKing - myKing % 10) / 10 - 2, flagWhoMoved);
+		var pcInCheckColor = flagWhoMoved ^ 8;
+		for (var iExamSq = 22; iExamSq <= 99; iExamSq++) {
+			// search the board
+			if (iExamSq % 10 < 2) {
+				continue;
+			}
+			//this.bubble("tracelog","iExamSq="+iExamSq);
+			iExamX = (iExamSq - 2) % 10;
+			iExamY = Math.floor((iExamSq - 22) / 10);
+			//iExamX = iExamSq % 10 - 2;
+			//iExamY = (iExamSq - iExamSq % 10) / 10 - 2;
+			iExamPc = etc.aBoard[iExamSq];
+			if ((iExamPc > 0) && ((iExamPc & 8 ^ 8) === flagWhoMoved)) {
+				// found a piece of the side whose king is in check
+				//this.bubble("tracelog","Piece "+iExamPc+" found at="+iExamSq+" of color "+pcInCheckColor);
+				for (var iWaySq = 22; iWaySq <= 99; iWaySq++) {
+					// search the board looking for a valid move that will get them out of check
+					if (iWaySq % 10 < 2) {
+						continue;
+					}
+					//this.bubble("tracelog","iWaySq="+iWaySq);
+					iTempX = (iWaySq - 2) % 10;
+					iTempY = Math.floor((iWaySq - 22) / 10);
+					if (this.isValidMove(iExamX, iExamY, iTempX, iTempY, bCheck, pcInCheckColor, false)) {
+						//this.bubble("tracelog","Apparently, this is a valid move.  Piece at X="+iExamX+", Y="+iExamY+", to X="+iTempX+", Y="+iTempY);
+						noOfMoves++;
+						if (noOfMoves>1) break;
+					}
+				}
+			}
+		}
+		this.bubble("tracelog","noOfMoves="+noOfMoves);
+		return noOfMoves;
+	}
+	
 	target.getPcByParams = function (nParamId, nWhere) {
 		var nPieceId = aParams[nParamId];
 		if ((nPieceId & 7) === 2) {
@@ -1656,7 +1698,7 @@ var tmp = function () {
 	
 	//*************************************making moves
 	target.findmove = function () {
-		var s, e, pn, themove, sb, bs;
+		var s, e, pn, themove, sb, bs, noOfMoves;
 		evaluees = parsees = prunees = 0;
 	
 		if (etc.bBlackSide) {
@@ -1664,8 +1706,17 @@ var tmp = function () {
 		} else {
 			bmove = 0;
 		}
-		//this.bubble("tracelog","Finding a move for "+bmove+", level="+level);
-		themove = this.treeclimber(level, bmove, 0, 120, 120, Al, Bt, ep);
+		
+		//check to see if there is only one possible move available
+		noOfMoves=target.findNumberOfMoves();
+		
+		if (noOfMoves==1) {
+			//this.bubble("tracelog","Finding a move for "+bmove+", level="+1);
+			themove = this.treeclimber(1, bmove, 0, 120, 120, Al, Bt, ep);
+		} else {
+			//this.bubble("tracelog","Finding a move for "+bmove+", level="+level);
+			themove = this.treeclimber(level, bmove, 0, 120, 120, Al, Bt, ep);
+		}
 		pn = themove[0];
 		s = themove[1];
 		e = themove[2];
