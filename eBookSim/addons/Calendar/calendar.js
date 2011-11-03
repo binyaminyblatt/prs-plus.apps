@@ -1,11 +1,11 @@
 //
-// Calendar for Sony Reader
+// Calendar for Sony Reader (600/x50)
 // by Ben Chenoweth
 // (utilises code taken from JavaScript Calendar featured on and available at JavaScript Kit: http://www.javascriptkit.com)
 //
 // Initial version: 2011-07-14
 // Latest update:
-// 2011-11-02 Ben Chenoweth - Selected date (not today) used in new event popup.
+// 2011-11-03 Ben Chenoweth - Fixed floating events not appearing in event popup; fixed easter icon; fixed floating event day info in data file.
 
 var tmp = function () {
 	var L = kbook.autoRunRoot.L;
@@ -398,7 +398,7 @@ var tmp = function () {
 				// no savefile, so push default events
 				events.push(["Y", "1", "1", "1900", "12", L("STR_NEWYEARSDAY")]);
 				events.push(["Y", "2", "14", "1900", "6", L("STR_VALENTINESDAY")]);
-				events.push(["F", "3", "0", "0", "3", L("STR_EASTERSUNDAY")]);
+				events.push(["F", "3", "0", "0", "14", L("STR_EASTERSUNDAY")]);
 				events.push(["Y", "3", "17", "1900", "10", L("STR_STPATRICKSDAY")]);
 				events.push(["F", "11", "4", "5", "11", L("STR_THANKSGIVING")]);
 				events.push(["Y", "12", "25", "1900", "5", L("STR_CHRISTMAS")]);
@@ -1217,7 +1217,7 @@ var tmp = function () {
 			stream = new Stream.File(datPath, 1);
 			stream.writeLine("# General Event-Format is: Type; Month; Day; Year; Icon; Text");
 			stream.writeLine("# Type can be: Y<early, M<onthly, W<eekly, F<loating, BLANK for one-off events");
-			stream.writeLine("# Float-Format: F; Month; Cardinal Occurrence; Day of Week (Sun=0; Monday=1); Icon; Text");
+			stream.writeLine("# Float-Format: F; Month; Cardinal Occurrence; Day of Week (Sun=1; Monday=2); Icon; Text");
 			stream.writeLine("# Special Float-Format: F;3;0;0;Icon;Easter Sunday");
 			stream.writeLine("# Icons: 3=Default, 4=Birthday, 5=Christmas, 6=Two Hearts, 7=Anniversary, 8=Airplane, 9=Car");
 			stream.writeLine("# Icons: 10=St. Patrick's Day, 11=Thanksgiving, 12=New Year's Day, 13=R.I.P., 14=Easter");
@@ -1495,15 +1495,14 @@ var tmp = function () {
 				target.EVENTS_DIALOG.weekDay.show(true);
 				if (tempEvents[currentTempEvent][3]=="0") {
 					target.EVENTS_DIALOG.weekDay.setValue("0");
-				} else 
-				if (tempEvents[currentTempEvent][3]>="1" && tempEvents[currentTempEvent][3]<="6" ) {
-					target.EVENTS_DIALOG.weekDay.setValue(wordDays[currentTempEvent[3]-1]);				
+				} else if (tempEvents[currentTempEvent][3]>="1" && tempEvents[currentTempEvent][3]<="6" ) {			
+					target.EVENTS_DIALOG.weekDay.setValue(wordDays[(tempEvents[currentTempEvent][3])-1]);				
 				}
 				target.EVENTS_DIALOG.cardinalDay.show(true);
 				if (tempEvents[currentTempEvent][2]=="0") {
 					target.EVENTS_DIALOG.cardinalDay.setValue("0");
 				} else if (tempEvents[currentTempEvent][2]>="1" && tempEvents[currentTempEvent][2]<="5" ) {
-					target.EVENTS_DIALOG.weekDay.setValue(cardinals[currentTempEvent[2]-1]);				
+					target.EVENTS_DIALOG.cardinalDay.setValue(cardinals[(tempEvents[currentTempEvent][2])-1]);
 				}
 				target.EVENTS_DIALOG.eventMonth.setValue(tempEvents[currentTempEvent][1]);
 				target.setVariable("event_month",tempEvents[currentTempEvent][1]);
