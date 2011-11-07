@@ -12,6 +12,7 @@
 //	2010-04-25 kartu - Fixed minor syntax glitch: removed trailing comma
 //	2010-04-27 kravitz - Added getFastBookMedia()
 //	2010-08-15 Mark Nord use compile for getSoValue and cloneObj
+//	2011-11-06 Mark Nord Added doBubble()
 
 try {
 	var getInstance = prsp.compile('propName',"var s,v,i;s = propName.split('.');v = s.shift();i = this;while (v) {i = i[v];v = s.shift();}return i;");
@@ -111,6 +112,20 @@ try {
 				book._media = Core.system.getSoValue(book, "media");
 			}
 			return book._media;
+		},
+		doBubble : function(target, cmd, param) {
+			var currentNode, focus;
+			//target.bubble('tracelog','enter doBubble');
+			focus = target.getWindow().focus;
+			//target.bubble('tracelog','focus '+focus)
+			//target.bubble('tracelog',Core.debug.dumpToString(focus,"focus.",2));
+			if (focus) {
+				try {
+					focus.bubble(cmd, param);
+				} catch (e) {
+					log.error("in doBubble, command " + cmd, e);
+				}
+			}
 		}
 	};
 

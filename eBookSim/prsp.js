@@ -184,7 +184,7 @@
 		} catch (e1) {
 			bootLog("FATAL: failed to call bootstrap " + e1); 
 		}
-/*		bootLog(Core.debug.dumpToString(Core,'Core.',2)); 	
+	/*	bootLog(Core.debug.dumpToString(Core,'Core.',2)); 	
 		bootLog(Core.debug.dumpToString(this,'this.',1)); 	*/
 	};
 	try {
