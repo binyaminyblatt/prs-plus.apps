@@ -162,6 +162,7 @@ _Core.system.setSoValue = prsp.setSoValue;
 _Core.system.getSoValue = getSoValue;
 _Core.system.getFastSoValue =  getSoValue(theRoot,'Core.system.getFastSoValue');
 _Core.system.rootObj = getSoValue(theRoot,'Core.system.rootObj');
+_Core.system.doBubble = getSoValue(theRoot,'Core.system.doBubble');
 //target.bubble('tracelog','done system');
 
 _Core.text.trim = getSoValue(theRoot,'Core.text.trim');
