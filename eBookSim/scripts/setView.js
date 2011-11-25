@@ -11,6 +11,7 @@
       	 case "Calc" : {
       					kbook.autoRunRoot._icon = _Core.config.compat.NodeKinds.getIcon("CALC",0);
       					kbook.autoRunRoot.L = _Core.lang.getLocalizer("Calc");
+						kbook.autoRunRoot._title = "Calculator";
       					//this.bubble("tracelog","setURI");
       					this.MAIN.EINK.VIEW.setURI("../addons/Calc/calculator.xml");
       					break;
