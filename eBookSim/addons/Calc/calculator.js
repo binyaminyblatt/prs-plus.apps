@@ -4,7 +4,8 @@
 //	2010-08-23 Mark Nord - Buttons enabled, should work on PRS 600 too
 //	2010-12-05 Mark Nord - translations and custom icon enabled, button-index-computed  device independent
 // 	2011-03-01 kartu - Moved into a function, to allow variable name optimizations
-//	2022-05-20 Mark Nord - fixed input of digits lile 0.0x 
+//	2011-05-20 Mark Nord - fixed input of digits like 0.0x
+//  2011-11-25 Ben Chenoweth - contents of memory cells now saved and loaded
 
 var tmp = function () { 	
 	// GLOBAL VARIABLES
@@ -86,13 +87,16 @@ var tmp = function () {
 		["BUTTON_NOT","BUTTON_LSH","BUTTON_RSH","BUTTON_A","BUTTON_B","BUTTON_C","BUTTON_D","BUTTON_E","BUTTON_F"]
 	];	
 	
-	var getSoValue = kbook.autoRunRoot.getSoValue,
-	    L = kbook.autoRunRoot.L;
+	var getSoValue = kbook.autoRunRoot.getSoValue;
+	var datPath0 = kbook.autoRunRoot.gamesSavePath+'Calc/';		
+	FileSystem.ensureDirectory(datPath0);
+	var datPath = datPath0+'calc.dat';	
+	
 	// END GLOBAL VARIABLES */
 	
 	target.init = function () {
 		/* set translated appTitle and appIcon */
-		this.appTitle.setValue(L("TITLE"));
+		this.appTitle.setValue(kbook.autoRunRoot._title);
 		this.appIcon.u = kbook.autoRunRoot._icon;
 		this.showTime();
 		freshstart();
@@ -106,6 +110,7 @@ var tmp = function () {
 	}
 	
 	target.exitApp = function() {
+		target.saveMemories();
 	    kbook.autoRunRoot.exitIf(kbook.model);
 	};
 	
@@ -475,8 +480,8 @@ var tmp = function () {
 		display = display.substring(display.length-digitsMaximum-1,display.length);
 		target.CalculatorLabel.setValue(display);
 		enter();
-		func ("memclearall"); 
-	
+		//func ("memclearall");
+		target.loadMemories();
 		target.setTrigmeth("deg");
 		target.setNumberBase("dec");
 	
@@ -1019,6 +1024,36 @@ var tmp = function () {
 			angleMeasure = "grad";
 		}
 		equals();
+	}
+	
+	target.loadMemories = function() {
+		// load previous contents of memories (if they exist)
+		try {
+			if (FileSystem.getFileInfo(datPath)) {
+				var stream = new Stream.File(datPath);
+				var tempnum = stream.readLine();
+				target.Meminput1.setValue(tempnum);
+				tempnum = stream.readLine();
+				target.Meminput2.setValue(tempnum);
+				tempnum = stream.readLine();
+				target.Meminput3.setValue(tempnum);
+				stream.close();			
+			} else {
+				func ("memclearall");
+			}
+		}  catch (e) { func ("memclearall"); }
+	}
+	
+	target.saveMemories = function() {
+		// save current contents of memories
+		try {
+			if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
+			stream = new Stream.File(datPath, 1);
+			stream.writeLine(target.Meminput1.getValue());
+			stream.writeLine(target.Meminput2.getValue());
+			stream.writeLine(target.Meminput3.getValue());
+			stream.close();
+		} catch (e) { }
 	}
 };
 tmp();
