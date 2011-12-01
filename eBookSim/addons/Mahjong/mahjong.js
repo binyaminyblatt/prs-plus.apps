@@ -14,6 +14,8 @@
 //  2011-05-28 Ben Chenoweth - Added new layout (BigHole).
 //  2011-07-06 Ben Chenoweth - Added ability to click on congratulations message to make it disappear.
 //  2011-09-11 Ben Chenoweth - Selection now passes to new tile if tile does not complete a pair; numCurrent now correct at start of game.
+//  2011-11-29 Ben Chenoweth - Fixed bug where I, II, III and IV tiles were not being counted in available moves.
+//  2011-11-30 Ben Chenoweth - Fixed bug where I, II, III and IV tiles were not being counted in available moves (second attempt).
 
 var tmp = function () {
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
@@ -137,7 +139,7 @@ var tmp = function () {
 		this.helpText.setValue(getFileContent(this.mahjongroot.concat('MahJong_Help_EN.txt'),'help.txt missing')); 
 		this.helpText.show(false);
 		
-		this.suchDopp();
+		//this.suchDopp();
 		return;		
 	};
 
@@ -181,13 +183,13 @@ var tmp = function () {
 			this['maJ' + 1 * i].changeLayout(-100, uD, uD, 0, uD, uD);
 		}
 		this.restL = this.StoneAll.length;
-		this.suchDopp();
 		for (var i = 0; i < this.StoneAll.length; i++) {
 			var xYz = Math.floor(Math.random() * this.MahjoNrs.length);
 			var xXx = this.MahjoNrs[xYz];
 			this["maJ" + i].u = xXx;
 			this.MahjoNrs.splice(xYz, 1);
 		}
+		this.suchDopp();
 	}
 	target.doMenuF = function () {
 		this.menuKlapp = Math.abs(this.menuKlapp - 1);
@@ -210,7 +212,7 @@ var tmp = function () {
 		var mJ = this.mahJong,
 			xyLg, xG, yG, aeh, uD = undefined;
 		var leeRand = (mJ.length > 0) * 1 + '' + this.mark;
-		this.bubble("tracelog","this.leeRand="+leeRand);
+		//this.bubble("tracelog","this.leeRand="+leeRand);
 		xG = this.L0 + 8 + pX * this.curDX;
 		yG = this.T0 + 6 + pY * this.curDY;
 		switch (leeRand) {
@@ -298,6 +300,13 @@ var tmp = function () {
 		for (var m = 0; m < such.length; m++) {
 			if (such[m] == 'F') aeh -= 1;
 		}
+		// look for I, II, III and IV
+		var wilds = 0;
+		for (var m = 0; m < 4; m++) {
+			if (such[m] == 'F') wilds++;
+		}
+		if  ((wilds==2) || (wilds==3)) aeh += 1;
+		if (wilds==4) aeh += 2;
 		this.currentNum.setValue('Rest ' + this.restL + '/' + aeh);
 		//this.bubble("tracelog","this.restL="+this.restL);
 		// check for win
@@ -510,7 +519,7 @@ var tmp = function () {
 		var id, n, found;
 		id = getSoValue(sender, "id");
 		n = id.substring(3, 6);
-		this.bubble("tracelog","n="+n);
+		//this.bubble("tracelog","n="+n);
 		found = false;
 		loop1: for (var i = 0; i < 8; i++) {
 			for (var j = 0; j < 9; j++) {
