@@ -38,7 +38,8 @@ var tmp = function () {
 		
 		// hide congratulations sprite
 		this.congratulations.changeLayout(0,0,uD,0,0,uD);
-		
+		this.enable(true);		
+
 		return;
 	}
 	

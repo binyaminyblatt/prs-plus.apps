@@ -138,7 +138,8 @@ var tmp = function () {
 	//	this.touchHelp.changeLayout(0, 0, uD, 0, 0, uD);
 		this.helpText.setValue(getFileContent(this.mahjongroot.concat('MahJong_Help_EN.txt'),'help.txt missing')); 
 		this.helpText.show(false);
-		
+		this.enable(true);		
+
 		//this.suchDopp();
 		return;		
 	};

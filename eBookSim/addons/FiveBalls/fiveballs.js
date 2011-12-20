@@ -88,6 +88,8 @@ var tmp = function () {
 		this.drawSumNum();
 		this.summe = 0;
 		this.showScore.setValue("Score: 0");
+
+		this.enable(true);
 	};
 	
 	target.removeB = function () {

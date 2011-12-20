@@ -89,6 +89,7 @@ var tmp = function () {
 		//DICTIONARY FUNCTIONS
 		target.init = function () {
 			this.changeResultsSize(kbook.autoRunRoot.resultSize);
+			this.enable(true);
 		};
 	
 		target.exitApp = function () {

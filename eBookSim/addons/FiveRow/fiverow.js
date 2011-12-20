@@ -175,6 +175,7 @@ var tmp = function () {
 			col10m[a] = [];
 		}
 		this.startPlay();
+		this.enable(true);
 	}
 	
 	target.placeO = function () {

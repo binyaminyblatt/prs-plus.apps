@@ -203,6 +203,8 @@ var tmp = function () {
 		planes[17]=[this.coord(0,0,0),this.coord(1,1,0),this.coord(2,2,0),this.coord(3,3,0),this.coord(0,0,1),this.coord(1,1,1),this.coord(2,2,1),this.coord(3,3,1),this.coord(0,0,2),this.coord(1,1,2),this.coord(2,2,2),this.coord(3,3,2),this.coord(0,0,3),this.coord(1,1,3),this.coord(2,2,3),this.coord(3,3,3)]
 		numplanes=18;
 		this.startPlay();
+		
+		this.enable(true);
 		return;
 	}
 
