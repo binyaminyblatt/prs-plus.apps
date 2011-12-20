@@ -192,6 +192,8 @@ var tmp = function () {
 		this.nonTouch.subMenu1.show(false);
 		this.nonTouch.subMenu2.show(false);
 		this.bckGround.show(false);
+		
+		this.enable(true);
 	};
 	
 	var showSubMenu = function (x) {

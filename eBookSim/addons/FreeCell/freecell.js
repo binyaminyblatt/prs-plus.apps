@@ -198,6 +198,7 @@ target.init = function () {
 		this.instr4.show(false);
 		this.instr5.show(false);
 	}
+	this.enable(true);
 	return;  
 }
 
