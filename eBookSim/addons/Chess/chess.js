@@ -17,21 +17,22 @@
 //		1-level undo implemented (OPTIONS on touch, MENU on non-touch).  Some slight changes made to labels (touch version).
 //	2011-02-28 Ben Chenoweth - Changed buttons for non-touch (since 300 does not have NEXT and PREV buttons)
 //	2011-03-01 kartu - Reformatted
-// 		Moved into a function, to allow variable name optimizations
-//  2011-03-20 Ben Chenoweth - Moved all labels out of status bar.
-//  2011-03-23 Ben Chenoweth - Added icon; implemented 10-depth undo.
-//  2011-03-25 Ben Chenoweth - Skins changed over to use common AppAssests.
-//  2011-03-27 Ben Chenoweth - Fixed labels for PRS-950.
-//  2011-04-03 Ben Chenoweth - Moved all labels around slightly; switched Prev and Next function for Touch.
-//  2011-06-07 Ben Chenoweth - Added Save/Load; 'in check' message.
-//  2011-06-08 Ben Chenoweth - Fixed a checking for checkmate bug; changed the touch labels slightly.
-//  2011-06-10 Ben Chenoweth - Added success/fail message on save; further checking for checkmate/stalemate fixes.
-//  2011-06-11 Ben Chenoweth - Added pop-up puzzle panel! 30 checkmate in 2 moves; 30 checkmate in 3 moves; 15 checkmate in 4 moves.
-//  2011-06-12 Ben Chenoweth - Added (white) move counter during puzzles.
-//  2011-06-14 Ben Chenoweth - Added more puzzles: total of 90 checkmate in 2 moves; 180 checkmate in 3 moves; 45 checkmate in 4 moves.
-//  2011-08-23 Ben Chenoweth - Changed the way puzzles are loaded.
-//  2011-09-26 Ben Chenoweth - Fixed a problem with valid moves for kings; added a work-around for rare AI failure.
-//  2011-11-02 Ben Chenoweth - Added AI speed-up if there is only one possible move.
+//		Moved into a function, to allow variable name optimizations
+//	2011-03-20 Ben Chenoweth - Moved all labels out of status bar.
+//	2011-03-23 Ben Chenoweth - Added icon; implemented 10-depth undo.
+//	2011-03-25 Ben Chenoweth - Skins changed over to use common AppAssests.
+//	2011-03-27 Ben Chenoweth - Fixed labels for PRS-950.
+//	2011-04-03 Ben Chenoweth - Moved all labels around slightly; switched Prev and Next function for Touch.
+//	2011-06-07 Ben Chenoweth - Added Save/Load; 'in check' message.
+//	2011-06-08 Ben Chenoweth - Fixed a checking for checkmate bug; changed the touch labels slightly.
+//	2011-06-10 Ben Chenoweth - Added success/fail message on save; further checking for checkmate/stalemate fixes.
+//	2011-06-11 Ben Chenoweth - Added pop-up puzzle panel! 30 checkmate in 2 moves; 30 checkmate in 3 moves; 15 checkmate in 4 moves.
+//	2011-06-12 Ben Chenoweth - Added (white) move counter during puzzles.
+//	2011-06-14 Ben Chenoweth - Added more puzzles: total of 90 checkmate in 2 moves; 180 checkmate in 3 moves; 45 checkmate in 4 moves.
+//	2011-08-23 Ben Chenoweth - Changed the way puzzles are loaded.
+//	2011-09-26 Ben Chenoweth - Fixed a problem with valid moves for kings; added a work-around for rare AI failure.
+//	2011-11-02 Ben Chenoweth - Added AI speed-up if there is only one possible move.
+//	2011-12-25 Ben Chenoweth - Added another work-around for rare AI failure.
 
 var tmp = function () {
 	var sMovesList;
@@ -55,9 +56,6 @@ var tmp = function () {
 	var aParams = [5, 3, 4, 6, 2, 4, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 9, 9, 9, 9, 9, 9, 9, 9, 13, 11, 12, 14, 10, 12, 11, 13];
 	var cursorX = 0;
 	var cursorY = 520;
-	
-	/* Core workaround 
-	var newEvent = prsp.compile("param", "return new Event(param)"); */
 	var newEvent;
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
 	var isNT = kbook.autoRunRoot.hasNumericButtons;
@@ -102,6 +100,7 @@ var tmp = function () {
 	var level = 2; // "Medium"
 	var automode = true; // reader controls the black pieces
 	var oldlevel;
+	var tempBoard = [];
 	
 	// Undo
 	var undoboard;
@@ -375,7 +374,7 @@ var tmp = function () {
 				etc.bBlackSide = !etc.bBlackSide;
 				flagWhoMoved ^= 8;
 				this.messageStatus.setValue("Black's turn");
-	
+		
 				// update AI board
 				z = 0;
 				for (y = 20; y < 100; y += 10) {
@@ -401,7 +400,7 @@ var tmp = function () {
 					}
 				}
 				//this.bubble("tracelog","kp="+kp);
-				//this.bubble("tracelog","kings="+kings);			
+				//this.bubble("tracelog","kings="+kings);		
 				this.prepare(); // get stuff ready for next move
 				moveno++;
 				if (doingPuzzle) {
@@ -413,6 +412,10 @@ var tmp = function () {
 				if (automode) {
 					FskUI.Window.update.call(kbook.model.container.getWindow());
 					oldlevel=level;
+					// Save board in case AI fails
+					for (y = 0; y < 110; y++) {
+						tempBoard[y] = etc.aBoard[y];
+					}
 					this.doSize();
 				}
 			}
@@ -530,7 +533,6 @@ var tmp = function () {
 	}
 	
 	target.squareFocus = function (nPieceId, bMakeActive) {
-		//var oSelCell = etc.bBlackSide ? ((nPieceId - nPieceId % 10) / 10 - 1 << 3) - nPieceId % 10 : (9 - (nPieceId - nPieceId % 10) / 10 << 3) - 1 + nPieceId % 10;
 		var x, y;
 		//this.bubble("tracelog","bMakeActive="+bMakeActive);
 		if (etc.bBlackSide) {
@@ -983,6 +985,7 @@ var tmp = function () {
 		var myKing = kings[flagWhoMoved >> 3 ^ 1];
 		
 		bCheck = this.isThreatened(myKing % 10 - 2, (myKing - myKing % 10) / 10 - 2, flagWhoMoved);
+		//this.bubble("tracelog","getInCheckPieces: bCheck="+bCheck+", flagWhoMoved="+flagWhoMoved);
 		if (bCheck) {
 			if (flagWhoMoved==0) {
 				this.checkStatus.setValue("White king is in check!");
@@ -1077,7 +1080,7 @@ var tmp = function () {
 				}
 			}
 		}
-		this.bubble("tracelog","noOfMoves="+noOfMoves);
+		//this.bubble("tracelog","noOfMoves="+noOfMoves);
 		flagWhoMoved ^= 8;
 		return noOfMoves;
 	}
@@ -1205,18 +1208,6 @@ var tmp = function () {
 					this.messageStatus.setValue("White's turn");
 				}
 				moveno = stream.readLine();
-				
-				/*if (isPuzzle) {
-					// load extra information
-					tempstring = stream.readLine(); //blank line
-					var puzzleName = stream.readLine();
-					var puzzleSource = stream.readLine();
-					this.puzzleName.setValue(puzzleName);
-					this.puzzleSource.setValue(puzzleSource);
-					puzzleMoves=0;
-					doingPuzzle = true;
-					this.puzzleMoves.setValue(puzzleMoves);
-				} else {*/
 				this.puzzleName.setValue("");
 				this.puzzleSource.setValue("");
 				this.puzzleMoves.setValue("");
@@ -1509,11 +1500,16 @@ var tmp = function () {
 	}
 	
 	target.doSize = function () {
-		var x, y, z, newy;
+		var x, y, z, newy, checkAI = false;
 		if (!bGameNotOver) {
 			return;
 		}
-
+		
+		// check for check before findmove
+		if (bCheck) {
+			checkAI=true;
+		}
+			
 		// call AI routine to calculate move for whichever player is currently supposed to be making a move
 		if (this.findmove()) {
 			// update aBoard
@@ -1540,29 +1536,81 @@ var tmp = function () {
 					if (z == 18) kings[0] = newy + x + 1;
 				}
 			}
-			this.writePieces();
-			this.updateUndo();
-			level=oldlevel;
-
-			// check for checkmate / stalemate
+			
+			// do a special check for check
 			this.getInCheckPieces();
-			if (bGameNotOver) {
+			if ((bCheck) && (checkAI) && (bGameNotOver)) {
+				// AI failed so reverse move and try again at lesser level
+				for (y = 0; y < 110; y++) {
+					etc.aBoard[y] = tempBoard[y];
+				}
+				// Revert AI board
+				z = 0;
+				for (y = 20; y < 100; y += 10) {
+					for (x = 1; x < 9; x++) {
+						z = etc.aBoard[y + x + 1];
+						if (z == 25) z = 1;
+						if (z == 29) z = 2;
+						if (z == 27) z = 3;
+						if (z == 28) z = 4;
+						if (z == 30) z = 5;
+						if (z == 26) z = 6;
+						if (z == 17) z = 9;
+						if (z == 21) z = 10;
+						if (z == 19) z = 11;
+						if (z == 20) z = 12;
+						if (z == 22) z = 13;
+						if (z == 18) z = 14;
+						newy = 110 - y;
+						board[newy + x] = z;
+						// update the position of the kings in the special king array
+						if (z == 6) kp[0] = newy + x;
+						if (z == 14) kp[1] = newy + x;
+					}
+				}
 				flagWhoMoved ^= 8;
 				etc.bBlackSide = !etc.bBlackSide;
-				this.getInCheckPieces();
-				flagWhoMoved ^= 8;
-				etc.bBlackSide = !etc.bBlackSide;
+				this.prepare(); // get stuff ready for next move
+				// try to find move at lesser level
+				level--;
+				if (level==0) {
+					level=oldlevel;
+					// output AI failure message
+					this.checkStatus.setValue("AI failed. Sorry!");
+					return;
+				} else {
+					this.prepare();
+					this.doSize();
+					level=oldlevel;
+					return;
+				}
+			} else {
+				// AI succeeded
+				this.writePieces();
+				this.updateUndo();
+				level=oldlevel;
+
+				// check for checkmate / stalemate
+				//this.getInCheckPieces();
+				if (bGameNotOver) {
+					flagWhoMoved ^= 8;
+					etc.bBlackSide = !etc.bBlackSide;
+					this.getInCheckPieces();
+					flagWhoMoved ^= 8;
+					etc.bBlackSide = !etc.bBlackSide;
+				}
+		
+				// black needs to do an automove if game not over and in automode
+				if ((bGameNotOver) && (automode) && (etc.bBlackSide)) {
+					FskUI.Window.update.call(kbook.model.container.getWindow());
+					oldlevel=level;
+					// Save board in case AI fails
+					for (y = 0; y < 110; y++) {
+						tempBoard[y] = etc.aBoard[y];
+					}
+					this.doSize();
+				}
 			}
-	
-			// black needs to do an automove if game not over and in automode
-			if ((bGameNotOver) && (automode) && (etc.bBlackSide)) {
-				FskUI.Window.update.call(kbook.model.container.getWindow());
-				oldlevel=level;
-				this.doSize();
-			}
-	
-			//this.bubble("tracelog","kp="+kp);
-			//this.bubble("tracelog","kings="+kings);
 		} else {
 			// couldn't find a move, so check for checkmate / stalemate
 			this.getInCheckPieces();
@@ -1594,7 +1642,7 @@ var tmp = function () {
 	
 	// AI functions
 	target.treeclimber = function (count, bm, sc, s, e, alpha, beta, EP) {
-		//this.bubble("tracelog","Entering treeclimber... count="+count+", bm="+bm+", sc="+sc+", s="+s+", e="+e+", alpha="+alpha+", beta="+beta+", EP="+EP);
+		//this.bubble("tracelog","Entering treeclimber: count="+count+", bm="+bm+", sc="+sc+", s="+s+", e="+e+", alpha="+alpha+", beta="+beta+", EP="+EP);
 		var z = -1;
 		sc = -sc;
 		var nbm = 8 - bm;
@@ -1694,7 +1742,7 @@ var tmp = function () {
 		board[e] = E;
 		pieces[nbm].length--;
 	
-		//this.bubble("tracelog","Leaving treeclimber...");
+		//this.bubble("tracelog","Leaving treeclimber: b="+b+", bs="+bs+", be="+be);
 		return [b, bs, be];
 	}
 	
@@ -1723,22 +1771,7 @@ var tmp = function () {
 		s = themove[1];
 		e = themove[2];
 	
-		//this.bubble("tracelog","pn="+pn+", s="+s+", e="+e);
-	
-	/*    //testing this here
-	    var test=0;
-	    var p=this.parse(bmove,ep,0);  
-	    for (z=0;z<p.length;z++){
-		var t=p[z];
-		test= test || (s==t[1] && e==t[2]);
-	    }
-	    if (!test) {
-		going=0;
-		debug ('no such move in findmove!',p,'\ns e',s,e);
-	    }
-	    //end test
-	    */
-	
+		//this.bubble("tracelog","FOUND A MOVE: pn="+pn+", s="+s+", e="+e);
 		return this.move(s, e, 0, pn);
 	}
 	
@@ -1771,10 +1804,6 @@ var tmp = function () {
 		// now see whether in check after this move, by getting the best reply.  
 		board[e] = S;
 		board[s] = 0;
-		/*p = pieces[bmove];
-		for (z = 0; z < p.length; z++) {
-			if (p[z][1] == s) p[z][1] = e;
-		}*/
 	
 		themove = this.treeclimber(0, 8 - bmove, 0, 120, 120, Al, Bt, ep);
 		//this.bubble("tracelog","got this far: themove="+themove);
@@ -1790,40 +1819,11 @@ var tmp = function () {
 	
 		//this.bubble("tracelog","Move: s="+s+", e="+e+", score="+score);
 	
-		// now see if it is check and/or mate
-		// but first move the piece
-	
-		//now assume null opposition move, to see if putting in check
-		//note passing s,e to treeclimber instead of shifiting it would not
-		//work, because the move gets appended to the opponent of the treeclimbing one.
-	
 		p = pieces[bmove];
 		for (z = 0; z < p.length; z++) {
 			if (p[z][1] == s) p[z][1] = e;
 		}
-	
-	/* the following checks have been skipped
-	    themove=this.treeclimber(0,bmove,0,120,120,Al,Bt,ep);
-	    if (themove[0]>400){
-			//this.bubble("tracelog","check");
-			ch=1;
-	    }
-	    //that's check. But if it is still check after opposition move
-	    // then it's checkmate.
-	    // and if it isn't check before opposition's best move, it's stalemate.
-	    if(this.treeclimber(1,8-bmove,0,120,120,Al,Bt,ep)[0]<-400){
-			going=0;
-			if(ch==1){
-				var sWinner = etc.bBlackSide ? "Black" : "White";
-				this.messageStatus.setValue("Checkmate! "+sWinner+" wins.");
-			}else{
-				this.messageStatus.setValue("Stalemate!");
-			}
-			bGameNotOver = false;
-	    }
-		*/
-	
-		//finished those checks, put board back in place.
+
 		board[s] = S;
 		board[e] = E;
 	
@@ -1896,16 +1896,6 @@ var tmp = function () {
 		}
 		//this.bubble("tracelog","White pieces="+pieces[0]);
 		//this.bubble("tracelog","Black pieces="+pieces[8]);
-	
-		//themove=this.treeclimber(0,0,0,120,120,Al,Bt,ep);
-		//if (themove[0]>400){
-		//	//this.bubble("tracelog","black in check");
-		//}
-	
-		//themove=this.treeclimber(0,8,0,120,120,Al,Bt,ep);
-		//if (themove[0]>400){
-		//	//this.bubble("tracelog","white in check");
-		//}
 		return;
 	}
 	
