@@ -33,6 +33,7 @@
 //	2011-09-26 Ben Chenoweth - Fixed a problem with valid moves for kings; added a work-around for rare AI failure.
 //	2011-11-02 Ben Chenoweth - Added AI speed-up if there is only one possible move.
 //	2011-12-25 Ben Chenoweth - Added another work-around for rare AI failure.
+//	2011-12-26 Ben Chenoweth - Fix to prevent castling after king moves (not compatible with undo)
 
 var tmp = function () {
 	var sMovesList;
@@ -51,6 +52,10 @@ var tmp = function () {
 	};
 	var fourBtsLastPc;
 	var flagWhoMoved;
+	var bHasMoved = false;
+	var wHasMoved = false;
+	var wOldKing = 96;
+	var bOldKing = 26;
 	var nFrstFocus;
 	var nScndFocus;
 	var aParams = [5, 3, 4, 6, 2, 4, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 9, 9, 9, 9, 9, 9, 9, 9, 13, 11, 12, 14, 10, 12, 11, 13];
@@ -99,7 +104,7 @@ var tmp = function () {
 	var dirs = [10, -10];
 	var level = 2; // "Medium"
 	var automode = true; // reader controls the black pieces
-	var oldlevel;
+	var oldlevel = level;
 	var tempBoard = [];
 	
 	// Undo
@@ -207,11 +212,11 @@ var tmp = function () {
 			}
 		}
 		board[120] = 0;
-		this.prepare();
 	
 		// initiate new game
 		this.resetBoard();
 		this.writePieces();
+		this.prepare();
 		
 		// set up undo arrays
 		undodepth=11; // this allows for 10 undos
@@ -230,6 +235,10 @@ var tmp = function () {
 		iParamId = 0;
 		nFrstFocus = fourBtsLastPc = lastStart = lastEnd = 0;
 		flagWhoMoved = 8;
+		wHasMoved = false;
+		bHasMoved = false;
+		wOldKing = 96;
+		bOldKing = 26;
 	
 		// place all pieces in their starting positions (located in the first 32 items of the aParams array)
 		for (iPosition = 0; iPosition < 120; iPosition++) {
@@ -335,6 +344,9 @@ var tmp = function () {
 				// need to handle (white) castling
 				nPiece = etc.aBoard[nSquareId];
 				nPieceType = nPiece & 7;
+				if (nPieceType == 2) {
+					wHasMoved = true;
+				}
 				nDiffX = destx - x;
 				nDiffY = desty - y;
 				xRook = 30 - nDiffX >> 2 & 7;
@@ -452,6 +464,9 @@ var tmp = function () {
 				// need to handle (black) castling
 				nPiece = etc.aBoard[nSquareId];
 				nPieceType = nPiece & 7;
+				if (nPieceType == 2) {
+					bHasMoved = true;
+				}
 				nDiffX = destx - x;
 				nDiffY = desty - y;
 				xRook = 30 - nDiffX >> 2 & 7;
@@ -558,7 +573,7 @@ var tmp = function () {
 	}
 	
 	target.isValidMove = function (nPosX, nPosY, nTargetX, nTargetY, inCheck, colorPcInCheck, firstMove) {
-		var startSq, nPiece, endSq, nTarget, nPieceType, flagPcColor, flagTgColor, nWay, nDiffX, nDiffY;
+		var startSq, nPiece, endSq, nTarget, nPieceType, flagPcColor, flagTgColor, pawnHasMoved, nWay, nDiffX, nDiffY;
 		//this.bubble("tracelog","isValidMove?");
 		startSq = nPosY * 10 + nPosX + 22;
 		nPiece = etc.aBoard[startSq];
@@ -571,8 +586,13 @@ var tmp = function () {
 		nPieceType = nPiece & 7;
 		flagPcColor = nPiece & 8;
 		//this.bubble("tracelog","startSq="+startSq+", nPiece="+nPiece+", nPieceType="+nPieceType+", flagPcColor="+flagPcColor);
-		bHasMoved = Boolean(nPiece & 16 ^ 16);
+		if (flagPcColor === 8) {
+			kingHasMoved = wHasMoved;
+		} else {
+			kingHasMoved = bHasMoved;
+		}
 		flagTgColor = nTarget & 8;
+		pawnHasMoved = Boolean(nPiece & 16 ^ 16);
 		//this.bubble("tracelog","endSq="+endSq+", nTarget="+nTarget+", flagTgColor="+flagTgColor);
 		nWay = 4 - flagPcColor >> 2;
 		nDiffX = nTargetX - nPosX;
@@ -594,7 +614,7 @@ var tmp = function () {
 					return (false);
 				}
 				if (nTargetY === nPosY + (2 * nWay)) {
-					if (bHasMoved) {
+					if (pawnHasMoved) {
 						//this.bubble("tracelog","Invalid move for pawn");
 						return (false);
 					}
@@ -633,7 +653,7 @@ var tmp = function () {
 					//this.bubble("tracelog","Invalid move for king");
 					return (false);
 				}
-			} else if (ourRook = etc.lookAt(30 - nDiffX >> 2 & 7, nTargetY), (nDiffX + 2 | 4) === 4 && nDiffY === 0 && !bCheck && !bHasMoved && ourRook > 0 && Boolean(ourRook & 16)) { // castling
+			} else if (ourRook = etc.lookAt(30 - nDiffX >> 2 & 7, nTargetY), (nDiffX + 2 | 4) === 4 && nDiffY === 0 && !bCheck && !kingHasMoved && ourRook > 0 && Boolean(ourRook & 16)) { // castling
 				for (var passX = nDiffX * 3 + 14 >> 2; passX < nDiffX * 3 + 22 >> 2; passX++) {
 					if (etc.lookAt(passX, nTargetY) > 0 || this.isThreatened(passX, nTargetY, nTargetY / 7 << 3 ^ 1)) {
 						//this.bubble("tracelog","Invalid move for king");
@@ -1532,8 +1552,18 @@ var tmp = function () {
 					newy = 110 - y;
 					etc.aBoard[newy + x + 1] = z;
 					// update the position of the kings in the special king array
-					if (z == 26) kings[1] = newy + x + 1;
-					if (z == 18) kings[0] = newy + x + 1;
+					if (z == 26) {
+						kings[1] = newy + x + 1;
+						if (kings[1] != wOldKing) {
+							wHasMoved = true;
+						}
+					}
+					if (z == 18) {
+						kings[0] = newy + x + 1;
+						if (kings[0] != bOldKing) {
+							bHasMoved = true;
+						}
+					}
 				}
 			}
 			
@@ -1602,8 +1632,8 @@ var tmp = function () {
 		
 				// black needs to do an automove if game not over and in automode
 				if ((bGameNotOver) && (automode) && (etc.bBlackSide)) {
-					FskUI.Window.update.call(kbook.model.container.getWindow());
 					oldlevel=level;
+					FskUI.Window.update.call(kbook.model.container.getWindow());
 					// Save board in case AI fails
 					for (y = 0; y < 110; y++) {
 						tempBoard[y] = etc.aBoard[y];
