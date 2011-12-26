@@ -33,7 +33,8 @@
 //	2011-09-26 Ben Chenoweth - Fixed a problem with valid moves for kings; added a work-around for rare AI failure.
 //	2011-11-02 Ben Chenoweth - Added AI speed-up if there is only one possible move.
 //	2011-12-25 Ben Chenoweth - Added another work-around for rare AI failure.
-//	2011-12-26 Ben Chenoweth - Fix to prevent castling after king moves (not compatible with undo)
+//	2011-12-26 Ben Chenoweth - Fix to prevent castling after king moves (not compatible with undo).
+//	2011-12-26 Ben Chenoweth - Fix to prevent castling through threatened square.
 
 var tmp = function () {
 	var sMovesList;
@@ -655,7 +656,7 @@ var tmp = function () {
 				}
 			} else if (ourRook = etc.lookAt(30 - nDiffX >> 2 & 7, nTargetY), (nDiffX + 2 | 4) === 4 && nDiffY === 0 && !bCheck && !kingHasMoved && ourRook > 0 && Boolean(ourRook & 16)) { // castling
 				for (var passX = nDiffX * 3 + 14 >> 2; passX < nDiffX * 3 + 22 >> 2; passX++) {
-					if (etc.lookAt(passX, nTargetY) > 0 || this.isThreatened(passX, nTargetY, nTargetY / 7 << 3 ^ 1)) {
+					if (etc.lookAt(passX, nTargetY) > 0 || this.isThreatened(passX, nTargetY, flagTgColor)) {
 						//this.bubble("tracelog","Invalid move for king");
 						return (false);
 					}
