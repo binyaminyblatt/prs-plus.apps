@@ -35,6 +35,7 @@
 //	2011-12-25 Ben Chenoweth - Added another work-around for rare AI failure.
 //	2011-12-26 Ben Chenoweth - Fix to prevent castling after king moves (not compatible with undo).
 //	2011-12-26 Ben Chenoweth - Fix to prevent castling through threatened square.
+//	2011-12-27 Ben Chenoweth - Fixed another AI bug when only one move possible.
 
 var tmp = function () {
 	var sMovesList;
@@ -1068,6 +1069,7 @@ var tmp = function () {
 		var iExamX, iExamY, iExamPc;
 		var noOfMoves = 0;
 		var myKing = kings[flagWhoMoved >> 3 ^ 1];
+		var foundmove = [];
 		
 		bCheck = this.isThreatened(myKing % 10 - 2, (myKing - myKing % 10) / 10 - 2, flagWhoMoved);
 		var pcInCheckColor = flagWhoMoved ^ 8;
@@ -1096,6 +1098,7 @@ var tmp = function () {
 					if (this.isValidMove(iExamX, iExamY, iTempX, iTempY, bCheck, pcInCheckColor, false)) {
 						//this.bubble("tracelog","Apparently, this is a valid move.  Piece at X="+iExamX+", Y="+iExamY+", to X="+iTempX+", Y="+iTempY);
 						noOfMoves++;
+						foundmove = [noOfMoves, iExamX, iExamY, iTempX, iTempY];
 						if (noOfMoves>1) break;
 					}
 				}
@@ -1103,7 +1106,7 @@ var tmp = function () {
 		}
 		//this.bubble("tracelog","noOfMoves="+noOfMoves);
 		flagWhoMoved ^= 8;
-		return noOfMoves;
+		return foundmove;
 	}
 	
 	target.getPcByParams = function (nParamId, nWhere) {
@@ -1791,16 +1794,18 @@ var tmp = function () {
 		//check to see if there is only one possible move available
 		noOfMoves=target.findNumberOfMoves();
 		
-		if (noOfMoves==1) {
-			//this.bubble("tracelog","Finding a move for "+bmove+", level="+1);
-			themove = this.treeclimber(1, bmove, 0, 120, 120, Al, Bt, ep);
+		if (noOfMoves[0]==1) {
+			//this.bubble("tracelog","Only one move for "+bmove);
+			pn = 0; //points don't matter
+			s = (7 - noOfMoves[2])*10 + noOfMoves[1] + 21;
+			e = (7 - noOfMoves[4])*10 + noOfMoves[3] + 21;
 		} else {
 			//this.bubble("tracelog","Finding a move for "+bmove+", level="+level);
 			themove = this.treeclimber(level, bmove, 0, 120, 120, Al, Bt, ep);
+			pn = themove[0];
+			s = themove[1];
+			e = themove[2];
 		}
-		pn = themove[0];
-		s = themove[1];
-		e = themove[2];
 	
 		//this.bubble("tracelog","FOUND A MOVE: pn="+pn+", s="+s+", e="+e);
 		return this.move(s, e, 0, pn);
