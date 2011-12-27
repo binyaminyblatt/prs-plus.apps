@@ -6,16 +6,17 @@
 //	2010-12-14 Ben Chenoweth - Removed some unnecessary graphics from the top of the screen.
 //	2010-12-15 Ben Chenoweth - Fixed the menu bug in the non-Touch, and added two buttons to the Touch version: "New layout" and "Easy/Normal"
 //	2011-02-10 Ben Chenoweth - Digit "0" quits (non-Touch); added Quit button (Touch)
-//  2011-03-01 kartu - Moved into a function, to allow variable name optimizations
-//  2011-03-20 Beb Chenoweth - Moved all labels out of status bar; moved this changelog from startup script into main script
-//  2011-03-22 Mark Nord - <text> based Help
-//  2011-03-26 Ben Chenoweth - Added congratulations upon completion
-//  2011-05-15 Ben Chenoweth - Added remember last layout; reordered existing layouts and added new layout (Aztec); hid test layout.
-//  2011-05-28 Ben Chenoweth - Added new layout (BigHole).
-//  2011-07-06 Ben Chenoweth - Added ability to click on congratulations message to make it disappear.
-//  2011-09-11 Ben Chenoweth - Selection now passes to new tile if tile does not complete a pair; numCurrent now correct at start of game.
-//  2011-11-29 Ben Chenoweth - Fixed bug where I, II, III and IV tiles were not being counted in available moves.
-//  2011-11-30 Ben Chenoweth - Fixed bug where I, II, III and IV tiles were not being counted in available moves (second attempt).
+//	2011-03-01 kartu - Moved into a function, to allow variable name optimizations
+//	2011-03-20 Beb Chenoweth - Moved all labels out of status bar; moved this changelog from startup script into main script
+//	2011-03-22 Mark Nord - <text> based Help
+//	2011-03-26 Ben Chenoweth - Added congratulations upon completion
+//	2011-05-15 Ben Chenoweth - Added remember last layout; reordered existing layouts and added new layout (Aztec); hid test layout.
+//	2011-05-28 Ben Chenoweth - Added new layout (BigHole).
+//	2011-07-06 Ben Chenoweth - Added ability to click on congratulations message to make it disappear.
+//	2011-09-11 Ben Chenoweth - Selection now passes to new tile if tile does not complete a pair; numCurrent now correct at start of game.
+//	2011-11-29 Ben Chenoweth - Fixed bug where I, II, III and IV tiles were not being counted in available moves.
+//	2011-11-30 Ben Chenoweth - Fixed bug where I, II, III and IV tiles were not being counted in available moves (second attempt).
+//	2011-12-27 Ben Chenoweth - Fixed Aztec layout.
 
 var tmp = function () {
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
@@ -60,7 +61,7 @@ var tmp = function () {
 	target.CastleLuft = [30, 34, 34, 38, 40, 40, 40, 48, 48, 48, 50, 54, 54, 58];
 	target.Castle_Plan = [10, 5, 20, 3, 30, 3, 40, 3, 50, 3, 60, 3, 70, 5, 11, 3, 71, 3, 12, 3, 72, 3, 13, 3, 33, 4, 43, 3, 53, 4, 73, 3, 14, 4, 34, 2, 54, 2, 74, 4, 15, 3, 35, 4, 45, 3, 55, 4, 75, 3, 16, 3, 76, 3, 17, 3, 77, 3, 18, 5, 28, 3, 38, 3, 48, 3, 58, 3, 68, 3, 78, 5];
 	target.AztecLuft = [23, 43, 34, 25, 45];
-	target.Aztec_Plan = [30, 1, 70, 2, 21, 1, 31, 3, 41, 1, 12, 1, 22, 3, 32, 5, 42, 3, 52, 1, 3, 1, 13, 3, 23, 4, 33, 7, 43, 4, 53, 3, 63, 1, 14, 3, 24, 5, 34, 8, 44, 5, 54, 3, 5, 1, 15, 3, 25, 4, 35, 7, 45, 4, 55, 3, 65, 1, 16, 1, 26, 3, 36, 5, 46, 3, 56, 1, 27, 1, 37, 3, 47, 1, 38, 1];
+	target.Aztec_Plan = [30, 1, 70, 2, 21, 1, 31, 3, 41, 1, 12, 1, 22, 3, 32, 5, 42, 3, 52, 1, 3, 1, 13, 3, 23, 4, 33, 7, 43, 4, 53, 3, 63, 1, 4, 1, 14, 3, 24, 5, 34, 8, 44, 5, 54, 3, 64, 1, 5, 1, 15, 3, 25, 4, 35, 7, 45, 4, 55, 3, 65, 1, 16, 1, 26, 3, 36, 5, 46, 3, 56, 1, 27, 1, 37, 3, 47, 1, 38, 1];
 	target.BigHoleLuft = [];
 	target.BigHole_Plan = [2, 4, 12, 4, 22, 4, 32, 4, 42, 4, 52, 4, 62, 4, 72, 4, 3, 1, 13, 3, 23, 4, 33, 4, 43, 4, 53, 4, 63, 3, 73, 1, 4, 1, 14, 3, 24, 4, 54, 4, 64, 3, 74, 1, 5, 1, 15, 3, 25, 4, 55, 4, 65, 3, 75, 1, 6, 1, 16, 3, 26, 4, 36, 4, 46, 4, 56, 4, 66, 3, 76, 1, 7, 4, 17, 4, 27, 4, 37, 4, 47, 4, 57, 4, 67, 4, 77, 4];
 	target.plaName = ['China', 'Wheel', 'China2', 'Castle', 'Italia', 'Castleum', 'Italia2', 'Glyphe', 'Dragon', 'Aztec', 'BigHole'];
