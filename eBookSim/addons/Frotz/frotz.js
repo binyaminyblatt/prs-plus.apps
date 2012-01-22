@@ -32,11 +32,7 @@ var tmp = function () {
 		return i;	
 	}
 
-	target.init = function () {
-		//target.bubble("tracelog","initialising...");
-		this.appTitle.setValue(kbook.autoRunRoot._title);
-		this.appIcon.u = kbook.autoRunRoot._icon;
-	
+	target.loadKeyboard = function () {
 		keys[0]="q";
 		keys[1]="w";
 		keys[2]="e";
@@ -151,6 +147,16 @@ var tmp = function () {
 		setSoValue(target.BACK, 'text', strBack);
 		setSoValue(target.SHIFT, 'text', strShift);
 		setSoValue(target.SPACE, 'text', "");
+		
+		return;
+	}
+	
+	target.init = function () {
+		//target.bubble("tracelog","initialising...");
+		this.appTitle.setValue(kbook.autoRunRoot._title);
+		this.appIcon.u = kbook.autoRunRoot._icon;
+		this.loadKeyboard();
+		this.enable(true); // needed for the SIM only
 	}
 
 	target.exitQuit = function (sender) {
@@ -158,6 +164,82 @@ var tmp = function () {
 		return;
 	}
 	
+	target.doOK = function () {
+		var currentLine = target.getVariable("current_line");
+		
+		// clear currentLine
+		currentLine = "";
+		target.currentText.setValue(currentLine);
+		target.setVariable("current_line",currentLine);
+		return;
+	}
+	
+	target.refreshKeys = function () {
+		var i,n,key;
+		n = -1;
+		if (shifted) {
+			n = n + shiftOffset;
+			setSoValue(target.SHIFT, 'text', strUnShift);
+		} else {
+			setSoValue(target.SHIFT, 'text', strShift);
+		}
+		if (symbols) {
+			n = n + symbolsOffset;
+			setSoValue(target.SYMBOL, 'text', "Abc");
+		} else {
+			setSoValue(target.SYMBOL, 'text', "Symbols");
+		}
+		for (i=1; i<=26; i++) {
+			key = 'key'+twoDigits(i);
+			setSoValue(target[key], 'text', keys[n+i]);
+			mouseEnter.call(target[key]);
+			mouseLeave.call(target[key]);
+		}	
+	}
+
+	target.doSpace = function () {
+		// ADD A SPACE
+		var currentLine = target.getVariable("current_line");
+		currentLine = currentLine + " ";
+		target.currentText.setValue(currentLine);
+		target.setVariable("current_line",currentLine);
+	}
+
+	target.doSymbol = function () {
+		symbols = !symbols;
+		this.refreshKeys();
+	} 
+
+	target.doShift = function () {
+		shifted = !shifted;
+		this.refreshKeys();
+	}	
+	
+	target.doBack = function () {
+		// BACKSPACE
+		var currentLine = target.getVariable("current_line");
+		currentLine = currentLine.slice(0,currentLine.length-1);
+		target.currentText.setValue(currentLine);
+		target.setVariable("current_line",currentLine);
+	}
+	
+	target.doKeyPress = function (sender) {
+		var id = getSoValue(sender, "id");
+		this.addCharacter(id);
+		return;
+	}
+	
+	target.addCharacter = function (id) {
+		var n = parseInt(id.substring(3, 5));
+		if (symbols) { n = n + symbolsOffset };
+		if (shifted) { n = n + shiftOffset };
+		var character = keys[n-1];
+		var currentLine = target.getVariable("current_line");
+		currentLine = currentLine + character;
+		target.currentText.setValue(currentLine);
+		target.setVariable("current_line",currentLine);		
+	}
+
 	target.ntHandleEventsDlg = function () {
 		if (custSel == 7) {
 			mouseEnter.call(target.key01);
@@ -535,73 +617,6 @@ var tmp = function () {
 		return;
 	}
 
-	target.refreshKeys = function () {
-		var i,n,key;
-		n = -1;
-		if (shifted) {
-			n = n + shiftOffset;
-			setSoValue(target.SHIFT, 'text', strUnShift);
-		} else {
-			setSoValue(target.SHIFT, 'text', strShift);
-		}
-		if (symbols) {
-			n = n + symbolsOffset;
-			setSoValue(target.SYMBOL, 'text', "Abc");
-		} else {
-			setSoValue(target.SYMBOL, 'text', "Symbols");
-		}
-		for (i=1; i<=26; i++) {
-			key = 'key'+twoDigits(i);
-			setSoValue(target[key], 'text', keys[n+i]);
-			mouseEnter.call(target[key]);
-			mouseLeave.call(target[key]);
-		}	
-	}
-
-	target.doSpace = function () {
-		// ADD A SPACE
-		var currentLine = target.getVariable("current_line");
-		currentLine = currentLine + " ";
-		target.currentLine.setValue(currentLine);
-		target.setVariable("current_line",currentLine);
-	}
-
-	target.doSymbol = function () {
-		symbols = !symbols;
-		this.refreshKeys();
-	} 
-
-	target.doShift = function () {
-		shifted = !shifted;
-		this.refreshKeys();
-	}	
-	
-	target.doBack = function () {
-		// BACKSPACE
-		var currentLine = target.getVariable("current_line");
-		currentLine = currentLine.slice(0,currentLine.length-1);
-		target.currentLine.setValue(currentLine);
-		target.setVariable("current_line",currentLine);
-	}
-	
-	target.doKeyPress = function (sender) {
-		var id = getSoValue(sender, "id");
-		this.addCharacter(id);
-		return;
-	}
-	
-	target.addCharacter = function (id) {
-		var n = parseInt(id.substring(3, 5));
-		//target.bubble("tracelog","id="+id+", n="+n);
-		if (symbols) { n = n + symbolsOffset };
-		if (shifted) { n = n + shiftOffset };
-		var character = keys[n-1];
-		//target.bubble("tracelog","n="+n+", character="+character);
-		var currentLine = target.getVariable("current_line");
-		currentLine = currentLine + character;
-		target.currentLine.setValue(currentLine);
-		target.setVariable("current_line",currentLine);		
-	}
 };
 tmp();
 tmp = undefined;
