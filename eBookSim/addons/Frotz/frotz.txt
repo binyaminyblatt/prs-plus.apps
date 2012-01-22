@@ -1,0 +1,9 @@
+rm /tmp/frotz.in /tmp/frotz.out
+touch /tmp/frotz.in
+tail -f /tmp/frotz.in | frotz DATA/ZORK1.DAT > /tmp/frotz.out 2>&1 &
+echo open mailbox >> /tmp/frotz.in
+more /tmp/frotz.out
+echo get leaflet >> /tmp/frotz.in
+more /tmp/frotz.out
+echo read leaflet >> /tmp/frotz.in
+more /tmp/frotz.out
