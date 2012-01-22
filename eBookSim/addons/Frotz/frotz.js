@@ -26,6 +26,8 @@ var tmp = function () {
 	var strShift = "\u2191"; //up arrow
 	var strUnShift = "\u2193"; //down arrow
 	var strBack = "\u2190"; //left arrow
+	var custSel;
+	var prevSel;
 	
 	var twoDigits = function (i) {
 		if (i<10) {return "0"+i}
@@ -148,6 +150,11 @@ var tmp = function () {
 		setSoValue(target.SHIFT, 'text', strShift);
 		setSoValue(target.SPACE, 'text', "");
 		
+		// highlight OK button for nonTouch
+		if (hasNumericButtons) {
+			custSel = 1;
+			target.ntHandleEventsDlg();
+		}
 		return;
 	}
 	
@@ -158,7 +165,7 @@ var tmp = function () {
 		this.loadKeyboard();
 		this.enable(true); // needed for the SIM only
 	}
-
+	
 	target.exitQuit = function (sender) {
 		kbook.autoRunRoot.exitIf(kbook.model);
 		return;
@@ -241,6 +248,19 @@ var tmp = function () {
 	}
 
 	target.ntHandleEventsDlg = function () {
+		if (custSel == 1) {
+			mouseEnter.call(target.btn_Ok);
+			mouseLeave.call(target.key01);
+			mouseLeave.call(target.key02);
+			mouseLeave.call(target.key03);
+			mouseLeave.call(target.key04);
+			mouseLeave.call(target.key05);
+			mouseLeave.call(target.key06);
+			mouseLeave.call(target.key07);
+			mouseLeave.call(target.key08);
+			mouseLeave.call(target.key09);
+			mouseLeave.call(target.key10);
+		}
 		if (custSel == 7) {
 			mouseEnter.call(target.key01);
 			mouseLeave.call(target.key02);
@@ -297,6 +317,7 @@ var tmp = function () {
 		if (custSel == 16) {
 			mouseLeave.call(target.key09);
 			mouseEnter.call(target.key10);
+			mouseLeave.call(target.btn_Ok);
 		}
 		if (custSel == 17) {
 			mouseLeave.call(target.key01);
@@ -436,24 +457,15 @@ var tmp = function () {
 			mouseLeave.call(target.SPACE);
 			mouseEnter.call(target.BACK);
 		}
-		if (custSel == 37) {
-			mouseLeave.call(target.SHIFT);
-			mouseLeave.call(target.SPACE);
-			mouseEnter.call(target.btn_Ok);
-		}
 		return;
 	}
 
 	target.moveCursor = function (direction) {
 	switch (direction) {
 		case "up" : {
-			if ((custSel>0) && (custSel<7)) {
+			if ((custSel>6) && (custSel<17)) {
 				prevSel=custSel;
-				custSel--;
-				target.ntHandleEventsDlg();
-			} else if ((custSel>6) && (custSel<17)) {
-				prevSel=custSel;
-				custSel=6;
+				custSel=1;
 				target.ntHandleEventsDlg();
 			} else if ((custSel>16) && (custSel<26)) {
 				prevSel=custSel;
@@ -479,21 +491,13 @@ var tmp = function () {
 				prevSel=custSel;
 				custSel=33;
 				target.ntHandleEventsDlg();				
-			} else if (custSel==37) {
-				prevSel=custSel;
-				custSel=35;
-				target.ntHandleEventsDlg();				
 			}
 			break
 		}
 		case "down" : {
-			if (custSel<6) {
+			if (custSel==1) {
 				prevSel=custSel;
-				custSel++;
-				target.ntHandleEventsDlg();
-			} else if (custSel==6) {
-				prevSel=custSel;
-				custSel=11;
+				custSel=16;
 				target.ntHandleEventsDlg();
 			} else if ((custSel>6) && (custSel<16)) {
 				prevSel=custSel;
@@ -523,10 +527,6 @@ var tmp = function () {
 				prevSel=custSel;
 				custSel=36;
 				target.ntHandleEventsDlg();			
-			} else if ((custSel==34) || (custSel==35)) {
-				prevSel=custSel;
-				custSel=37;
-				target.ntHandleEventsDlg();			
 			}
 			break
 		}
@@ -544,10 +544,6 @@ var tmp = function () {
 				custSel--;
 				target.ntHandleEventsDlg();	
 			} else if ((custSel==35) || (custSel==36)) {
-				prevSel=custSel;
-				custSel--;
-				target.ntHandleEventsDlg();	
-			} else if (custSel==38) {
 				prevSel=custSel;
 				custSel--;
 				target.ntHandleEventsDlg();	
@@ -571,10 +567,6 @@ var tmp = function () {
 				prevSel=custSel;
 				custSel++;
 				target.ntHandleEventsDlg();	
-			} else if (custSel==37) {
-				prevSel=custSel;
-				custSel++;
-				target.ntHandleEventsDlg();	
 			}
 			break
 		}
@@ -583,6 +575,7 @@ var tmp = function () {
 	}
 	
 	target.doCenterF = function () {
+		if (custSel === 1) target.btn_Ok.click();
 		if (custSel === 7) target.key01.click();
 		if (custSel === 8) target.key02.click();
 		if (custSel === 9) target.key03.click();
@@ -613,7 +606,6 @@ var tmp = function () {
 		if (custSel === 34) target.SYMBOL.click();
 		if (custSel === 35) target.SPACE.click();
 		if (custSel === 36) target.BACK.click();
-		if (custSel === 37) target.btn_Ok.click();
 		return;
 	}
 
