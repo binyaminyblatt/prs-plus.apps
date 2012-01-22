@@ -146,5 +146,14 @@
       	 				kbook.autoRunRoot.hasNumericButtons = _Core.config.compat.hasNumericButtons;
       					this.MAIN.EINK.VIEW.setURI("../addons/Solitaire/solitaire.xml");				
       					break;
-      					}						
+      					}
+      	 case "Frotz" : {		
+      					kbook.autoRunRoot._icon = _Core.config.compat.NodeKinds.getIcon("GAME",0);
+      					kbook.autoRunRoot._title = "Frotz";				
+      					kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
+						kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;
+      					kbook.autoRunRoot.startsWith = _Core.text.startsWith;
+      					this.MAIN.EINK.VIEW.setURI("../addons/Frotz/frotz.xml");				
+      					break;
+      					}
       	}
