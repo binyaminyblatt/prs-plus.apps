@@ -98,7 +98,7 @@
   		 try {
 			this.setView("Menu");					
 			//this.setView("TestApp");	
-  		    fnPageScroll = _Core.system.getSoValue(this.TRACER, 'scrollPage');
+  		    fnPageScroll = _Core.system.getSoValue(this.MAIN.TRACER, 'scrollPage');
 			touch = !_Core.config.compat.hasNumericButtons;
 		 	this.changeInterface(touch);
 		 	var items = _Core.system.getSoValue(this,"root.window.systemBox.menu.items");
@@ -116,7 +116,7 @@
 			this.setVariable("TRACER",this.getVariable("TRACER").concat(String.fromCharCode(10)).concat(msg));
 		    try {
 
-		       fnPageScroll.call(this.TRACER, true, 1);
+		       fnPageScroll.call(this.MAIN.TRACER, true, 1);
 			    }
 		    catch (e) {
     	    //   this.myLog('Err:' + e);
@@ -126,11 +126,13 @@
 		<function id="internalNumKey" params="num">
 			var part=new Object;
 			part.key=num;
-			this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doDigit", part);
+		//	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doDigit", part);
+			_Core.system.doBubble(this, "doDigit", part);
 		</function>
 
 		<function id="internalNumKeyHold" params="num">
-			this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doHold"+ num);
+		//	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doHold"+ num);
+			_Core.system.doBubble(this, "doHold"+ num);
 		</function>
 		
 		<function id="keyDown" params="ev">
@@ -155,21 +157,23 @@
 				}
 			}
 			else switch (ev.keyCode) {
-			 case 30 : 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doUp");
+			 case 113: 	_Core.system.doBubble(this, "doRoot");	//q
  			 			break;
-			 case 31 : 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doDown");
+			 case 30 : 	_Core.system.doBubble(this, "doUp");
  			 			break;
-			 case 27 : 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doMenu");	// Esc
+			 case 31 : 	_Core.system.doBubble(this, "doDown");
  			 			break;
-			 case 28 : 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doLeft");
+			 case 27 : 	_Core.system.doBubble(this, "doMenu");		// Esc
+ 			 			break;
+			 case 28 : 	_Core.system.doBubble(this, "doLeft");
  			 			break;			 
-			 case 29 : 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doRight");			 
+			 case 29 : 	_Core.system.doBubble(this, "doRight");			 
  			 			break;
- 			 case 13 : 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doCenter");	// Enter
+ 			 case 13 : 	_Core.system.doBubble(this, "doCenter");	// Enter
   			 			break;
- 			 case 11 : 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doPrevious"); // PgUp
+ 			 case 11 : 	_Core.system.doBubble(this, "doPrevious"); // PgUp
   			 			break;
- 			 case 12 : 	this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doNext");	// PgDn
+ 			 case 12 : 	_Core.system.doBubble(this, "doNext");		// PgDn
   			 			break;  			 			  			 			
  			} 
 			]]>
@@ -192,21 +196,21 @@
 			else {
 					if	(!ev.contextual) {
 						this.bubble('tracelog', key);
-						this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble(key);
+						_Core.system.doBubble(this, key);
 					}	
 					if	(ev.contextual) {
 						switch (key) {
 							case "doNext":		this.bubble('tracelog', "doLast");
-												this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doLast");
+												_Core.system.doBubble(this, "doLast");
 												break;
 							case "doPrevious":	this.bubble('tracelog', "doFirst");
-												this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doFirst");
+												_Core.system.doBubble(this, "doFirst");
 											 	break;
 							case "doRoot":		this.bubble('tracelog', "doMenu");
-												this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble("doMenu");									
+												_Core.system.doBubble(this, "doMenu");									
 											 	break;
 							default:			this.bubble('tracelog', key.substring(0,2).concat('Hold').concat(key.substring(2)));
-											    this.MAIN.EINK.VIEW.DOCUMENT.AUTORUN_GROUP.AUTORUN.bubble(key.substring(0,2).concat('Hold').concat(key.substring(2)));
+											    _Core.system.doBubble(this, key.substring(0,2).concat('Hold').concat(key.substring(2)));
 						}
 					 }	
 				}	 
