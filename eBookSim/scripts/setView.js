@@ -153,6 +153,7 @@
       					kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
 						kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;
       					kbook.autoRunRoot.startsWith = _Core.text.startsWith;
+						kbook.autoRunRoot.listFiles = _Core.io.listFiles;
       					this.MAIN.EINK.VIEW.setURI("../addons/Frotz/frotz.xml");				
       					break;
       					}
