@@ -177,7 +177,7 @@ _Core.io.copyFile = getSoValue(theRoot,'Core.io.copyFile');
 _Core.io.deleteFile = getSoValue(theRoot,'Core.io.deleteFile');
 _Core.io.setFileContent = getSoValue(theRoot,'Core.io.setFileContent');
 _Core.io.getFileContent = getSoValue(theRoot,'Core.io.getFileContent');
-_Core.io.listFiles = getSoValue(theRoot,'Core.io.listFilest');
+_Core.io.listFiles = getSoValue(theRoot,'Core.io.listFiles');
 //target.bubble('tracelog','done io');
 
 _Core.shell.umount = getSoValue(theRoot,'Core.shell.umount');

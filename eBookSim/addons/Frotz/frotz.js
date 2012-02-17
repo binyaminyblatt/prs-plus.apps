@@ -12,9 +12,12 @@ var tmp = function () {
 	var setSoValue = kbook.autoRunRoot.setSoValue;
 	var getFileContent = kbook.autoRunRoot.getFileContent;
 	var startsWith = kbook.autoRunRoot.startsWith;
+	var listFiles = kbook.autoRunRoot.listFiles;
 	
 	var datPath = kbook.autoRunRoot.gamesSavePath+'Frotz/';
-	FileSystem.ensureDirectory(datPath);  
+	FileSystem.ensureDirectory(datPath);
+	//var tempPath = "/tmp/frotz/";
+	//FileSystem.ensureDirectory(tempPath);
 
 	var mouseLeave = getSoValue( target.btn_Ok,'mouseLeave');
 	var mouseEnter = getSoValue( target.btn_Ok,'mouseEnter');
@@ -28,6 +31,14 @@ var tmp = function () {
 	var strBack = "\u2190"; //left arrow
 	var custSel;
 	var prevSel;
+	
+	var tempOutput = "";
+	
+	var pageScroll;
+	var strUp = "\u2191";
+	var strDown = "\u2193";
+	var previousCommands = [];
+	var previousCommandNum = 0;
 	
 	var twoDigits = function (i) {
 		if (i<10) {return "0"+i}
@@ -149,10 +160,12 @@ var tmp = function () {
 		setSoValue(target.BACK, 'text', strBack);
 		setSoValue(target.SHIFT, 'text', strShift);
 		setSoValue(target.SPACE, 'text', "");
+		setSoValue(target.BUTTON_UPP, 'text', strUp);
+		setSoValue(target.BUTTON_DWN, 'text', strDown);
 		
 		// highlight OK button for nonTouch
 		if (hasNumericButtons) {
-			custSel = 1;
+			custSel = 5;
 			target.ntHandleEventsDlg();
 		}
 		return;
@@ -162,18 +175,112 @@ var tmp = function () {
 		//target.bubble("tracelog","initialising...");
 		this.appTitle.setValue(kbook.autoRunRoot._title);
 		this.appIcon.u = kbook.autoRunRoot._icon;
+		try {
+			pageScroll = getSoValue(this.frotzText, 'scrollPage');
+		} catch (ignore) { }
 		this.loadKeyboard();
+		this.loadGameList();
 		this.enable(true); // needed for the SIM only
+		previousCommands.push(""); // start previous commands list with a blank entry
+		if (hasNumericButtons) {
+			this.touchLabel1.show(false);
+			this.frotzScroll.show(false);
+		} else {
+			this.nonTouch1.show(false);
+		}
+		this.loadGameList();
+	}
+
+	target.setOutput = function (output) {
+		this.frotzText.setValue(output);
+		try {
+			pageScroll.call(this.frotzText, true, 1);
+		}
+		catch (ignore) { }
 	}
 	
-	target.exitQuit = function (sender) {
+	target.loadGameList = function () {
+		var items;
+		items = listFiles(datPath);
+		if (items.length == 0) {
+			tempOutput = "Error:\nThere are no files in the game directory.\nPlease connect your reader to a PC and copy the game files into the Frotz folder located in the PRS+ GamesSave folder.\n\n"
+			this.setOutput(tempOutput);
+		} else {
+			filesList = "";
+			for (item in items) {
+				filesList = filesList + items[item] + "\n";
+			}
+			tempOutput = filesList;
+			this.setOutput(tempOutput);
+		}
+		
+	}
+
+	target.doButtonClick = function (sender) {
+		var id, n, numCommands;
+		id = getSoValue(sender, "id");
+		n = id.substring(7, 10);
+		if (n == "UPP") {
+			// scroll frotzText textbox up
+			try {
+				pageScroll.call(this.frotzText, true, -1);
+			}
+			catch (ignore) { }
+			return;
+		}
+		if (n == "DWN") {
+			// scroll frotzText textbox down
+			try {
+				pageScroll.call(this.frotzText, true, 1);
+			}
+			catch (ignore) { }
+			return;
+		}		
+		if (n == "PRE") {
+			// copy previous command into command box
+			numCommands = previousCommands.length;
+			if (numCommands !== 0) {
+				if (previousCommandNum <= 1) {
+					previousCommandNum = numCommands;
+				} else {
+					previousCommandNum--;
+				}
+				// replace currentLine with previous command
+				currentLine = previousCommands[previousCommandNum-1];
+				target.currentText.setValue(currentLine);
+				target.setVariable("current_line",currentLine);
+			}
+			return;
+		}		
+	}
+	
+	target.doQuit = function (sender) {
 		kbook.autoRunRoot.exitIf(kbook.model);
+		return;
+	}
+	
+	target.doRoot = function (sender) {
+		this.doQuit();
+	}
+	
+	target.doHold0 = function () {
+		this.doQuit();
 		return;
 	}
 	
 	target.doOK = function () {
 		var currentLine = target.getVariable("current_line");
 		
+		// add currentLine to output
+		tempOutput = tempOutput + currentLine + "\n";
+		this.setOutput(tempOutput);
+
+		// add command to previousCommands array
+		if (currentLine !== "") {
+			previousCommands.push(currentLine);
+		}
+		previousCommandNum = 0;
+			
 		// clear currentLine
 		currentLine = "";
 		target.currentText.setValue(currentLine);
@@ -248,8 +355,19 @@ var tmp = function () {
 	}
 
 	target.ntHandleEventsDlg = function () {
-		if (custSel == 1) {
+		if (custSel === 1) {
+			mouseEnter.call(target.BUTTON_UPP);
+			mouseLeave.call(target.BUTTON_DWN);
+		}
+		if (custSel === 2) {
+			mouseLeave.call(target.btn_Ok);
+			mouseEnter.call(target.BUTTON_DWN);
+			mouseLeave.call(target.BUTTON_UPP);
+		}
+		if (custSel === 5) {
 			mouseEnter.call(target.btn_Ok);
+			mouseLeave.call(target.BUTTON_DWN);
+			mouseLeave.call(target.BUTTON_PRE);
 			mouseLeave.call(target.key01);
 			mouseLeave.call(target.key02);
 			mouseLeave.call(target.key03);
@@ -261,187 +379,193 @@ var tmp = function () {
 			mouseLeave.call(target.key09);
 			mouseLeave.call(target.key10);
 		}
-		if (custSel == 7) {
+		if (custSel === 6) {
+			mouseLeave.call(target.btn_Ok);
+			mouseEnter.call(target.BUTTON_PRE);
+			mouseLeave.call(target.key10);
+		}
+		if (custSel === 7) {
 			mouseEnter.call(target.key01);
 			mouseLeave.call(target.key02);
 			mouseLeave.call(target.key11);
 		}
-		if (custSel == 8) {
+		if (custSel === 8) {
 			mouseLeave.call(target.key01);
 			mouseEnter.call(target.key02);
 			mouseLeave.call(target.key03);
 			mouseLeave.call(target.key12);
 		}
-		if (custSel == 9) {
+		if (custSel === 9) {
 			mouseLeave.call(target.key02);
 			mouseEnter.call(target.key03);
 			mouseLeave.call(target.key04);
 			mouseLeave.call(target.key13);
 		}
-		if (custSel == 10) {
+		if (custSel === 10) {
 			mouseLeave.call(target.key03);
 			mouseEnter.call(target.key04);
 			mouseLeave.call(target.key05);
 			mouseLeave.call(target.key14);
 		}
-		if (custSel == 11) {
+		if (custSel === 11) {
 			mouseLeave.call(target.key04);
 			mouseEnter.call(target.key05);
 			mouseLeave.call(target.key06);
 			mouseLeave.call(target.key15);
 		}
-		if (custSel == 12) {
+		if (custSel === 12) {
 			mouseLeave.call(target.key05);
 			mouseEnter.call(target.key06);
 			mouseLeave.call(target.key07);
 			mouseLeave.call(target.key16);
 		}
-		if (custSel == 13) {
+		if (custSel === 13) {
 			mouseLeave.call(target.key06);
 			mouseEnter.call(target.key07);
 			mouseLeave.call(target.key08);
 			mouseLeave.call(target.key17);
 		}
-		if (custSel == 14) {
+		if (custSel === 14) {
 			mouseLeave.call(target.key07);
 			mouseEnter.call(target.key08);
 			mouseLeave.call(target.key09);
 			mouseLeave.call(target.key18);
 		}
-		if (custSel == 15) {
+		if (custSel === 15) {
 			mouseLeave.call(target.key08);
 			mouseEnter.call(target.key09);
 			mouseLeave.call(target.key10);
 			mouseLeave.call(target.key19);
 		}
-		if (custSel == 16) {
+		if (custSel === 16) {
 			mouseLeave.call(target.key09);
 			mouseEnter.call(target.key10);
 			mouseLeave.call(target.btn_Ok);
+			mouseLeave.call(target.BUTTON_PRE);
 		}
-		if (custSel == 17) {
+		if (custSel === 17) {
 			mouseLeave.call(target.key01);
 			mouseEnter.call(target.key11);
 			mouseLeave.call(target.key12);
 			mouseLeave.call(target.SHIFT);
 		}
-		if (custSel == 18) {
+		if (custSel === 18) {
 			mouseLeave.call(target.key02);
 			mouseLeave.call(target.key11);
 			mouseEnter.call(target.key12);
 			mouseLeave.call(target.key13);
 			mouseLeave.call(target.key20);
 		}
-		if (custSel == 19) {
+		if (custSel === 19) {
 			mouseLeave.call(target.key03);
 			mouseLeave.call(target.key12);
 			mouseEnter.call(target.key13);
 			mouseLeave.call(target.key14);
 			mouseLeave.call(target.key21);
 		}
-		if (custSel == 20) {
+		if (custSel === 20) {
 			mouseLeave.call(target.key04);
 			mouseLeave.call(target.key13);
 			mouseEnter.call(target.key14);
 			mouseLeave.call(target.key15);
 			mouseLeave.call(target.key22);
 		}
-		if (custSel == 21) {
+		if (custSel === 21) {
 			mouseLeave.call(target.key05);
 			mouseLeave.call(target.key14);
 			mouseEnter.call(target.key15);
 			mouseLeave.call(target.key16);
 			mouseLeave.call(target.key23);
 		}
-		if (custSel == 22) {
+		if (custSel === 22) {
 			mouseLeave.call(target.key06);
 			mouseLeave.call(target.key15);
 			mouseEnter.call(target.key16);
 			mouseLeave.call(target.key17);
 			mouseLeave.call(target.key24);
 		}
-		if (custSel == 23) {
+		if (custSel === 23) {
 			mouseLeave.call(target.key07);
 			mouseLeave.call(target.key16);
 			mouseEnter.call(target.key17);
 			mouseLeave.call(target.key18);
 			mouseLeave.call(target.key25);
 		}
-		if (custSel == 24) {
+		if (custSel === 24) {
 			mouseLeave.call(target.key08);
 			mouseLeave.call(target.key17);
 			mouseEnter.call(target.key18);
 			mouseLeave.call(target.key19);
 			mouseLeave.call(target.key26);
 		}
-		if (custSel == 25) {
+		if (custSel === 25) {
 			mouseLeave.call(target.key09);
 			mouseLeave.call(target.key10);
 			mouseLeave.call(target.key18);
 			mouseEnter.call(target.key19);
 		}
-		if (custSel == 26) {
+		if (custSel === 26) {
 			mouseLeave.call(target.key11);
 			mouseLeave.call(target.key20);
 			mouseEnter.call(target.SHIFT);
 			mouseLeave.call(target.SYMBOL);
 		}
-		if (custSel == 27) {
+		if (custSel === 27) {
 			mouseLeave.call(target.key12);
 			mouseLeave.call(target.SHIFT);
 			mouseEnter.call(target.key20);
 			mouseLeave.call(target.key21);
 			mouseLeave.call(target.SYMBOL);
 		}
-		if (custSel == 28) {
+		if (custSel === 28) {
 			mouseLeave.call(target.key13);
 			mouseLeave.call(target.key20);
 			mouseEnter.call(target.key21);
 			mouseLeave.call(target.key22);
 			mouseLeave.call(target.SPACE);
 		}
-		if (custSel == 29) {
+		if (custSel === 29) {
 			mouseLeave.call(target.key14);
 			mouseLeave.call(target.key21);
 			mouseEnter.call(target.key22);
 			mouseLeave.call(target.key23);
 			mouseLeave.call(target.SPACE);
 		}
-		if (custSel == 30) {
+		if (custSel === 30) {
 			mouseLeave.call(target.key15);
 			mouseLeave.call(target.key22);
 			mouseEnter.call(target.key23);
 			mouseLeave.call(target.key24);
 			mouseLeave.call(target.SPACE);
 		}
-		if (custSel == 31) {
+		if (custSel === 31) {
 			mouseLeave.call(target.key16);
 			mouseLeave.call(target.key23);
 			mouseEnter.call(target.key24);
 			mouseLeave.call(target.key25);
 			mouseLeave.call(target.SPACE);
 		}
-		if (custSel == 32) {
+		if (custSel === 32) {
 			mouseLeave.call(target.key17);
 			mouseLeave.call(target.key24);
 			mouseEnter.call(target.key25);
 			mouseLeave.call(target.key26);
 			mouseLeave.call(target.SPACE);
 		}
-		if (custSel == 33) {
+		if (custSel === 33) {
 			mouseLeave.call(target.key18);
 			mouseLeave.call(target.key19);
 			mouseLeave.call(target.key25);
 			mouseEnter.call(target.key26);
 			mouseLeave.call(target.BACK);
 		}
-		if (custSel == 34) {
+		if (custSel === 34) {
 			mouseLeave.call(target.SHIFT);
 			mouseLeave.call(target.key20);
 			mouseLeave.call(target.SPACE);
 			mouseEnter.call(target.SYMBOL);
 		}
-		if (custSel == 35) {
+		if (custSel === 35) {
 			mouseLeave.call(target.key21);
 			mouseLeave.call(target.key22);
 			mouseLeave.call(target.key23);
@@ -452,7 +576,7 @@ var tmp = function () {
 			mouseLeave.call(target.BACK);
 			mouseLeave.call(target.btn_Ok);
 		}	
-		if (custSel == 36) {
+		if (custSel === 36) {
 			mouseLeave.call(target.key26);
 			mouseLeave.call(target.SPACE);
 			mouseEnter.call(target.BACK);
@@ -463,9 +587,21 @@ var tmp = function () {
 	target.moveCursor = function (direction) {
 	switch (direction) {
 		case "up" : {
-			if ((custSel>6) && (custSel<17)) {
+			if (custSel===2) {
 				prevSel=custSel;
 				custSel=1;
+				target.ntHandleEventsDlg();
+			} else if (custSel===5) {
+				prevSel=custSel;
+				custSel=2;
+				target.ntHandleEventsDlg();
+			} else if (custSel===6) {
+				prevSel=custSel;
+				custSel=5;
+				target.ntHandleEventsDlg();
+			} else if ((custSel>6) && (custSel<17)) {
+				prevSel=custSel;
+				custSel=5;
 				target.ntHandleEventsDlg();
 			} else if ((custSel>16) && (custSel<26)) {
 				prevSel=custSel;
@@ -495,15 +631,23 @@ var tmp = function () {
 			break
 		}
 		case "down" : {
-			if (custSel==1) {
+			if (custSel===1) {
 				prevSel=custSel;
-				custSel=16;
+				custSel=2;
+				target.ntHandleEventsDlg();
+			} else if (custSel===2) {
+				prevSel=custSel;
+				custSel=5;
+				target.ntHandleEventsDlg();
+			} else if (custSel===5) {
+				prevSel=custSel;
+				custSel=6;
 				target.ntHandleEventsDlg();
 			} else if ((custSel>6) && (custSel<16)) {
 				prevSel=custSel;
 				custSel=custSel+10;
 				target.ntHandleEventsDlg();
-			} else if (custSel==16) {
+			} else if (custSel===16) {
 				prevSel=custSel;
 				custSel=25;
 				target.ntHandleEventsDlg();
@@ -511,11 +655,11 @@ var tmp = function () {
 				prevSel=custSel;
 				custSel=custSel+9;
 				target.ntHandleEventsDlg();			
-			} else if ((custSel==24) || (custSel==25)) {
+			} else if ((custSel===24) || (custSel===25)) {
 				prevSel=custSel;
 				custSel=33;
 				target.ntHandleEventsDlg();			
-			} else if ((custSel==26) || (custSel==27)) {
+			} else if ((custSel===26) || (custSel===27)) {
 				prevSel=custSel;
 				custSel=34;
 				target.ntHandleEventsDlg();			
@@ -523,7 +667,7 @@ var tmp = function () {
 				prevSel=custSel;
 				custSel=35;
 				target.ntHandleEventsDlg();			
-			} else if (custSel==33) {
+			} else if (custSel===33) {
 				prevSel=custSel;
 				custSel=36;
 				target.ntHandleEventsDlg();			
@@ -531,7 +675,11 @@ var tmp = function () {
 			break
 		}
 		case "left" : {
-			if ((custSel>7) && (custSel<17)) {
+			if (custSel===6) {
+				prevSel=custSel;
+				custSel=16;
+				target.ntHandleEventsDlg();	
+			} else if ((custSel>7) && (custSel<17)) {
 				prevSel=custSel;
 				custSel--;
 				target.ntHandleEventsDlg();	
@@ -543,7 +691,7 @@ var tmp = function () {
 				prevSel=custSel;
 				custSel--;
 				target.ntHandleEventsDlg();	
-			} else if ((custSel==35) || (custSel==36)) {
+			} else if ((custSel===35) || (custSel===36)) {
 				prevSel=custSel;
 				custSel--;
 				target.ntHandleEventsDlg();	
@@ -551,7 +699,11 @@ var tmp = function () {
 			break
 		}		
 		case "right" : {
-			if ((custSel>6) && (custSel<16)) {
+			if (custSel===16) {
+				prevSel=custSel;
+				custSel=6;
+				target.ntHandleEventsDlg();	
+			} else if ((custSel>6) && (custSel<16)) {
 				prevSel=custSel;
 				custSel++;
 				target.ntHandleEventsDlg();	
@@ -563,7 +715,7 @@ var tmp = function () {
 				prevSel=custSel;
 				custSel++;
 				target.ntHandleEventsDlg();	
-			} else if ((custSel==34) || (custSel==35)) {
+			} else if ((custSel===34) || (custSel===35)) {
 				prevSel=custSel;
 				custSel++;
 				target.ntHandleEventsDlg();	
@@ -575,7 +727,10 @@ var tmp = function () {
 	}
 	
 	target.doCenterF = function () {
-		if (custSel === 1) target.btn_Ok.click();
+		if (custSel === 1) target.BUTTON_UPP.click();
+		if (custSel === 2) target.BUTTON_DWN.click();
+		if (custSel === 5) target.btn_Ok.click();
+		if (custSel === 6) target.BUTTON_PRE.click();
 		if (custSel === 7) target.key01.click();
 		if (custSel === 8) target.key02.click();
 		if (custSel === 9) target.key03.click();

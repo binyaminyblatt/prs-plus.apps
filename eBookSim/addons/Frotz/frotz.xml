@@ -19,7 +19,7 @@
 			<style id="swis16blk" size="16" style="bold" color="#000000"/>		
         </style>	
 		
-  		<style font="Swis721 BT" size="20" style="bold">
+  		<style font="Swis721 BT" size="20" style="">
 			<style id="etext-e" halign="left" left="8" top="8" right="8" bottom="8">
 				<style id="etext-d" color="#959595" background="#6D6D6D"/>
 				<style id="etext-p" background="#B49AFF"/>
@@ -125,23 +125,23 @@
     <group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
         <panel skin="AppMainSkin" left="0" right="0" top="0" bottom="0"/>
         <group id="AUTORUN" width="600" top="70" bottom="30">
-        	<sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="0" v="1"/>
+        	<sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="0" v="1" canFocus="true" />
 			<label id="appTitle" skin="title" left="70" right="0" top="-78" height="70" align="left" text="Frotz"/>
 			<label id="copyright" skin="copyText" left="70" right="0" top="-20" height="20" align="left" text="(C) Ben Chenoweth 2012"/>
 			
             <code>
 				<function id="doLeft">		this.moveCursor("left");	</function>
-				<function id="doPrevious">	this.moveCursor("left");	</function>
 				<function id="doRight">		this.moveCursor("right");	</function>
-				<function id="doNext">		this.moveCursor("right");	</function> 
 				<function id="doUp">      	this.moveCursor("up");	</function>
 				<function id="doDown">		this.moveCursor("down");	</function>
+				<function id="doPrevious">	this.doPrevious();	</function>
+				<function id="doNext">		this.doNext();	</function> 
 				<function id="doCenter">	this.doCenterF();	</function>
 				<function id="doMark">		this.doMark();	</function>
 				<function id="doSize">		this.doSize();	</function>
                 <function id="doOption">	this.doOption();	</function>
-                <function id="doRoot">      this.exitQuit(); </function>
-                <function id="doHold0">     this.exitQuit(); </function>
+                <function id="doQuit">      this.doQuit(); </function>
+				<function id="doRoot">		this.doRoot();	</function>
 				<function id="doMenu">		this.doOption();	</function>
 				<function id="doDigit" params="part"> this.digitF(part.key);	</function>
 				<function id="doOK">		this.doOK();	</function>
@@ -152,13 +152,17 @@
 				<function id="doKeyPress" params="sender"> this.doKeyPress(sender);	</function>
             </code>
 			
-		  <button id="btn_Exit" left="0" top="-70" height="70" width="70" active="true" visible="false" do="doRoot"/>			
-		  <label id='touchButtons4'   skin='touchText'    left='285' right='0' bottom='3' height='15' align='left' text='Quit'/>
-		  
-		  <text id='frotzText' skin='eventText' left='10' right='10' top='8' bottom='260' active='false' visible='true' /> 
+		  <button id="btn_Exit" left="0" top="-70" height="70" width="70" active="true" visible="false" do="doQuit"/>	  
+		  <text id='frotzText' skin='eventText' left='10' right='64' top='8' bottom='260' active='false' visible='true' />
+		  <scrollbar scroller="frotzText" id="frotzScroll" visible="true" right="54" top="10" bottom="260" />
+		  <button id="BUTTON_UPP" active="true" text="U"  right="10" width="40" top="10" height="40" do="doButtonClick"/>
+		  <button id="BUTTON_DWN" active="true" text="D"  right="10" width="40" bottom="262" height="40" do="doButtonClick"/>
+		  <label id='touchLabel1'   skin='touchText'    left='285' right='0' bottom='3' height='15' align='left' text='Quit'/>
+		  <label id='nonTouch1'   skin='touchText'    left='490' right='0' bottom='3' height='15' align='left' text='[Hold 0] Quit'/>
 		  <text id='currentText' skin='eventText' left='10' right='108' height='42' bottom='215' active='false' visible='true' />
 		  <button id="btn_Ok" text="OK" right='10' bottom="215" width="90" height="40" do="doOK"/>
-		
+		  <button id="BUTTON_PRE" active="true" text="^"  right="10" width="40" bottom="170" height="40" do="doButtonClick"/>
+		  
 			<button id="key01" text="q" left= "75" bottom="170" width="40" height="40" do="doKeyPress"/>
 			<button id="key02" text="w" left="120" bottom="170" width="40" height="40" do="doKeyPress"/>
 			<button id="key03" text="e" left="165" bottom="170" width="40" height="40" do="doKeyPress"/>
