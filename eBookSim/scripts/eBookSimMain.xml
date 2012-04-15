@@ -149,9 +149,9 @@
 			this.bubble('tracelog', 'keyDown-');  */
 			if ((ev.key >='0') && (ev.key<='9')){
 				if(ev.altKey){
-					this.internalNumKeyHold(ev.key);
+					this.internalNumKeyHold(ev.key*1);
 				}else{
-					this.internalNumKey(ev.key);
+					this.internalNumKey(ev.key*1);
 				}
 			}
 			else switch (ev.keyCode) {

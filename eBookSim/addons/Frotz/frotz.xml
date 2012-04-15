@@ -94,31 +94,30 @@
 		this._scriptLoaded = true;
 		</function>
 		<function id="modelChanged">
-        arguments.callee.grammar.call(this);
-        var state = this.getVariable("STATE");
-        var target;
-	    //  	this.bubble("tracelog","this.state: "+this.state);
-	    //   	this.bubble("tracelog","state: "+state);
+		arguments.callee.grammar.call(this);
+		var state = this.getVariable("STATE");
+		var target;
+	    // 	this.bubble("tracelog","this.state: "+this.state);
+	    // 	this.bubble("tracelog","state: "+state);
         if (this.state != state) {
             this.focus(true)
-	    //    this.bubble("tracelog","enter if "+this);
-            this.AUTORUN_GROUP.show(false)
-            switch(state) {
-            case "AUTORUN":
-                this.loadScript();
-                this.AUTORUN_GROUP.show(true);
-                target = this.AUTORUN_GROUP.AUTORUN;
-           //	    target.enable(true);    
-                break;
-            }
-            this.state = state;
-            target.init();
-             if (target.isEnabled())
-                {
-                target.focus(true);
-          	        this.bubble("tracelog","focus set");
-                };
-        }
+	    //  this.bubble("tracelog","enter if "+this);
+			this.AUTORUN_GROUP.show(false)
+			switch(state) {
+			case "AUTORUN":
+				this.loadScript();
+				this.AUTORUN_GROUP.show(true);
+				target = this.AUTORUN_GROUP.AUTORUN;
+           //	target.enable(true);    
+				break;
+			}
+			this.state = state;
+			target.init();
+			if (target.isEnabled())	{
+				target.focus(true);
+				this.bubble("tracelog","focus set");
+			}
+        };
 		</function>
     </code>
 
@@ -137,12 +136,13 @@
 				<function id="doPrevious">	this.doPrevious();	</function>
 				<function id="doNext">		this.doNext();	</function> 
 				<function id="doCenter">	this.doCenterF();	</function>
+				<function id="doHoldCenter">	this.doHoldCenterF();	</function>
 				<function id="doMark">		this.doMark();	</function>
 				<function id="doSize">		this.doSize();	</function>
                 <function id="doOption">	this.doOption();	</function>
-                <function id="doQuit">      this.doQuit(); </function>
-				<function id="doRoot">		this.doRoot();	</function>
-				<function id="doMenu">		this.doOption();	</function>
+                <function id="doHoldMenu">	this.doQuit(); </function>
+				<function id="doRoot">		this.doQuit();	</function>
+				<!--function id="doMenu">		this.doOption();	</function-->
 				<function id="doDigit" params="part"> this.digitF(part.key);	</function>
 				<function id="doOK">		this.doOK();	</function>
 				<function id="doShift">		this.doShift();	</function>
@@ -155,49 +155,66 @@
 		  <button id="btn_Exit" left="0" top="-70" height="70" width="70" active="true" visible="false" do="doQuit"/>	  
 		  <text id='frotzText' skin='eventText' left='10' right='64' top='8' bottom='260' active='false' visible='true' />
 		  <scrollbar scroller="frotzText" id="frotzScroll" visible="true" right="54" top="10" bottom="260" />
-		  <button id="BUTTON_UPP" active="true" text="U"  right="10" width="40" top="10" height="40" do="doButtonClick"/>
-		  <button id="BUTTON_DWN" active="true" text="D"  right="10" width="40" bottom="262" height="40" do="doButtonClick"/>
+		  <!--button id="BUTTON_UPP" active="true" text="U"  right="10" width="40" top="10" height="40" do="doButtonClick"/>
+		  <button id="BUTTON_DWN" active="true" text="D"  right="10" width="40" bottom="262" height="40" do="doButtonClick"/-->
 		  <label id='touchLabel1'   skin='touchText'    left='285' right='0' bottom='3' height='15' align='left' text='Quit'/>
-		  <label id='nonTouch1'   skin='touchText'    left='490' right='0' bottom='3' height='15' align='left' text='[Hold 0] Quit'/>
-		  <text id='currentText' skin='eventText' left='10' right='108' height='42' bottom='215' active='false' visible='true' />
-		  <button id="btn_Ok" text="OK" right='10' bottom="215" width="90" height="40" do="doOK"/>
-		  <button id="BUTTON_PRE" active="true" text="^"  right="10" width="40" bottom="170" height="40" do="doButtonClick"/>
-		  
-			<button id="key01" text="q" left= "75" bottom="170" width="40" height="40" do="doKeyPress"/>
-			<button id="key02" text="w" left="120" bottom="170" width="40" height="40" do="doKeyPress"/>
-			<button id="key03" text="e" left="165" bottom="170" width="40" height="40" do="doKeyPress"/>
-			<button id="key04" text="r" left="210" bottom="170" width="40" height="40" do="doKeyPress"/>
-			<button id="key05" text="t" left="255" bottom="170" width="40" height="40" do="doKeyPress"/>
-			<button id="key06" text="y" left="300" bottom="170" width="40" height="40" do="doKeyPress"/>
-			<button id="key07" text="u" left="345" bottom="170" width="40" height="40" do="doKeyPress"/>
-			<button id="key08" text="i" left="390" bottom="170" width="40" height="40" do="doKeyPress"/>
-			<button id="key09" text="o" left="435" bottom="170" width="40" height="40" do="doKeyPress"/>
-			<button id="key10" text="p" left="480" bottom="170" width="40" height="40" do="doKeyPress"/>
-			
-			<button id="key11" text="a" left= "95" bottom="120" width="40" height="40" do="doKeyPress"/>
-			<button id="key12" text="s" left="140" bottom="120" width="40" height="40" do="doKeyPress"/>
-			<button id="key13" text="d" left="185" bottom="120" width="40" height="40" do="doKeyPress"/>
-			<button id="key14" text="f" left="230" bottom="120" width="40" height="40" do="doKeyPress"/>
-			<button id="key15" text="g" left="275" bottom="120" width="40" height="40" do="doKeyPress"/>
-			<button id="key16" text="h" left="320" bottom="120" width="40" height="40" do="doKeyPress"/>
-			<button id="key17" text="j" left="365" bottom="120" width="40" height="40" do="doKeyPress"/>
-			<button id="key18" text="k" left="410" bottom="120" width="40" height="40" do="doKeyPress"/>
-			<button id="key19" text="l" left="455" bottom="120" width="40" height="40" do="doKeyPress"/>			
+		  <label id='nonTouch1'   skin='touchText'    left='490' right='0' bottom='3' height='15' align='left' text='[Hold Menu] Quit'/>
 
-			<button id="key20" text="z" left="140" bottom="70" width="40" height="40" do="doKeyPress"/>
-			<button id="key21" text="x" left="185" bottom="70" width="40" height="40" do="doKeyPress"/>
-			<button id="key22" text="c" left="230" bottom="70" width="40" height="40" do="doKeyPress"/>
-			<button id="key23" text="v" left="275" bottom="70" width="40" height="40" do="doKeyPress"/>
-			<button id="key24" text="b" left="320" bottom="70" width="40" height="40" do="doKeyPress"/>
-			<button id="key25" text="n" left="365" bottom="70" width="40" height="40" do="doKeyPress"/>
-			<button id="key26" text="m" left="410" bottom="70" width="40" height="40" do="doKeyPress"/>
+		  <text id='currentText' skin='eventText' left='10' right='108' height='42' bottom='215' active='false' visible='true' />
+
+		    <button id="key10" active="true" text="^"  right="10" width="40" bottom="170" height="40" do="doButtonClick"/>
+		  
+			<button id="key11" text="q" left= "75" bottom="170" width="40" height="40" do="doKeyPress"/>
+			<button id="key12" text="w" left="120" bottom="170" width="40" height="40" do="doKeyPress"/>
+			<button id="key13" text="e" left="165" bottom="170" width="40" height="40" do="doKeyPress"/>
+			<button id="key14" text="r" left="210" bottom="170" width="40" height="40" do="doKeyPress"/>
+			<button id="key15" text="t" left="255" bottom="170" width="40" height="40" do="doKeyPress"/>
+			<button id="key16" text="y" left="300" bottom="170" width="40" height="40" do="doKeyPress"/>
+			<button id="key17" text="u" left="345" bottom="170" width="40" height="40" do="doKeyPress"/>
+			<button id="key18" text="i" left="390" bottom="170" width="40" height="40" do="doKeyPress"/>
+			<button id="key19" text="o" left="435" bottom="170" width="40" height="40" do="doKeyPress"/>
+			<button id="key20" text="p" left="480" bottom="170" width="40" height="40" do="doKeyPress"/>
 			
-			<button id="SHIFT" text="Shft" left="70" bottom="70" width="65" height="40" do="doShift"/>
-			<button id="SYMBOL" text="Symbols" left="70" bottom="20" width="110" height="40" do="doSymbol"/>
-			<button id="SPACE" text="Space" left="185" bottom="20" width="220" height="40" do="doSpace"/>
-			<button id="BACK" text="Back" left="410" bottom="20" width="110" height="40" do="doBack"/>
+			<button id="key21" text="a"  left= "75" bottom="120" width="40" height="40" do="doKeyPress"/>
+			<button id="key22" text="s"  left="120" bottom="120" width="40" height="40" do="doKeyPress"/>
+			<button id="key23" text="d"  left="165" bottom="120" width="40" height="40" do="doKeyPress"/>
+			<button id="key24" text="f"  left="210" bottom="120" width="40" height="40" do="doKeyPress"/>
+			<button id="key25" text="g"  left="255" bottom="120" width="40" height="40" do="doKeyPress"/>
+			<button id="key26" text="h"  left="300" bottom="120" width="40" height="40" do="doKeyPress"/>
+			<button id="key27" text="j"  left="345" bottom="120" width="40" height="40" do="doKeyPress"/>
+			<button id="key28" text="k"  left="390" bottom="120" width="40" height="40" do="doKeyPress"/>
+			<button id="key29" text="l"  left="435" bottom="120" width="40" height="40" do="doKeyPress"/>			
+			<button id="key30" text="OK" left="480" bottom="120" width="65" height="40" do="doOK"/>			
+
+			<button id="key31" text="Shft" left= "75" bottom="70" width="40" height="40" do="doShift"/>
+			<button id="key32" text="z"    left="120" bottom="70" width="40" height="40" do="doKeyPress"/>
+			<button id="key33" text="x"    left="165" bottom="70" width="40" height="40" do="doKeyPress"/>
+			<button id="key34" text="c"    left="210" bottom="70" width="40" height="40" do="doKeyPress"/>
+			<button id="key35" text="v"    left="255" bottom="70" width="40" height="40" do="doKeyPress"/>
+			<button id="key36" text="b"    left="300" bottom="70" width="40" height="40" do="doKeyPress"/>
+			<button id="key37" text="n"    left="345" bottom="70" width="40" height="40" do="doKeyPress"/>
+			<button id="key38" text="m"    left="390" bottom="70" width="40" height="40" do="doKeyPress"/>
+			<button id="key39" text=" "    left="435" bottom="70" width="40" height="40" do="doKeyPress"/>
+			<button id="key40" text=" "    left="480" bottom="70" width="65" height="40" do="doBack"/>			
+
+			<button id="key41" text="Symbols" left= "70" bottom="20" width="90" height="40" do="doSymbol"/>
+			<button id="key42" text="/"       left="165" bottom="20" width="40" height="40" do="doKeyPress"/>
+			<button id="key43" text="Space"   left="210" bottom="20" width="220" height="40" do="doSpace"/>
+			<button id="key44" text="-"       left="435" bottom="20" width="40" height="40" do="doKeyPress"/>
+			<button id="key45" text=" "       left="480" bottom="20" width="65" height="40" do="doKeyPress"/>
 		
-		
+			<panel id="POPUP" skin="popup" left="50" width ="500" height="60" bottom="120" >
+					<button id="key51" text="A" left= "25" bottom="8" width="40" height="40" do="doKeyPress"/>
+					<button id="key52" text="Ä" left= "70" bottom="8" width="40" height="40" do="doKeyPress"/>
+					<button id="key53" text="À" left="115" bottom="8" width="40" height="40" do="doKeyPress"/>
+					<button id="key54" text="Á" left="160" bottom="8" width="40" height="40" do="doKeyPress"/>
+					<button id="key55" text=" " left="205" bottom="8" width="40" height="40" do="doKeyPress"/>
+					<button id="key56" text=" " left="250" bottom="8" width="40" height="40" do="doKeyPress"/>
+					<button id="key57" text=" " left="295" bottom="8" width="40" height="40" do="doKeyPress"/>
+					<button id="key58" text=" " left="340" bottom="8" width="40" height="40" do="doKeyPress"/>
+					<button id="key59" text=" " left="385" bottom="8" width="40" height="40" do="doKeyPress"/>			
+					<button id="key60" text=" " left="430" bottom="8" width="40" height="40" do="doKeyPress"/>			
+	        </panel>
         </group>
     </group>
 </document>

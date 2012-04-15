@@ -77,15 +77,15 @@
 			<cutout id="AppMainStatus-c" x="0" y="401" width="50" height="34"/>
 			<cutout id="AppMainStatus-r" x="0" y="401" width="5" height="34"/>
 			
-			<cutout id="popup-tl" x="728" y="51" width="5" heiht="3"/>
-			<cutout id="popup-tc" x="733" y="51" width="42" height="5"/>
-			<cutout id="popup-tr" x="775" y="51" width="5" height="5"/>
-			<cutout id="popup-ml" x="728" y="55" width="5" height="25"/>         
-			<cutout id="popup-mc" x="733" y="55" width="42" height="25"/>
-			<cutout id="popup-mr" x="775" y="55" width="5" height="25"/>
-			<cutout id="popup-bl" x="728" y="81" width="5" height="5"/>
-			<cutout id="popup-bc" x="733" y="81" width="42" height="5"/>
-			<cutout id="popup-br" x="775" y="81" width="5" height="5"/>
+			<cutout id="popup-tl" x="728" y="51" width="5" height="3" lines="0"/>
+			<cutout id="popup-tc" x="733" y="51" width="42" height="5" lines="0"/>
+			<cutout id="popup-tr" x="775" y="51" width="5" height="5" lines="0"/>
+			<cutout id="popup-ml" x="728" y="55" width="5" height="25" lines="0"/>         
+			<cutout id="popup-mc" x="733" y="55" width="42" height="25" lines="0"/>
+			<cutout id="popup-mr" x="775" y="55" width="5" height="25" lines="0"/>
+			<cutout id="popup-bl" x="728" y="81" width="5" height="5" lines="0"/>
+			<cutout id="popup-bc" x="733" y="81" width="42" height="5" lines="0"/>
+			<cutout id="popup-br" x="775" y="81" width="5" height="5" lines="0"/>
 			
 			<cutout id="menu_lt" x="400" y="332" width="20" height="6"/>
 			<cutout id="menu_ct" x="420" y="332" width="20" height="6"/>
@@ -131,7 +131,7 @@
 			<cutout id="selectsquare" x="65" y="367" width="75" height="75"/>
 			<cutout id="highlight" x="142" y="367" width="75" height="75"/>
 			
-			<!-- FIVEROW SPRITES-->
+			<!-- FIVEROW SPRITES -->
 			<cutout id="g1Cursor" x="98" y="298" width="50" height="50"/>
 			<cutout id="g2Cursor" x="168" y="298" width="50" height="50"/>
 			<cutout id="buttons" x="48" y="239" width="50" height="50"/>
