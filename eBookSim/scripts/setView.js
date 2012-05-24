@@ -53,7 +53,8 @@
       					}									
       	 case "Chess" : {
       					kbook.autoRunRoot._icon = _Core.config.compat.NodeKinds.getIcon("CHESS",0);
-      					kbook.autoRunRoot._title = "Schach";				
+      					kbook.autoRunRoot._title = "Schach";
+						kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;
       					this.MAIN.EINK.VIEW.setURI("../addons/Chess/chess.xml");				
       					break;
       					}
