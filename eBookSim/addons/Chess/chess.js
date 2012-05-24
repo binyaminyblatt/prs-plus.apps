@@ -1494,7 +1494,11 @@ var tmp = function () {
         }
         x = cursorX / 75; // find column
         y = (cursorY - 70) / 75; // find row
-        iPosition = (y + 2) * 10 + 2 + x;
+		if (playAsBlack) {
+			iPosition = 121 - ((y + 2) * 10 + 2 + x);
+		} else {
+			iPosition = (y + 2) * 10 + 2 + x;
+		}
         //this.bubble("tracelog","n="+n+", iPosition="+iPosition);
         this.makeSelection(iPosition, false);
         return;
