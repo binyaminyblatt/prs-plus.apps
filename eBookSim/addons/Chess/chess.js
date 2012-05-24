@@ -1351,6 +1351,7 @@ var tmp = function () {
             }
             stream.writeLine(etc.bBlackSide);
             stream.writeLine(moveno);
+			stream.writeLine(playAsBlack);
             stream.close();
             this.checkStatus.setValue("Game saved successfully");
         } catch (e) { this.checkStatus.setValue("Game save failed"); }
@@ -1386,17 +1387,26 @@ var tmp = function () {
                 }
                 this.messageStatus.setValue(merryMessage + "'s turn");
                 moveno = stream.readLine();
+				if (stream.readLine() === "true") {
+					playAsBlack = true;
+				} else {
+					playAsBlack = false;
+				}
                 this.puzzleName.setValue("");
                 this.puzzleSource.setValue("");
                 this.puzzleMoves.setValue("");
-                doingPuzzle = false;
-                //
-
+				doingPuzzle = false;
                 stream.close();
 
                 // update board
                 this.writePieces();
-
+				
+				// revert button/label to "New Game"
+				setSoValue(target.BUTTON_RES, 'text', "New Game");
+				this.nonTouch.setValue("[Hold 9] New Game");
+				mouseEnter.call(target.BUTTON_RES);
+				mouseLeave.call(target.BUTTON_RES);
+				
                 // reset undo
                 currundo = 0;
                 this.updateUndo();
@@ -2559,6 +2569,13 @@ var tmp = function () {
 
                 // update board
                 this.writePieces();
+
+				// revert button/label to "New Game"
+				setSoValue(target.BUTTON_RES, 'text', "New Game");
+				this.nonTouch.setValue("[Hold 9] New Game");
+				mouseEnter.call(target.BUTTON_RES);
+				mouseLeave.call(target.BUTTON_RES);
+				playAsBlack = false;
 
                 // reset undo
                 currundo = 0;
