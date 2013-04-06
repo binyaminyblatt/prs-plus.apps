@@ -158,4 +158,17 @@
       					this.MAIN.EINK.VIEW.setURI("../addons/Frotz/frotz.xml");				
       					break;
       					}
+		case "StudyWord" : {
+						var L = _Core.lang.getLocalizer("Calendar");
+      					kbook.autoRunRoot._icon = 17;
+      					kbook.autoRunRoot._title = "StudyWord";				
+      					kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
+						kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;
+      					kbook.autoRunRoot.startsWith = _Core.text.startsWith;
+      					kbook.autoRunRoot.L = L;
+						kbook.autoRunRoot.model = _Core.config.model;
+
+      					this.MAIN.EINK.VIEW.setURI("../addons/StudyWord/studyword.xml");				
+      					break;
+						}
       	}

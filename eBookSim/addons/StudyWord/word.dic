@@ -1,0 +1,142 @@
+//General Dictionary format is: 
+//#lan
+//Original word;Transcription;Translation;Studies flag
+//-----------------------------------------------------------
+//lan - name of file with alphabet for keyboard: lan + .kbd
+//Studies flag can be: 0 - not studied; 1 - studied
+////////////////////////////////////////////////////////////////////////////////////
+#eng
+mustache;;усы;0
+popkin;;Попкин;0
+barbers;;парикмахеры;0
+revolting;;отвратительный;0
+grip;;захват;0
+vanished;;исчезли;0
+tucked;;заправленные;0
+slithering;;скользя;0
+scars;;шрамы;0
+whined;;заскулил;0
+sunny;;солнечно;0
+gently;;осторожно;0
+thought;;мысль;0
+persuade;;убеждать;0
+on very day;;на день;0
+bun;bun;булочка;0
+chuckled;;усмехнулся;0
+blushed;;покраснел;0
+wolf;;волк;0
+coil;;катушка;0
+winked;;подмигнул;0
+lemon ice pop;;лимон лед поп-;0
+cried;;плакал;0
+distinctly ruffled;;отчетливо взъерошил;0
+ribs;;ребра;0
+nearly;;почти;0
+shouted;;крикнула;0
+hoodlums;;хулиганы;0
+lemon drop;;лимонный леденец;0
+curiously;;странно;0
+lids;;крышки;0
+scrawny;;тощий;0
+punished;;наказанный;0
+handy;;удобный;0
+neat hedges;;аккуратные живые изгороди;0
+lizard;;ящерица;0
+mouth;;рот;0
+moand;;moand;0
+headmistress;;директриса;0
+all over the place;;повсюду;0
+gap;;разрыв;0
+murmured;;пробормотал;0
+plates of egg;;пластинами яйцо;0
+relief;;помощь;0
+leap;;прыгать;0
+jacket sleeve;;рукав куртки;0
+doorbell;;дверной звонок;0
+vcr;;видеомагнитофона;0
+wiping;;вытирая;0
+fitted;;установлены;0
+forehead;;лоб;0
+grin;;ухмыляться;0
+spoil;;портиться;0
+laid;;заложен;0
+horror;;ужас;0
+fell;;упали;0
+trash;;мусор;0
+barked ;;лаял;0
+fat;;жир;0
+scissors;;ножницы;0
+sniggered;;хихикнул;0
+bald;;лысый;0
+chasing;;погоня;0
+scotch tape;;скотч;0
+swish;;свист;0
+groaned;;застонал;0
+bonnets;;шляпки;0
+cabbage;;капуста;0
+parcel;;посылка;0
+threw a sharp sideway glance ;;бросила острый взгляд боковом;0
+heel;;пятка;0
+flocks of owls;;стаи сов;0
+rapped;;постучал;0
+climbing;;восхождение;0
+cupboard;;шкаф;0
+shrunk;;сократилась;0
+nasty;;противный;0
+boring;;скучный;0
+beady;;покрытый капельками;0
+scented;;пахнущий;0
+jerked;;дернулась;0
+put;;ставить;0
+earmuffs;;теплые наушники;0
+stiffly;stiffly;сухо;0
+crawling;;ползком;0
+gashed;;разрезанный;0
+mood;;настроение;0
+howls;;воет;0
+beet;;свекла;0
+flinging;;бросив;0
+ripping the paper off a gold wristwatch;;разрывая бумагу с золотыми наручными часами;0
+chimney;;дымоход;0
+leaning;;склонность;0
+punching bag ;;груша;0
+bangs;;челка;0
+puppet;;кукольный;0
+gasped;;ахнули;0
+snoozed on;;дремали на;0
+had laughed himself silly at;;смеялся сам глупо на;0
+sobs;;рыдания;0
+yelled;;крикнула;0
+wig;;парик;0
+felt;;войлок;0
+bet dedalus diggle ;;ставки Дедал Diggle;0
+scar;;шрам;0
+sticking;;торчащий;0
+read;;читать;0
+leaped;;вскочила;0
+neck;;шея;0
+slug;;пуля;0
+tangles of bushy;;заросли густым;0
+sniffed angrily;;понюхал сердито;0
+glory;;слава;0
+shuffled;;перетасовал;0
+budge;;сдвинуть с места;0
+bowed;;поклонилась;0
+flicked into darkness;;щелкнул в темноте;0
+flinch;;дрогнуть;0
+glistening;;сверкающий;0
+fry;;жарить;0
+thick;;толстый;0
+anxious;;тревожный;0
+feast;;праздник;0
+snap;;огрызаться;0
+swiftly;;быстро;0
+knickerbocker;;житель Нью-Йорка;0
+skinny;;тощий;0
+baggy ;;мешковатый;0
+boredom;;скука;0
+deafening;;оглушительный;0
+tired;;уставший;0
+haircut;;стрижка;0
+tantrum;;вспышка гнева;0
+swung;;качнулся;0
