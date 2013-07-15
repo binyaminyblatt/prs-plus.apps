@@ -1,0 +1,802 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Interface layout file for Word crossword puzzle app
+     written by Dan Genin (dan.genin@gmail.com) 
+     borrowing generously from MineSweeper by Mark Nord
+     History: 
+     6/9/2012             alpha
+     -->
+     
+<document xmlns="http://www.kinoma.com/fskin/1" id="DOCUMENT">
+
+<assets>
+	<import href="../AppAssets/AppAssets.xml"/>
+
+	<behavior id="gridSprite">
+		<!--script on="mouseDown" params="event">
+				this.bubble("showMouseDown");
+			</script-->
+		<script on="mouseUp" params="event">
+				this.bubble("doGridClick",this);
+			</script>
+	</behavior>
+	<behavior id="closeSprite">
+		<script on="mouseUp" params="event">
+				this.bubble("showHelp");
+		</script>
+	</behavior>
+			
+	<style font="Swis721 BT">
+		<style id="swis24gry" size="24" style="" right="15" halign="right" top="5" color="#6D6D6D"/>
+		<style id="swis32blk" size="32" style="" color="#000000"/>
+		<style id="swis24blk" size="24" style="" halign="right" top="5" color="#000000"/>
+		<style id="swis16blk" size="16" style="" color="#000000"/>
+		<style id="digits" size="22" style="bold" color="#000000"/>
+		<style id="copynote" size="14" style="italic" color="#707070"/>
+		<style id="touchText" size="12" style="bold" color="#000000"/>
+		<style id="tinyText" size="10" style="bold" color="#000000"/>
+	</style>
+	
+	<style font="Swis721 BT" size="20">
+		<style id="control-e" style="normal" size="14" left="25" halign="left">
+			<style id="control-d"/>
+			<style id="control-p"/>
+			<style id="control-s"/>
+		</style>
+	</style>
+
+	<style id="dialog" background="#80000000"/>
+
+<texture href="cwskins/cw_labels.png">
+	<cutout id="square_c" x="51" y="1" width="33" height="33"/>	
+	<cutout id="null" x="0" y="70" width="1" height="1" lines="1"/>
+	<cutout id="null32h" x="370" y="32" width="1" height="32" lines="1"/>
+</texture>
+
+<skin id="swis16blk" styles="swis16blk"/>	
+<skin id="swis20blk" styles="menu_e"/>
+<skin id="swis24gry" styles="swis24gry"/>	
+<skin id="swis24blk" styles="swis24blk"/>	
+<skin id="swis32blk" styles="swis32blk"/>	
+<skin id="touchText" styles="touchText"/>
+<skin id="tinyText"  styles="tinyText"/>
+<skin id="cellText"	 styles="swis24blk"/>	
+
+<skin id="frame1"
+		cutouts="null,null,null,null,null,null,null,null,null"/>		
+
+<skin id="frame2"
+		cutouts="null,null,null,null,null,null,null,null,null"/>		
+
+<skin id="square" 
+		cutouts="square_c"/>
+
+<skin id="customText"
+		cutouts="htext-lt,htext-ct,htext-rt,htext-lm,htext-cm,htext-rm,htext-lb,htext-cb,htext-rb" 
+		styles="swis24gry,swis24blk,swis24blk,swis24blk"/>
+		  
+<skin id="nullButton" 
+		cutouts="null32h,null32h,null32h"
+		styles="button-d,button-e,button-p,button-s"/>
+			
+<skin id="ntMenuSep"	
+	cutouts="menu_ls,menu_cs,menu_rs"
+	styles="button-d,button-e,button-p,button-s"/>
+	
+<skin id="ntMenuChk" 
+	cutouts="menu_li"/>
+		
+</assets>
+
+<model>
+	<variable id="fileName" value="test"/>
+</model>
+
+<code>
+    <function id="runJs" params="path,target">
+        try {
+            var f = new Stream.File(path);
+            var fn = new Function("target", f.toString());
+            fn(target);
+            delete fn;
+        }
+        catch(e)
+        {
+        }
+    </function>
+    <function id="loadScript">
+        if (!this.hasOwnProperty('_scriptLoaded'))
+            this._scriptLoaded = false;
+        if (!this._scriptLoaded)
+        {
+	   		if(kbook.autoRunRoot.path==undefined){
+				path = this.getBaseURI().slice(7);
+				kbook.model=this;
+			}else{
+				path = kbook.autoRunRoot.path;
+			}
+            var index = path.lastIndexOf('/');
+            if (index > 0)
+               path = path.substring(0, index + 1);
+            this.driveroot = path.substring(0,2);
+            var target = this.AUTORUN_GROUP.AUTORUN;
+            target.driveroot = this.driveroot;
+		    		target.crosswordRoot = path;
+            this.runJs(path+"crossword.js",target);
+        }
+        this._scriptLoaded = true;
+    </function>
+    <function id="modelChanged">
+	arguments.callee.grammar.call(this);
+        var state = this.getVariable("STATE");
+
+        var target;
+
+        if (this.state != state) {
+            this.focus(true)
+            this.AUTORUN_GROUP.show(false)
+            switch(state) {
+            case "AUTORUN":
+                this.loadScript();
+                this.AUTORUN_GROUP.show(true);
+                target = this.AUTORUN_GROUP.AUTORUN;
+                break;
+            }
+            this.state = state;
+            target.init();
+             if (target.isEnabled())
+                {
+
+                target.focus(true);
+
+                };
+        }
+    </function>
+
+    <!-- Menu-Functions -->
+ 	<function id="always">
+	 		return true;
+ 	</function>
+ 	<function id="never">
+	 		return false;
+ 	</function> 	
+ 	<function id="doExitQuit">
+		this.AUTORUN_GROUP.AUTORUN.exitQuit();
+ 	</function> 
+ 	<function id="doShowHelp">
+		this.AUTORUN_GROUP.AUTORUN.showHelp();
+ 	</function> 
+	<function id="doAbout">
+		this.AUTORUN_GROUP.AUTORUN.ABOUT_DIALOG.open();
+	</function>
+</code>
+
+<group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
+	<panel skin="AppMainSkin" left="0" right="0" top="0" bottom="0"/>
+    <group id="AUTORUN" width="600" top="70" bottom="33">
+	   	<sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" active="false" u="38" v="1"/>   
+		<label id="appTitle" skin="title" left="70" right="0" top="-70" height="70" align="left" text="CrossWord"/>
+		<code>
+         <function id="doDigit" params="part">
+             this.doDigitF(part.key)
+         </function>
+         <function id="doMenu">
+            this.doMenuF();
+         </function>
+         <function id="doRoot">
+            this.exitQuit();
+         </function>
+         <function id="doCenter">
+            this.doCenterF();
+         </function>
+         <function id="doMark">
+             this.doCenterF();
+         </function>
+         <function id="doLeft">
+            this.moveCursor("left");
+         </function>
+          <function id="doPrevious">
+            this.changeClickMode();
+         </function>
+         <function id="doRight">
+            this.moveCursor("right");
+         </function>
+         <function id="doNext">
+            this.changeClickMode();
+         </function>
+         <function id="doUp">
+            this.moveCursor("up");
+         </function>
+         <function id="doDown">
+            this.moveCursor("down");
+         </function>
+         <function id="doRoot">	
+            this.exitQuit();
+         </function>
+      	</code>
+		
+		<group id="Touch" width="600" top="0" bottom="0">
+			<menuBar id="MENUBAR" alignment="left" left="3" width="600" top="3" height="32">
+				<menu title="GAME">
+					<item title="Select puzzle"   do="switchPuzzle" can="always" />
+					<item title="Next puzzle" do="switchPuzzle" can="always" />
+					<item title="Exit"   do="doExitQuit" can="always" />														
+				</menu>
+				<menu title="CHECK" >
+					<item title="Check letter" do="hint" can="always"/>
+					<item title="Check word"   do="hint" can="always"/>
+					<item title="Check puzzle" do="hint" can="always"/>
+					<item title="Reveal letter"   do="hint" can="always"/>
+					<item title="Reveal word"   do="hint" can="always"/>
+				</menu>
+				<menu title="HELP" >
+					<item title="Instructions" do="doShowHelp" can="always"/>
+					<separator/>
+					<item title="About" do="doAbout" can="always"/>
+				</menu>
+			</menuBar>
+			
+		<label id="mode" skin="swis20blk" left="350" width="250" top="3" height="32" text="MODE: Across" />
+		<button id="changeMode" left="450" width="150" top="3" height="30" active="true" visible="false" do="changeDirection" />
+		</group>
+	
+		<label id="cwdTitle" skin="swis16blk" left="100" top="60" width="300" height="20" text="Crossword"/>
+ 		<label id="cwdAuthor" skin="swis16blk" left="100" top="80" width="300" height="20" text="by Author"/>
+	
+	<panel id="frame2" skin="frame2" left="151" top="110" width="298" height="298"/>
+	<sprite skin="square" id="sq000"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq001"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq002"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq003"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq004"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq005"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq006"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq007"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq008"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq009"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq010"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq011"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq012"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq013"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq014"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq015"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq016"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq017"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq018"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq019"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq020"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq021"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq022"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq023"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq024"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq025"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq026"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq027"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq028"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq029"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq030"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq031"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq032"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq033"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq034"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq035"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq036"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq037"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq038"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq039"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq040"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq041"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq042"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq043"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq044"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq045"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq046"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq047"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq048"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq049"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq050"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq051"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq052"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq053"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq054"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq055"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq056"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq057"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq058"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq059"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq060"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq061"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq062"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq063"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq064"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq065"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq066"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq067"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq068"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq069"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq070"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq071"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq072"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq073"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq074"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq075"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq076"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq077"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq078"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq079"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq080"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq081"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq082"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq083"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq084"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq085"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq086"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq087"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq088"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq089"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq090"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq091"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq092"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq093"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq094"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq095"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq096"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq097"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq098"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq099"><behave like="gridSprite"/></sprite>
+	
+	<sprite skin="square" id="sq100"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq101"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq102"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq103"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq104"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq105"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq106"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq107"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq108"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq109"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq110"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq111"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq112"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq113"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq114"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq115"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq116"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq117"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq118"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq119"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq120"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq121"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq122"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq123"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq124"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq125"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq126"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq127"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq128"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq129"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq130"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq131"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq132"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq133"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq134"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq135"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq136"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq137"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq138"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq139"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq140"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq141"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq142"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq143"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq144"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq145"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq146"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq147"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq148"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq149"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq150"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq151"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq152"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq153"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq154"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq155"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq156"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq157"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq158"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq159"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq160"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq161"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq162"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq163"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq164"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq165"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq166"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq167"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq168"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq169"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq170"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq171"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq172"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq173"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq174"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq175"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq176"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq177"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq178"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq179"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq180"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq181"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq182"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq183"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq184"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq185"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq186"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq187"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq188"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq189"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq190"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq191"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq192"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq193"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq194"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq195"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq196"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq197"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq198"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq199"><behave like="gridSprite"/></sprite>
+
+	<sprite skin="square" id="sq200"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq201"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq202"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq203"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq204"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq205"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq206"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq207"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq208"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq209"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq210"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq211"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq212"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq213"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq214"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq215"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq216"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq217"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq218"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq219"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq220"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq221"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq222"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq223"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq224"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq225"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq226"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq227"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq228"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq229"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq230"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq231"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq232"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq233"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq234"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq235"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq236"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq237"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq238"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq239"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq240"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq241"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq242"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq243"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq244"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq245"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq246"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq247"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq248"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq249"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq250"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq251"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq252"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq253"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq254"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq255"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq256"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq257"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq258"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq259"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq260"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq261"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq262"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq263"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq264"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq265"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq266"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq267"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq268"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq269"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq270"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq271"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq272"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq273"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq274"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq275"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq276"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq277"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq278"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq279"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq280"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq281"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq282"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq283"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq284"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq285"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq286"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq287"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq288"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq289"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq290"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq291"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq292"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq293"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq294"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq295"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq296"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq297"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq298"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq299"><behave like="gridSprite"/></sprite>
+
+	<sprite skin="square" id="sq300"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq301"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq302"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq303"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq304"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq305"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq306"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq307"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq308"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq309"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq310"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq311"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq312"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq313"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq314"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq315"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq316"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq317"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq318"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq319"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq320"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq321"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq322"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq323"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq324"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq325"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq326"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq327"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq328"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq329"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq330"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq331"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq332"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq333"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq334"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq335"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq336"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq337"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq338"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq339"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq340"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq341"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq342"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq343"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq344"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq345"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq346"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq347"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq348"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq349"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq350"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq351"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq352"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq353"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq354"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq355"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq356"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq357"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq358"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq359"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq360"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq361"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq362"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq363"><behave like="gridSprite"/></sprite>
+	<sprite skin="square" id="sq364"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq365"><behave like="gridSprite"/></sprite>	
+	<sprite skin="square" id="sq366"><behave like="gridSprite"/></sprite><sprite skin="square" id="sq367"><behave like="gridSprite"/></sprite>
+
+<!-- ******************************** cell labels **************************************************************************************** -->
+<label skin="cellText" id="cell000" width="32" height="16" halign="justify" valign="top" text=""/><label skin="cellText" id="cell001" width="32" height="16" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell002" width="32" height="16" halign="center" valign="top" text=""/><label skin="cellText" id="cell003" width="32" height="16" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell004" width="32" height="16" halign="center" valign="top" text=""/><label skin="cellText" id="cell005" width="32" height="16" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell006" width="32" height="16" halign="center" valign="top" text=""/><label skin="cellText" id="cell007" width="32" height="16" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell008" width="32" height="16" halign="center" valign="top" text=""/><label skin="cellText" id="cell009" width="32" height="16" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell010" width="32" height="16" halign="center" valign="top" text=""/><label skin="cellText" id="cell011" width="32" height="16" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell012" width="32" height="16" halign="center" valign="top" text=""/><label skin="cellText" id="cell013" width="32" height="16" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell014" width="32" height="16" halign="center" valign="top" text=""/><label skin="cellText" id="cell015" width="32" height="16" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell016" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell017" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell018" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell019" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell020" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell021" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell022" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell023" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell024" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell025" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell026" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell027" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell028" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell029" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell030" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell031" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell032" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell033" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell034" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell035" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell036" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell037" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell038" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell039" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell040" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell041" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell042" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell043" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell044" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell045" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell046" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell047" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell048" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell049" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell050" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell051" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell052" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell053" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell054" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell055" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell056" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell057" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell058" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell059" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell060" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell061" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell062" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell063" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell064" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell065" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell066" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell067" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell068" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell069" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell070" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell071" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell072" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell073" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell074" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell075" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell076" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell077" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell078" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell079" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell080" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell081" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell082" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell083" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell084" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell085" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell086" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell087" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell088" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell089" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell090" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell091" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell092" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell093" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell094" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell095" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell096" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell097" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell098" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell099" width="32" height="32" halign="center" valign="top" text=""/>
+	
+	<label skin="cellText" id="cell100" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell101" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell102" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell103" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell104" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell105" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell106" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell107" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell108" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell109" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell110" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell111" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell112" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell113" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell114" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell115" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell116" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell117" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell118" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell119" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell120" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell121" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell122" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell123" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell124" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell125" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell126" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell127" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell128" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell129" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell130" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell131" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell132" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell133" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell134" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell135" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell136" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell137" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell138" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell139" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell140" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell141" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell142" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell143" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell144" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell145" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell146" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell147" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell148" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell149" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell150" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell151" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell152" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell153" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell154" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell155" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell156" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell157" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell158" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell159" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell160" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell161" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell162" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell163" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell164" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell165" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell166" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell167" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell168" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell169" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell170" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell171" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell172" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell173" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell174" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell175" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell176" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell177" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell178" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell179" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell180" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell181" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell182" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell183" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell184" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell185" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell186" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell187" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell188" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell189" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell190" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell191" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell192" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell193" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell194" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell195" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell196" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell197" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell198" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell199" width="32" height="32" halign="center" valign="top" text=""/>
+
+	<label skin="cellText" id="cell200" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell201" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell202" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell203" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell204" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell205" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell206" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell207" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell208" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell209" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell210" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell211" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell212" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell213" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell214" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell215" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell216" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell217" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell218" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell219" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell220" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell221" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell222" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell223" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell224" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell225" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell226" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell227" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell228" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell229" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell230" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell231" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell232" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell233" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell234" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell235" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell236" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell237" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell238" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell239" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell240" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell241" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell242" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell243" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell244" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell245" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell246" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell247" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell248" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell249" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell250" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell251" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell252" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell253" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell254" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell255" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell256" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell257" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell258" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell259" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell260" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell261" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell262" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell263" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell264" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell265" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell266" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell267" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell268" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell269" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell270" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell271" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell272" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell273" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell274" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell275" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell276" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell277" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell278" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell279" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell280" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell281" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell282" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell283" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell284" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell285" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell286" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell287" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell288" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell289" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell290" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell291" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell292" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell293" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell294" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell295" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell296" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell297" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell298" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell299" width="32" height="32" halign="center" valign="top" text=""/>
+
+	<label skin="cellText" id="cell300" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell301" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell302" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell303" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell304" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell305" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell306" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell307" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell308" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell309" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell310" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell311" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell312" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell313" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell314" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell315" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell316" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell317" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell318" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell319" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell320" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell321" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell322" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell323" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell324" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell325" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell326" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell327" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell328" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell329" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell330" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell331" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell332" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell333" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell334" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell335" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell336" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell337" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell338" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell339" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell340" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell341" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell342" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell343" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell344" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell345" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell346" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell347" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell348" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell349" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell350" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell351" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell352" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell353" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell354" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell355" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell356" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell357" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell358" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell359" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell360" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell361" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell362" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell363" width="32" height="32" halign="center" valign="top" text=""/>
+	<label skin="cellText" id="cell364" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell365" width="32" height="32" halign="center" valign="top" text=""/>	
+	<label skin="cellText" id="cell366" width="32" height="32" halign="center" valign="top" text=""/><label skin="cellText" id="cell367" width="32" height="32" halign="center" valign="top" text=""/>
+		 
+
+	<label id="num0" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num1" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num2" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num3" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num4" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num5" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num6" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num7" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num8" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num9" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num10" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num11" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num12" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num13" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num14" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num15" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num16" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num17" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num18" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num19" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num20" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num21" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num22" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num23" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num24" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num25" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num26" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num27" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num28" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num29" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num30" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num31" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num32" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num33" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num34" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num35" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num36" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num37" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num38" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num39" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num40" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num41" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num42" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num43" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num44" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num45" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num46" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num47" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num48" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num49" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num50" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num51" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num52" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num53" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num54" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num55" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num56" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num57" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num58" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num59" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num60" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num61" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num62" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num63" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num64" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num65" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num66" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num67" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num68" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num69" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num70" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num71" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num72" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num73" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num74" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num75" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num76" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num77" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num78" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	<label id="num79" skin="tinyText" width="32" height="16" halign="left" valign="top" text=""/>
+	
+    <text id='helpText' skin='helpText' left='5' right='10' top='5' bottom='500' active='false' visible='false'/>	
+	<sprite skin='square' id='closeHelpText' right='20' top='15' u='4' visible='false' active='false'><behave
+    like="closeSprite"/></sprite>
+	<text id="clueText" skin="helpText" left="50" top="650" width="500" height="50" active="false"/>
+	
+	<button id="BUTTON_Q"	active="true" text="Q" left="040" width="40" bottom="170" height="40" do="doButtonClick"/>
+   	<button id="BUTTON_W"	active="true" text="W" left="090" width="40" bottom="170" height="40" do="doButtonClick"/>
+   	<button id="BUTTON_E"	active="true" text="E" left="140" width="40" bottom="170" height="40" do="doButtonClick"/>   	
+	<button id="BUTTON_R" 	active="true" text="R" left="190" width="40" bottom="170" height="40" do="doButtonClick"/>
+    <button id="BUTTON_T"	active="true" text="T" left="240" width="40" bottom="170" height="40" do="doButtonClick"/>		
+    <button id="BUTTON_Y"	active="true" text="Y" left="290" width="40" bottom="170" height="40" do="doButtonClick"/>
+    <button id="BUTTON_U"	active="true" text="U" left="340" width="40" bottom="170" height="40" do="doButtonClick"/>    		
+    <button id="BUTTON_I"	active="true" text="I" left="390" width="40" bottom="170" height="40" do="doButtonClick"/>    		
+    <button id="BUTTON_O"	active="true" text="O" left="440" width="40" bottom="170" height="40" do="doButtonClick"/> 
+    <button id="BUTTON_P"	active="true" text="P" left="490" width="40" bottom="170" height="40" do="doButtonClick"/>  
+      
+	<button id="BUTTON_A"	active="true" text="A" left="040" width="40" bottom="120" height="40" do="doButtonClick"/>
+   	<button id="BUTTON_S"	active="true" text="S" left="090" width="40" bottom="120" height="40" do="doButtonClick"/>
+   	<button id="BUTTON_D"	active="true" text="D" left="140" width="40" bottom="120" height="40" do="doButtonClick"/>   	
+	<button id="BUTTON_F" 	active="true" text="F" left="190" width="40" bottom="120" height="40" do="doButtonClick"/>
+    <button id="BUTTON_G" 	active="true" text="G" left="240" width="40" bottom="120" height="40" do="doButtonClick"/>		
+    <button id="BUTTON_H" 	active="true" text="H" left="290" width="40" bottom="120" height="40" do="doButtonClick"/>
+    <button id="BUTTON_J"	active="true" text="J" left="340" width="40" bottom="120" height="40" do="doButtonClick"/>    		
+    <button id="BUTTON_K"	active="true" text="K" left="390" width="40" bottom="120" height="40" do="doButtonClick"/> 
+    <button id="BUTTON_L"	active="true" text="L" left="440" width="40" bottom="120" height="40" do="doButtonClick"/> 
+	
+   	<button id="BUTTON_Z"	active="true" text="Z" left="040" width="40" bottom="070" height="40" do="doButtonClick"/>
+   	<button id="BUTTON_X"	active="true" text="X" left="090" width="40" bottom="070" height="40" do="doButtonClick"/>
+   	<button id="BUTTON_C"	active="true" text="C" left="140" width="40" bottom="070" height="40" do="doButtonClick"/>   	
+	<button id="BUTTON_V" 	active="true" text="V" left="190" width="40" bottom="070" height="40" do="doButtonClick"/>
+    <button id="BUTTON_B" 	active="true" text="B" left="240" width="40" bottom="070" height="40" do="doButtonClick"/>		
+    <button id="BUTTON_N" 	active="true" text="N" left="290" width="40" bottom="070" height="40" do="doButtonClick"/>		
+    <button id="BUTTON_M" 	active="true" text="M" left="340" width="40" bottom="070" height="40" do="doButtonClick"/>
+    <button id="BUTTON_ " 	active="true" text=" " left="390" width="40" bottom="070" height="40" do="doButtonClick"/>
+
+	<button id="BUTTON_1" 	active="true" text=" " left="010" width="40" bottom="305" height="40" do="doSwitchKeyboard"/>	
+	    
+	<dialog id="ABOUT_DIALOG" width="450" height="250" visible="false">
+		<code>
+         	<function id="doCenter">
+         		this.doOK();
+	         </function>		
+			<function id="doOK">
+				this.show(false)
+			</function>
+			<function id="open">
+				this.show(true)
+			</function>
+		</code>
+		<background skin="dlg_background" left="0" right="0" top="0" bottom="0"/>
+		<label skin="swis32blk" text="CrossWord" align="center" left="28" right="28" top="10" height="35"/>
+		<label skin="swis24blk" text="written in JavaScript" align="center" left="28" right="28" top="42" height="28"/>
+		<label skin="swis16blk" text="This version was written 2011-2012 by Daniel Genin" align="center" left="28" right="28" top="70" height="28"/>
+		<default-button id="OK" text="Ok" width="70" bottom="10" do="doOK"/>
+	</dialog>
+
+	<dialog id="WIN_DIALOG"  width="450" height="250" visible="false">
+		<code>
+         	<function id="doCenter">
+         		this.doOK();
+	         </function>				
+			<function id="doOK">
+				this.show(false)
+			</function>
+			<function id="open">
+				this.show(true)
+			</function>
+		</code>
+		<background skin="dlg_background" left="0" right="0" top="0" bottom="0"/>
+		<label skin="swis32blk" active="false" text="CORRECT!" align="center" left="28" right="28" top="30" height="35"/>
+		<default-button id="OK" text="Ok" width="70" bottom="10" do="doOK"/>
+	</dialog>
+
+	<dialog id="PUZZLE_DIALOG" width="450" height="250" visible="false">
+		<code>
+			<function id="doLoad">
+				this.show(false);
+				this.container.loadCrossword();
+			</function>
+			<function id="doClose">
+				this.show(false);
+				this.closeDlg();
+			</function>
+		</code>
+		<background skin="dlg_background" left="0" right="0" top="0" bottom="0"/>
+		<label skin="swis32blk" active="false" text="Choose a puzzle:" align="center" left="28" right="28" top="20" height="38"/>
+		<text id="puzzleName" skin="customText" active="false" variable="fileName" left="160" width="262" top="67" height="41"/>
+		<button id="prevPuzzle" skin="nullButton" left="100" top="67" width="50" heigth="28" text="-" do="doPrevNextPuzzle"/>
+		<button id="nextPuzzle" skin="nullButton" left="410" top="67" width="50" heigth="28" text="+" do="doPrevNextPuzzle"/>
+		
+		<default-button id="btn_Ok" text="Load" width="70" bottom="10" do="doLoad"/>
+		<button id="btn_Cancel" text="Cancel" width="100" left ="270" bottom="10" do="doClose"/>		
+	</dialog>
+		 
+  </group>
+</group>
+
+</document>

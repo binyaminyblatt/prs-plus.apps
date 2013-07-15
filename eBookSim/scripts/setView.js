@@ -171,4 +171,16 @@
       					this.MAIN.EINK.VIEW.setURI("../addons/StudyWord/studyword.xml");				
       					break;
 						}
+      	case "CrossWord" : {
+      					this.bubble("tracelog","CrossWord");
+      					kbook.autoRunRoot._icon = _Core.config.compat.NodeKinds.getIcon("GAME",0);
+      					kbook.autoRunRoot._title = "CrossWord";				
+      					kbook.autoRunRoot.setSoValue = _Core.system.setSoValue;
+      					kbook.autoRunRoot.getFileContent = _Core.io.getFileContent;
+						kbook.autoRunRoot.listFiles = _Core.io.listFiles;
+						this.bubble("tracelog","here");
+      					this.MAIN.EINK.VIEW.setURI("../addons/CrossWord/crossword.xml");
+						this.bubble("tracelog","after");
+      					break;
+      					}
       	}
