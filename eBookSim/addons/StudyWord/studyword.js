@@ -90,10 +90,16 @@ var tmp = function () {
 	var lplus = 6;
 	var lminus = 5;
 	var learnedwords = 0;
-
+	
+	
+	var readme ;
+	var readmeline = 0;
+	var readmelength = 0;
 	var curl=1;		//current level
 	var scr = 0;		//current score for level
-
+	var sel = -1;		//selected button
+	var column = 0;
+	var  curkey;
 	var WA =new Array();	//arrays of words for current learning
 	
 	var words =new Array();	//array of words(all words from file)
@@ -342,7 +348,8 @@ var tmp = function () {
 		setSoValue(target.keyboard1.BACK, 'text', strBack);
 		setSoValue(target.keyboard1.SHIFT, 'text', strShift);
 		setSoValue(target.keyboard1.SPACE, 'text', "");
-
+		setSoValue(target.Help_DIALOG.BUTTON_UPP, 'text', strUp);
+		setSoValue(target.Help_DIALOG.BUTTON_DWN, 'text', strDown);
 		
 		//apply translation strings
 		target.keyboard1.eventDescription.setValue("");
@@ -436,9 +443,9 @@ var tmp = function () {
 			for(var i = 0; i<10;i++){
 				wordsnum++;
 				words[wordsnum-1] = new Array({word: "", transcription: "", translate: "",studied:0});
-				words[wordsnum-1].word = "Word"+wordsnum;
-				words[wordsnum-1].transcription = "Transcription"+wordsnum;
-				words[wordsnum-1].translate = "Translation"+wordsnum;
+				words[wordsnum-1].word = "word"+wordsnum;
+				words[wordsnum-1].transcription = "transcription"+wordsnum;
+				words[wordsnum-1].translate = "translation"+wordsnum;
 				words[wordsnum-1].studied = 0;
 				lang = "eng";
 			}
@@ -544,6 +551,33 @@ var tmp = function () {
 	}
 
 
+
+	//
+	target.LoadDescription = function (){
+		var i,j;
+		var file = "";
+
+		file =kbdPath+"readme.txt";
+
+		if (FileSystem.getFileInfo(file)) {
+
+			 readme = getFileContent(file,'readme missing');
+			if (readme!='readme missing') {
+				//readme = tmp.split("\r\n");
+				target.Help_DIALOG.help_descr.setValue(readme);//.split("\r\n");	// CR LF is used by stream.writeLine()
+			} else {
+				// fallback
+
+			}
+		} else {
+			// fallback
+
+		}
+		return;	
+	}
+
+
+
 	//select word and begin level
 	target.WordSelection = function (){
 		//word selection
@@ -596,26 +630,26 @@ var tmp = function () {
 		var id;
 		id = getSoValue(sender, "id");
 		n = id.substring(7, 10);
-		if (n == "004") {
+		if (n == "VBT") {
 		//select word as studied
 			if((wordsnum!=0)&&(wordsnum!=learnedwords)){
 			target.decreasewordnum();
 			target.WordSelection();	}		
 			return;
 		}
-		if (n == "005") {
-			// save words
+		if (n == "HLP") {
+			// help 
 
-			target.saveWords();
+			target.LoadDescription();
+			target.Help_DIALOG.show(true);
 
 			return;
 		}
-		if (n == "006") {
+		if (n == "SET") {
 			// 
 
 			target.OpenSettings();
 			target.SETTINGS_DIALOG.show(true);
-
 			return;
 		}			
 		if (n == "001") {
@@ -812,19 +846,6 @@ var tmp = function () {
 	
 
 
-
-	target.doRoot = function (sender) {
-		this.saveWords();
-		kbook.autoRunRoot.exitIf(kbook.model);
-		return;
-	}
-	
-	target.doHold0 = function () {
-		this.saveEvents();
-		kbook.autoRunRoot.exitIf(kbook.model);
-		return;
-	}
-
 	//save words to file
 	target.saveWords = function () {
 		var event;
@@ -910,6 +931,12 @@ var tmp = function () {
 		eventDescription = eventDescription + " ";
 		target.keyboard1.eventDescription.setValue(eventDescription);
 		target.setVariable("current_line",eventDescription);
+
+		var Remain = "Remain: ";
+		var wordtmp = words[WA[workingword].word].word;
+		var rmn =  wordtmp.length - eventDescription.length;
+		Remain = Remain + rmn + " of " + wordtmp.length;
+		setSoValue(target.keyboard1.remainder,'text',Remain);
 	}
 
 	target.doSymbol = function () {
@@ -930,19 +957,27 @@ var tmp = function () {
 		eventDescription = eventDescription.slice(0,eventDescription.length-1);
 		target.keyboard1.eventDescription.setValue(eventDescription);
 		target.setVariable("current_line",eventDescription);
+		
+		var Remain = "Remain: ";
+		var wordtmp = words[WA[workingword].word].word;
+		var rmn =  wordtmp.length - eventDescription.length;
+		Remain = Remain + rmn + " of " + wordtmp.length;
+		target.keyboard1.remainder.setText(Remain);
 	}
 	
 	target.doKeyPress = function (sender) {
 		var id = getSoValue(sender, "id");
-		this.addCharacter(id);
+		curkey=parseInt(id.substring(3, 5));
+		this.addCharacter();
+		
 		return;
 	}
 	
-	target.addCharacter = function (id) {
-		var key=id.substring(3, 5);
+	target.addCharacter = function () {
+		
 		var n;
 
-		n = parseInt(key);
+		n = curkey;
 
 		if (symbols) { n = n + symbolsOffset };
 		if (shifted) { n = n + shiftOffset };
@@ -1010,14 +1045,54 @@ var tmp = function () {
 		}
 */
 
+
+
+		//target.eventsText.setValue("WWWWWWW");				
+		//target.eventsText.show(true);
+//target.eventsText.style.background='#ffffff';
+//target.getElementById("BUTTON_001").style.background='#6D6D6D';
+		//target.BUTTON_001.style.background='#6D6D6D';
+//target.fnShowProps(target.eventsText.getAttribute(),"Win");
+
+
+
+
 		return;
 	}
 
 
+
+target.fnShowProps = function(obj, objName){
+    var res = "";
+var i;
+	var Path = target.studywordRoot + "qwe.txt";
+	stream = new Stream.File(Path, 1);
+    for (i in obj) {// обращение к свойствам объекта по индексу
+	//var i = 0;
+	res = "";
+        res += objName + "." + i + " = " + obj[i] + "\n";
+
+
+			stream.writeLine(res);}
+		
+			stream.close();
+
+	//return res;
+/*
+  var result = "";
+  for (var i in obj) {
+    if (obj.hasOwnProperty(i)) {
+        result += objName + "." + i + " = " + obj[i] + "\n";
+    }
+  }
+  return result;*/
+}
+
 	//level 2 initialisation
 	target.Level2Init = function (){ 
 
-
+		sel = 0;
+		column = 0;
 		target.Status_Label.setValue("Level2");
 		target.StatusScore_Label.show(false);
 
@@ -1087,7 +1162,9 @@ var tmp = function () {
 	//level 3 initialisation
 	target.Level3Init = function (){ 
 
-
+		sel = 0;
+		column = 0;
+		target.level3.wordcaseSel.changeLayout(0,0, uD,0, 0, uD);
 		var str = "";
 		var val;
 		val = WA[workingword].l3;
@@ -1146,6 +1223,7 @@ var tmp = function () {
 	//level 4 initialisation
 	target.Level4Init = function (){ 
 		target.StatusScore_Label.setValue("");
+		sel = 0;
 		var str = "";
 		str ="Score: "+ WA[workingword].l4 +" of " + l4val;
 		target.StatusScore_Label.setValue(str);
@@ -1171,6 +1249,7 @@ var tmp = function () {
 			setSoValue(target.transcription, 'text',words[WA[workingword].word].transcription);
 			setSoValue(target.translate, 'text',words[WA[workingword].word].translate);
 
+
 		return;
 	}
 
@@ -1178,6 +1257,9 @@ var tmp = function () {
 	//level 5 initialisation
 	target.Level5Init = function (){ 
 		var str = "";
+		sel = 0;
+		column = 0;
+		target.level3.wordcaseSel.changeLayout(0,0, uD,0, 0, uD);
 		var val;
 		val = WA[workingword].l5;
 		str ="Score: "+ val +" of " + l5val;
@@ -1235,7 +1317,8 @@ var tmp = function () {
 	//level 6 initialisation
 	target.Level6Init = function (){ 
 
-
+		sel = 0;
+		column = 0;
 		var str = "";
 		var val;
 		val = WA[workingword].l6;
@@ -1255,7 +1338,9 @@ var tmp = function () {
 		target.BUTTON_003.show(true);
 		target.BUTTON_001.enable(true);
 
+
 		target.BUTTON_003.enable(true);
+		target.BUTTON_001.focus(true);
 		target.Word.show(true);
 		setSoValue(target.Word, 'text',words[WA[workingword].word].translate);
 		setSoValue(target.keyboard1.Answer, 'text',words[WA[workingword].word].word);
@@ -1271,10 +1356,12 @@ var tmp = function () {
 		setSoValue(target.keyboard1.remainder,'text',Remain);
 		target.setVariable("current_line","");
 		target.keyboard1.Answer.show(false);
-				target.eventsText.setValue("l6= " + WA[workingword].l6 + " score= "+ scr);
+				//target.eventsText.setValue("l6= " + WA[workingword].l6 + " score= "+ scr);
 				//target.eventsText.show(true);
+
 		return;
 	}
+
 
 
 
@@ -1394,6 +1481,7 @@ var tmp = function () {
 		target.BUTTON_001.setText('Reset');
 		target.BUTTON_003.setText('Mix');
 		curl = 10;
+		sel=0;
 		target.Status_Label.setValue("No word to learn");
 		target.StatusScore_Label.show(false);
 		target.Win.show(true);
@@ -1403,13 +1491,7 @@ var tmp = function () {
 		return;
 	}
 
-
-
-	target.SETTINGS_DIALOG.doPlusMinus = function (sender) {
-		var id;
-		var step = 0;
-		id = getSoValue(sender, "id");
-		n = id.substring(7, 10);
+		target.SD_doPlusMinus= function (n){
 		if(n.charAt(2)=='P'){step = 1;}else{step = -1;}
 
 		if (n.charAt(1) == 'P') {
@@ -1533,11 +1615,59 @@ var tmp = function () {
 			target.SETTINGS_DIALOG.RadioB_RB2.enable(true);
 			target.setVariable("TRIG",0);
 			//target.eventsText.show(true);		
-		}		
+		}	
+}
+
+	target.SETTINGS_DIALOG.doPlusMinus = function (sender) {
+		var id;
+		var step = 0;
+		id = getSoValue(sender, "id");
+		n = id.substring(7, 10);
+		target.SD_doPlusMinus(n);
 
 	}
 
+	target.Help_DIALOG.doPlusMinus = function (sender) {
+
+		var id;
+		var step = 0;
+		id = getSoValue(sender, "id");
+		n = id.substring(7, 10);	
+		if (n == "DWN") {
+
+
+			
+			if((readmeline<=0)||(readmelength<=0)){readmeline = 0;readmelength = 0;}
+			//var tmp = readme.substring(100);
+			var tmp = readme.split("\r\n");
+
+			while((tmp[readmeline]=="")){readmeline++;readmelength +=2;}
+ 
+			readmelength +=tmp[readmeline].length +2 ;
+			//var num = readme.search(tmp[readmeline]);
+			//target.Help_DIALOG.help_descr.setValue(readmeline+ " " + num + " " + tmp[readmeline]);
+
+			target.Help_DIALOG.help_descr.setValue(readme.substring(readmelength));
+//			target.Help_DIALOG.help_descr.setValue(tmp[0].length+ " " + tmp[1].length + " " +tmp[2].length + " ");	
+			readmeline++;
+			return;
+
+
+		}		
+		if (n == "UPP") {
+			readmeline--;
+			var tmp = readme.split("\r\n");
+			while((tmp[readmeline]=="")&&(readmeline>0)){readmeline--;readmelength -=2;}
+			if((readmeline<=0)||(readmelength<=0)){readmeline = 0;readmelength = 0;}
+			readmelength -=tmp[readmeline].length +2 ;
+			target.Help_DIALOG.help_descr.setValue(readme.substring(readmelength));
+
+			return;
+		}
+	}
+
 	target.OpenSettings = function () {
+
 		target.SETTINGS_DIALOG.WAScorePlus_set_Text.setValue(lplus);
 		target.SETTINGS_DIALOG.WAScoreMinus_set_Text.setValue(lminus);
 		target.SETTINGS_DIALOG.WAWorkingnum_set_Text.setValue(workwordnummax);
@@ -1549,6 +1679,7 @@ var tmp = function () {
 		target.SETTINGS_DIALOG.L6_set_Text.setValue(l6val);
 		target.SETTINGS_DIALOG.L2Num_set_Text.setValue(l2nummax);
 		target.SETTINGS_DIALOG.L3Num_set_Text.setValue(l3nummax);
+		target.SETTINGS_DIALOG.selection.changeLayout(0, 0, uD, 0, 0, uD);
 
 
 	}
@@ -1578,7 +1709,7 @@ var tmp = function () {
 		target.split1.show(false);
 
 		target.Win.show(false);
-
+		target.selection.changeLayout(0, 0, uD, 0, 0, uD);
 		for(var i = 0; i<=9; i ++){
 			var k = i + 10;
 			target.level2['square'+i].enable(false);
@@ -1593,6 +1724,514 @@ var tmp = function () {
 		}
 		return;
 	}
+
+
+//button controls
+	target.doMove = function (forw){
+		var x = 0;
+		var y = 0;
+		if(forw == "up"){y = -1;}
+		if(forw == "down"){y = 1;}
+		if(forw == "left"){x = -1;}
+		if(forw == "right"){x = 1;}
+		if(curl == 2){
+			if(y!=0){if(!target.L2step(y)){if(y==1){sel = 0;}else{sel = l2nummax+1;};target.L2step(y);}target.level2['selection'+(column+1)].changeLayout(300*(column),300, uD, (sel-1)*70+80, 70, uD);}
+			
+
+			if(sel>0){// if selected 
+
+				if(x==-1){
+						
+					column = 0;
+					target.level2.selection2.changeLayout(0,0, uD, 0, 0, uD);
+						
+				}
+				else if(x==1){
+
+					if(column==0){
+				//target.eventsText.show(true);
+						column = 1;l2s1 = sel-1;workingword=l21[sel-1];sel = 0;target.L2step(1);
+						target.level2['selection'+(column+1)].changeLayout(300*(column),300, uD, (sel-1)*70+80, 70, uD);
+						}else
+					if(column==1){target.L2sel();}
+				}
+			}
+		}
+		if((curl == 3)||(curl == 5)){
+			if((sel>0)&&(x == 1)){target.L3sel();}
+			if(y!=0){
+				if(!target.L3step(y)){if(y==1){sel = 0;}else{sel = l3nummax+1;};target.L3step(y);}
+				target.level3.wordcaseSel.changeLayout(0,600, uD, (sel-1)*70+220, 70, uD);
+				return;}
+		}
+
+		if(curl==4){
+			if(x!=0){target.L4BSel(-x);}
+
+		}
+		if(curl==6){
+			target.L6step(x,y);
+
+		}
+
+		
+		if(curl==11){
+						
+			if((readmeline<=0)||(readmelength<=0)){readmeline = 0;readmelength = 0;}
+			//var tmp = readme.substring(100);
+			var tmp = readme.split("\r\n");
+
+			while((tmp[readmeline]=="")){readmeline++;readmelength +=2;}
+ 
+			readmelength +=tmp[readmeline].length +2 ;
+			//var num = readme.search(tmp[readmeline]);
+			//target.Help_DIALOG.help_descr.setValue(readmeline+ " " + num + " " + tmp[readmeline]);
+
+			target.Help_DIALOG.help_descr.setValue(readme.substring(readmelength));
+//			target.Help_DIALOG.help_descr.setValue(tmp[0].length+ " " + tmp[1].length + " " +tmp[2].length + " ");	
+			readmeline++;
+			return;
+
+		}
+
+	}
+
+	target.doRoot = function (sender) {
+		this.saveWords();
+		kbook.autoRunRoot.exitIf(kbook.model);
+		return;
+	}
+	
+	target.doHold0 = function () {
+		this.saveEvents();
+		kbook.autoRunRoot.exitIf(kbook.model);
+		return;
+	}
+	target.doNext = function (sender) {
+		if(curl==1){WA[workingword].l1+=lplus;
+		//for level 1 NEXT button
+			target.Level1Visible(false);
+			target.WordSelection();
+			return;
+		}
+		if(curl==2){
+		//for level 2 NEXT button
+			if((sel>=1)&&(column==0)){
+			column = 1;l2s1 = sel-1;workingword=l21[sel-1];sel = 0;target.L2step(1);
+			target.level2['selection'+(column+1)].changeLayout(300*(column),300, uD, (sel-1)*70+80, 70, uD);
+			return;}else
+			if((sel<=10)&&(column==1)){target.L2sel();}
+
+			return;
+		}
+		if((curl==3)||(curl==5)){
+		//for level 3 NEXT button
+			if(sel>0){target.L3sel();}
+			return;
+		}
+		if(curl==4){
+			target.L4BClick();
+			return;
+		}
+		if(curl==6){
+			if(column==5){if(sel==2){target.keyboard1.Answer.show(true);return;}}
+			if((column!=5)||(sel!=2)){
+			if(words[WA[workingword].word].word==target.getVariable("current_line")){scr+=lplus;WA[workingword].l6+=scr;target.level6complite();	return;}
+				else{scr=-lminus;}
+
+				val = WA[workingword].l6+scr;
+				str ="Score: "+ val +" of " + l6val;
+				target.StatusScore_Label.setValue(str);
+				return;	}
+			return;
+		}
+		if(curl==10){
+			target.L10B();
+			return;
+		}
+		return;
+	}
+
+	target.L10B = function () {
+			if(sel==0){
+				target.ResetStatistics();
+				target.saveWords();
+				target.addwords();
+				target.WordSelection();
+				return;}
+			else{
+				target.MixWord();
+				target.ResetStatistics();
+				target.addwords();
+				target.WordSelection();
+				return;	
+			}
+	}
+
+	target.doPrevious = function (sender) {
+
+		if(curl==2){
+		//for level 2 Prev button
+		if(!target.L2step(1)){sel = 0;target.L2step(1);}
+			target.level2['selection'+(column+1)].changeLayout(300*(column),300, uD, (sel-1)*70+80, 70, uD);
+			return;
+		}
+		if((curl==3)||(curl==5)){
+		//for level 3 Prev button
+
+		if(!target.L3step(1)){sel = 0;target.L3step(1);}
+			target.level3.wordcaseSel.changeLayout(0,600, uD, (sel-1)*70+220, 70, uD);
+			return;
+		}
+
+		if(curl==4){
+			target.L4BSel(1);
+			return;
+		}
+		if(curl==6){
+			target.L4BSel(2);
+			column = 5;
+			return;
+		}
+		if(curl==10){
+			target.L4BSel(2);
+			return;
+		}
+
+		return;
+	}
+
+
+	target.doMenu = function (sender) {
+		//setings 
+		target.OpenSettings();
+		target.SETTINGS_DIALOG.show(true);
+		return;
+	}
+	target.doCenter = function (sender) {
+		if(curl==4){
+			target.L4BClick();
+		}
+		if(curl==6){
+			if(curkey ==200){target.doShift()}else
+			if(curkey ==201){target.doSymbol();}else
+			if(curkey ==202){target.doSpace()}else
+			if(curkey ==203){target.doBack()}else{this.addCharacter();}
+		}
+		
+		return;
+	}
+	target.doMark = function (sender) {
+	//select word as studied
+		if((wordsnum!=0)&&(wordsnum!=learnedwords)){
+			target.decreasewordnum();
+			target.WordSelection();
+		}
+		return;
+	}
+
+	target.doSize = function (sender) {
+		// help 
+		curl=11;
+		target.LoadDescription();
+		target.Help_DIALOG.show(true);
+
+		return;
+	}
+
+	target.digitF = function (key) {
+		var str = "";
+		if(key==0){
+		this.saveWords();
+		kbook.autoRunRoot.exitIf(kbook.model);
+		return;
+		}else{
+		if((key==1)&&(curl==1)){
+		//for level 1 NEXT button
+			WA[workingword].l1+=lplus;
+			target.Level1Visible(false);
+			target.WordSelection();
+			return;
+		}
+		if(curl==2){
+			if(sel!=key){
+			if(key<=l2nummax){sel = key;
+
+				if((l21[sel-1]==-1)&&(column==0)){
+					if(!target.L2step(1)){sel = 0;target.L2step(1);}}
+				else if((l22[sel-1]==-1)&&(column==1)){
+					if(!target.L2step(1)){sel = 0;target.L2step(1);}
+				}
+				target.StatusScore_Label.show(true);target.StatusScore_Label.setValue("Score: "+ (WA[l21[sel-1]].l2+scr) +" of " + l2val);
+				target.level2['selection'+(column+1)].changeLayout(300*(column),300, uD, (sel-1)*70+80, 70, uD);
+			}}
+			else if(column == 0){l2s2 = 25;scr = 0;column = 1;l2s1 = sel-1;workingword=l21[sel-1];workingword = l21[l2s1];target.StatusScore_Label.show(true);sel = 0;target.L2step(1);target.level2['selection'+(column+1)].changeLayout(300*(column),300, uD, (sel-1)*70+80, 70, uD);}
+			else if(column == 1){target.L2sel();}
+			return;
+		}
+		if((curl==3)||(curl==5)){
+			if(sel!=key){sel = key;
+				if(l21[sel-1]==-1){if(!target.L3step(1)){sel = 0;target.L3step(1);}}
+				target.level3.wordcaseSel.changeLayout(0,600, uD, (sel-1)*70+220, 70, uD);
+		
+			} else{target.L3sel();}
+
+		
+		}
+		if(curl==4){
+			sel = key-1;
+			target.L4BClick();
+		
+		}
+		if(curl==6){
+			if(key==9){target.doBack()}else{
+			sel = key-1;
+			target.L6step(0,0);
+			}
+		}
+
+		if(curl==10){
+			sel = key-1;
+			target.L4BSel(2);
+			//target.L10B();
+			return;
+		}
+		return;
+		}//else
+		return;
+	}
+
+
+	target.doOption = function () {
+		//setings 
+		target.OpenSettings();
+		target.SETTINGS_DIALOG.show(true);
+		return;
+	}
+
+
+	target.L6step = function (x,y) {
+		var pref = 5;
+		var w = 35;
+		sel = sel+x;
+		column+=y;
+		if(sel<0){sel=0}
+		if(column<0){column = 0;}
+		if(column>3){column = 3;}
+		if(column ==0){if(sel>13){sel=13;};curkey = sel+1;}
+		if(column ==1){pref = 25;if(sel>12){sel=12;};curkey = 15+sel}
+		if((sel == 0)&&(column==2)){w=65;pref = 5;curkey =200;}else 
+		if(column ==2){pref = 35;if(sel>11){sel=11};curkey =27 + sel}
+		if(column==3){if(sel>2){sel=2};
+			if(sel==0){w=110;pref=25;curkey =201;}else if(sel==1){w=270;pref=140 - 270-5;curkey =202;}else if(sel==2){w=110;pref=270-110+35-10;curkey =203;}}
+
+
+		target.selection.changeLayout(pref-2+sel*(w+5), w+4, uD,368+column*50, 47, uD);
+
+	}
+
+	target.L4BSel = function (x) {
+		sel+=x;
+		if (sel>2){sel=0;}
+		if (sel<0){sel=2;}
+
+		target.selection.changeLayout(448-sel*200, 123, uD, 652, 47, uD);
+	}
+
+	target.L4BClick = function () {
+		if(sel==0){
+			scr=lplus;WA[workingword].l4+=scr;
+			val = WA[workingword].l4;
+			str ="Score: "+ val +" of " + l4val;
+			target.StatusScore_Label.setValue(str);
+			target.WordSelection();
+			return;
+
+		}else 
+		if(sel==1){
+			scr=lplus-lminus;WA[workingword].l4+=scr;
+			target.WordSelection();
+			return;
+		}else 
+		if(sel==2){target.translate.show(true);return;}
+	}
+	target.L2step = function (x) {
+		if(column==0){
+			if(x==1){if(sel<1){sel=0;};var i = sel;while(i<l2nummax){i++;if(l21[i-1]!=-1){sel = i;target.StatusScore_Label.show(true);target.StatusScore_Label.setValue("Score: "+ (WA[l21[sel-1]].l2+scr) +" of " + l2val);return 1;}}}
+			else if((x==-1)&&(sel>0)){if(sel>l2nummax){sel=l2nummax+1;};var i = sel;while(i>1){i--;if(l21[i-1]!=-1){sel = i;target.StatusScore_Label.show(true);target.StatusScore_Label.setValue("Score: "+ (WA[l21[sel-1]].l2+scr) +" of " + l2val);return 1;}}}
+			else if(sel<1){sel=1;}}
+		else{
+			if(x==1){if(sel<1){sel=0;};var i = sel;while(i<l2nummax){i++;if(l22[i-1]!=-1){sel = i;return 1;}}}
+			else if((x==-1)&&(sel>0)){if(sel>l2nummax){sel=l2nummax+1;};var i = sel;while(i>1){i--;if(l22[i-1]!=-1){sel = i;return 1;}}}
+			else if(sel<1){sel=1;}}
+		return 0;	
+	}
+
+	target.L3step = function (x) {
+
+			if(x==1){if(sel<1){sel=0;};var i = sel;while(i<l3nummax){i++;if(l21[i-1]!=-1){sel = i;return 1;}}}
+			else if((x==-1)&&(sel>0)){if(sel>l3nummax){sel=l3nummax+1;};var i = sel;while(i>1){i--;if(l21[i-1]!=-1){sel = i;return 1;}}}
+			else if(sel<1){sel=1;}
+
+		return 0;	
+	}
+	target.L2sel = function () {
+
+		l2s2 = 10+ sel-1;
+		if(l21[l2s1]!=l22[l2s2-10]){
+		//if selected word not match
+			scr = -lminus;
+			var val = WA[workingword].l2+scr;
+			var str ="Score: "+ val +" of " + l2val;
+			target.StatusScore_Label.setValue(str);
+
+
+			l2s2 = 25;
+			return;
+		}else{
+			target.level2['square'+l2s1].enable(false);
+			target.level2['square'+l2s1].u=1;
+			target.level2['square'+l2s2].u=1;
+			target.level2['square'+l2s2].enable(false);
+			l2num--;
+
+			scr += lplus;			
+			WA[l21[l2s1]].l2 += scr;
+			scr = 0;
+
+			var str ="Score: "+ WA[workingword].l2 +" of " + l2val;
+			target.StatusScore_Label.setValue(str);
+			target.level2.selection1.changeLayout(0, 0, uD, 0, 0, uD);
+			target.level2.selection2.changeLayout(0, 0, uD, 0, 0, uD);
+			column = 0;
+			sel = 0;
+
+			l21[l2s1] = -1;
+			l22[l2s2-10] = -1;
+			l2s1 = 55;
+			l2s2 = 56;
+			target.L2step(1);
+			target.level2.selection1.changeLayout(0,300, uD, (sel-1)*70+80, 70, uD);
+			if(l2num<=0){
+				target.WordSelection();
+				return;
+			}
+		}
+	}
+
+	target.L3sel = function () {
+		var str ="";
+		l2s1 = sel-1;
+		if(l21[l2s1]==workingword){
+			scr += lplus;
+			if(curl==3){WA[workingword].l3 += scr;}
+			else{WA[workingword].l5 += scr;}
+			target.WordSelection();	
+			return;
+		
+		}
+		else {target.level3['wordcase'+(sel-1)].u=1;scr = -lminus;l21[l2s1] = -1;
+		}
+		if(curl==3){
+			val = WA[workingword].l3+scr;
+			str ="Score: "+ val +" of " + l3val;
+		}else if(curl==5){
+			val = WA[workingword].l5+scr;
+			str ="Score: "+ val +" of " + l5val;
+		}		
+		target.StatusScore_Label.setValue(str);
+		return;
+	}
+
+
+
+	target.Help_DIALOG.doMove = function (forw){
+		if(forw == "right"){			if((readmeline<=0)||(readmelength<=0)){readmeline = 0;readmelength = 0;}
+			//var tmp = readme.substring(100);
+			var tmp = readme.split("\r\n");
+
+			while((tmp[readmeline]=="")){readmeline++;readmelength +=2;}
+ 
+			readmelength +=tmp[readmeline].length +2 ;
+			//var num = readme.search(tmp[readmeline]);
+			//target.Help_DIALOG.help_descr.setValue(readmeline+ " " + num + " " + tmp[readmeline]);
+
+			target.Help_DIALOG.help_descr.setValue(readme.substring(readmelength));
+//			target.Help_DIALOG.help_descr.setValue(tmp[0].length+ " " + tmp[1].length + " " +tmp[2].length + " ");	
+			readmeline++;
+			return;}
+		if(forw == "left"){			readmeline--;
+			var tmp = readme.split("\r\n");
+			while((tmp[readmeline]=="")&&(readmeline>0)){readmeline--;readmelength -=2;}
+			if((readmeline<=0)||(readmelength<=0)){readmeline = 0;readmelength = 0;}
+			readmelength -=tmp[readmeline].length +2 ;
+			target.Help_DIALOG.help_descr.setValue(readme.substring(readmelength));
+
+			return;}
+	}
+
+
+	target.SETTINGS_DIALOG.doPrevious = function (Sender){
+		column=5;
+		sel+=1;
+		if (sel>3){sel=0;}
+		if (sel<0){sel=3;}
+
+		target.SETTINGS_DIALOG.selection.changeLayout(400-sel*130-2, 104, uD, 550-4, 47, uD);
+			return;
+	}
+	target.SETTINGS_DIALOG.doMove = function (forw){
+		var x = 0;
+		var y = 0;
+		var PM = 'P';
+		var sen = "L";
+		var l = '';
+
+		var pref = 0;
+		if(forw == "up"){PM = 'P';y=-1;}
+		if(forw == "down"){PM = 'M';y=1;}
+		if(forw == "left"){x = -1;}
+		if(forw == "right"){x = 1;}
+
+
+		if (column==5){sel = 0;column = 0;}
+		column += x; 
+		if(sel==4){if(column>0){column = 0;sel++;}}
+		if(column>1){column=0;sel++;};
+		if(column<0){if(sel==5){column=0}else{column=1;}sel--;};
+		if (sel>5){sel=0;}
+		if (sel<0){sel=5;}
+		l = (column*3+(sel+1));	
+		if (sel==3){pref=30; if(column==0){l='P'}else{l='M'} }
+		if (sel==4){pref=60; l='N' }
+		if (sel==5){pref=90;  l=(8+column);}
+
+		sen +=l+ PM;
+		if(y!=0){target.SD_doPlusMinus(sen);}
+		target.SETTINGS_DIALOG.selection.changeLayout(5-2+column*245, 225, uD,pref+ 100+50*(sel)-4, 44, uD);
+
+	}
+	target.SETTINGS_DIALOG.doNext = function (Sender){
+		if(column==5){
+			var sen = "";
+			if(sel==0){target.SETTINGS_DIALOG.doOK();return;}else
+			if(sel==1){sen="DEF"}else
+			if(sel==2){sen="MIX"}else
+			if(sel==3){sen="RST"}
+			target.SD_doPlusMinus(sen);
+		}
+		else{target.SETTINGS_DIALOG.doOK();}
+	}
+
+	target.SETTINGS_DIALOG.digitF = function (key) {
+
+		sel = key-1;
+
+		if (column==5){column = 0;}
+		target.SETTINGS_DIALOG.doMove("");
+
+	}
+
 
 };
 tmp();
