@@ -4,7 +4,7 @@
 //
 // History: 
 //	06/09/2012	Dan Genin - alpha release
-//	15/07/2013	Ben Chenoweth - added keyboard switch button; various fixes
+//	15/07/2013	Ben Chenoweth - added keyboard switch button; various fixes; errors output to clue box; remembers previous puzzle
 
 var tmp = function() {
 	//
@@ -22,9 +22,11 @@ var tmp = function() {
 	var listFiles = kbook.autoRunRoot.listFiles;
 	//var datPath = kbook.autoRunRoot.gamesSavePath + 'CrossWord/puzzles/';
 	var datPath = target.crosswordRoot + 'puzzles/';
+	var settingsPath  = target.crosswordRoot + 'settings.dat';
+	//var settingsPath = kbook.autoRunRoot.gamesSavePath + 'CrossWord/settings.dat';
 
 	var fnPageScroll = getSoValue(target.helpText, 'scrollPage');
-	
+	var lastClickOnMenu = false;              // Used to control smooth menu closing
 	var width = [ 230, 280, 230 ]; // lazy as I can't get >> itemWidth =
 									// itemStyle.getWidth(window, item.title);<<
 									// to work [inherited from minesweeper. dig]
@@ -58,11 +60,11 @@ var tmp = function() {
 	
 	// read in the list of puzzles in the data directory
 	FileSystem.ensureDirectory(datPath);
-	target.bubble('tracelog', 'datPath = ' + datPath);	
+	//target.bubble('tracelog', 'datPath = ' + datPath);	
 	puzzleNames = listFiles(datPath,"puz");
-	target.bubble('tracelog', 'puzzleNames = ' + puzzleNames[0]);
+	//target.bubble('tracelog', 'puzzleNames = ' + puzzleNames[0]);
 	var currPuzzleIndex = 0;
-	var prevPuzzleIndex;
+	var prevPuzzleIndex = -1;
 	
 	target.helpText.setValue(getFileContent(target.crosswordRoot.concat('CrossWord_Help_EN.txt'),'help.txt missing'));
 	target.helpText.show(false);
@@ -138,7 +140,8 @@ var tmp = function() {
 				
 			size = stream.bytesAvailable;
 			if (size > 4096) {
-				target.bubble("tracelog","Puzzle too big.");
+				target.bubble("tracelog","Puzzle file is too big.");
+				target.clueText.setValue("ERROR: Puzzle file is too big.");
 				return;
 			}
 			
@@ -146,6 +149,7 @@ var tmp = function() {
 			
 			if (getString(chunk,2,11) != "ACROSS&DOWN") {
 				target.bubble("tracelog","The file does not appear to be an AcrossLite format puzzle.");
+				target.clueText.setValue("ERROR: The file does not appear to be an AcrossLite format puzzle.");
 				return;
 			};
 			
@@ -155,7 +159,8 @@ var tmp = function() {
 			//target.bubble("tracelog","cwdHeight = "+cwdHeight);
 			
 			if (cwdWidth > 15 || cwdHeight > 15) {
-				target.bubble("tracelog","Puzzles larger than 15x15 not yet supported.");
+				target.bubble("tracelog","Puzzles larger than 15x15 not supported.");
+				target.clueText.setValue("ERROR: Puzzles larger than 15x15 not supported.");
 				return(-1);
 			}
 			
@@ -163,7 +168,7 @@ var tmp = function() {
 			//if (chunk.peek(30)+chunk.peek(31)*256 == 0) {
 				cwdSolution = getString(chunk,52,cwdWidth*cwdHeight); // if solution is unscrambled load it 
 			//}
-			target.bubble("tracelog","cwdSolution = "+cwdSolution);
+			//target.bubble("tracelog","cwdSolution = "+cwdSolution);
 			
 			nextField = 52 + cwdWidth*cwdHeight;
 			cwdGrid = getString(chunk,nextField,cwdWidth*cwdHeight);
@@ -233,11 +238,11 @@ var tmp = function() {
 	
 	// loads the puzzle data from the puzzleNames[currPuzzleIndex] file and sets up the puzzle field
 	target.loadCrossword = function() {
-		target.bubble('tracelog','in loadCrossword');
+		//target.bubble('tracelog','in loadCrossword');
 		if (loadCrosswordFile() < 0) {
-			target.bubble('tracelog','failed to load the puzzle file')
+			target.bubble('tracelog','failed to load the puzzle file');
 			return;
-			}
+		}
 		
 		maxCells = (cwdWidth) * (cwdHeight) - 1; // Number of cells in the current puzzle
 		
@@ -333,7 +338,7 @@ var tmp = function() {
 			}
 
 		// hide unused squares
-		target.bubble('tracelog',(cwdWidth) * (cwdHeight) + "," + maxSquares)
+		//target.bubble('tracelog',(cwdWidth) * (cwdHeight) + "," + maxSquares)
 		for (i = (cwdWidth) * (cwdHeight); i <= maxSquares; i++) {
 			this['sq' + pad(i, 3)].changeLayout(0, 0, uD, 0, 0, uD);
 		}
@@ -400,7 +405,7 @@ var tmp = function() {
 	
 	// initialization
 	target.init = function() {
-		var i, j;
+		var i, fname;
 
 		// set translated appTitle and appIcon
 		this.appTitle.setValue(kbook.autoRunRoot._title);
@@ -413,22 +418,54 @@ var tmp = function() {
 		}
 		keyboardLow = true;
 		
+		// check MenuOptions
+		//var menuBar = this.findContent("MENUBAR"); // menuBar had to be defined as id="MENUBAR" in XML!! [from original MS code. dig]
+		//var menus = getSoValue(menuBar, "menus");
+		//var items = getSoValue(menus[0], "items");
+		
+		// look for settings file
+		try {
+			if (FileSystem.getFileInfo(settingsPath)) {
+				stream = new Stream.File(settingsPath);
+				fname = stream.readLine();
+				stream.close();
+				if (FileSystem.getFileInfo(datPath + fname)) {
+					// Get number of previous puzzle
+					for (i=0; i < puzzleNames.length; i++) {
+							if (puzzleNames[i] == fname) {
+								currPuzzleIndex = i;
+								break;
+							}
+						}
+				}
+			}
+		} catch (e) {}
+		
 		// display the puzzle load dialog box
-		// should be changed to load config file where the last puzzle accessed would be stored
 		target.setVariable("fileName", puzzleNames[currPuzzleIndex]);
 		target.PUZZLE_DIALOG.show(true);
-		
-		// check MenuOptions
-		var menuBar = this.findContent("MENUBAR"); // menuBar had to be defined as id="MENUBAR" in XML!! [from original MS code. dig]
-		var menus = getSoValue(menuBar, "menus");
-		var items = getSoValue(menus[0], "items");
+	};
+	
+	target.doRoot = function (sender) {
+		this.exitQuit();
 	};
 	
 	// saves current progress and exits
-	// only gets called externally
 	target.exitQuit = function() {
+		var stream;
+		
 		target.bubble('tracelog', 'in exitQuit');
+		
 		this.saveCrossword();
+		
+		// output settings file (filename of current puzzle)
+		try {
+			if (FileSystem.getFileInfo(settingsPath)) FileSystem.deleteFile(settingsPath);
+			stream = new Stream.File(settingsPath, 1);
+			stream.writeLine(puzzleNames[currPuzzleIndex]);		
+			stream.close();
+		} catch (e) {}
+		
 		kbook.autoRunRoot.exitIf(kbook.model);
 	};
 
@@ -482,7 +519,7 @@ var tmp = function() {
 	};
 	
 	target.doSwitchKeyboard = function(sender) {
-		target.bubble('tracelog','doSwitchKeyboard');
+		//target.bubble('tracelog','doSwitchKeyboard');
 		if (keyboardLow) {
 			this['BUTTON_Q'].changeLayout(40, 40, uD, 140, 40, uD);
 			this['BUTTON_W'].changeLayout(90, 40, uD, 140, 40, uD);
@@ -630,8 +667,32 @@ var tmp = function() {
 		}
 	};
 	
+	target.container.container.clearWord = function(sender) {
+		if (direction == 0) {
+			// go backward horizontally until a black square is encountered to get to the beginning of the current word 
+			for (i = currCell; (i % cwdWidth) != 0 && cwdGrid.charAt(i - 1) != '.'; i--);
+			// go forward clearing each letter
+			for (j = i; cwdGrid.charAt(j) != '.' && j < (Math.floor(i/cwdWidth) * cwdWidth + cwdWidth); j++)
+				target['cell' + pad(j, 3)].setValue("");
+		} else {
+			// go upward until a black square is encountered to get to the beginning of the word
+			for (i = currCell; i >= 0 && cwdGrid.charAt(i - cwdWidth) != '.'; i = i - cwdWidth);
+			if (i < 0) i = i + cwdWidth;
+			// go forward clearing each letter
+			for (j = i; cwdGrid.charAt(j) != '.' && j < (cwdWidth*cwdHeight); j = j + cwdWidth)
+				target['cell' + pad(j, 3)].setValue("");
+		}
+		return;
+	};
+	
+	target.container.container.clearPuzzle = function(sender) {
+		for ( var i = 0; i < cwdGrid.length; i++)
+			target['cell' + pad(i, 3)].setValue("");
+	};
+	
 	target.PUZZLE_DIALOG.closeDlg = function() {
-		if ((cwdWidth == 0) || (currPuzzleIndex != prevPuzzleIndex))
+		target.bubble('tracelog', 'currPuzzleIndex=' + currPuzzleIndex+", prevPuzzleIndex="+prevPuzzleIndex);
+		if (currPuzzleIndex != prevPuzzleIndex)
 			target.loadCrossword();
 	}	
 	 
@@ -642,14 +703,14 @@ var tmp = function() {
 		senderID = getSoValue(sender,"id");
 				
 		len = puzzleNames.length;
-		target.bubble('tracelog', 'puzzleNames.length = ' + len);
+		//target.bubble('tracelog', 'puzzleNames.length = ' + len);
 		fileName = target.getVariable("fileName");
 		// for(i = 0; puzzleNames[i] != fileName && i < len; i++);
 		// target.bubble('tracelog','doPrevNextPuzzle : i = '+i);
 		// target.bubble('tracelog','doPrevNextPuzzle : puzzleNames[i] '+puzzleNames[i % len]);
 
-		target.bubble('tracelog', 'doPrevNextPuzzle: senderID ' + senderID);
-		target.bubble('tracelog','doPrevNextPuzzle : [before] currPuzzleIndex = ' + currPuzzleIndex);
+		//target.bubble('tracelog', 'doPrevNextPuzzle: senderID ' + senderID);
+		//target.bubble('tracelog','doPrevNextPuzzle : [before] currPuzzleIndex = ' + currPuzzleIndex);
 
 		switch(senderID) {
 			case "prevPuzzle" : {
@@ -665,11 +726,11 @@ var tmp = function() {
 			}
 		};
 
-		target.bubble('tracelog','doPrevNextPuzzle : [after] currPuzzleIndex = ' + currPuzzleIndex);
+		//target.bubble('tracelog','doPrevNextPuzzle : [after] currPuzzleIndex = ' + currPuzzleIndex);
 		
 		this.container.setVariable("fileName", puzzleNames[currPuzzleIndex]);
 
-		target.bubble('tracelog','doPrevNextPuzzle : fname = ' + target.getVariable("fileName"));
+		//target.bubble('tracelog','doPrevNextPuzzle : fname = ' + target.getVariable("fileName"));
 	}	
 
 	// CHECK menu
@@ -677,7 +738,7 @@ var tmp = function() {
 	target.container.container.hint = function(sender) {
 		var x = getSoValue(sender, "index");
 		
-		target.bubble('tracelog','in hint: sender index = ' + x);
+		//target.bubble('tracelog','in hint: sender index = ' + x);
 			
 		switch (x) {
 			// check that the letter in the current cell is correct
@@ -694,12 +755,12 @@ var tmp = function() {
 					// go backward horizontally until a black square is encountered to get to the beginning of the current word 
 					for (i = currCell; (i % cwdWidth) != 0 && cwdGrid.charAt(i - 1) != '.'; i--);
 					// go forward checking each letter
-					target.bubble('tracelog','in hint: check slot ' + acrossNumberMap[pad(currCell, 3)]);
+					//target.bubble('tracelog','in hint: check slot ' + acrossNumberMap[pad(currCell, 3)]);
 					//for (j = acrossNumberMap[pad(currCell, 3)]; cwdGrid.charAt(j) != '.'; j++)
 						//target.bubble('tracelog', 'in hint: checking slot ' + j);
 					//for (j = acrossNumberMap[pad(currCell, 3)] * 1; cwdGrid.charAt(j) != '.' && j < (acrossNumberMap[pad(currCell, 3)]/cwdWidth)*(cwdWidth+1); j++) {
 					for (j = i; cwdGrid.charAt(j) != '.' && j < (Math.floor(i/cwdWidth) * cwdWidth + cwdWidth); j++) {
-						target.bubble('tracelog', 'in hint: checking slot ' + j + ' ' + target['cell' + pad(j, 3)].getValue() + ' ' + cwdSolution.charAt(j));
+						//target.bubble('tracelog', 'in hint: checking slot ' + j + ' ' + target['cell' + pad(j, 3)].getValue() + ' ' + cwdSolution.charAt(j));
 						if (target['cell' + pad(j, 3)].getValue() != "" && target['cell' + pad(j, 3)].getValue() != cwdSolution.charAt(j))
 							target['sq' + pad(j, 3)].u = 3;
 						}
@@ -723,12 +784,12 @@ var tmp = function() {
 				break;
 			}
 			// reveal current letter
-			case 3: {
+			case 4: {
 				target['cell' + pad(currCell, 3)].setValue(cwdSolution.charAt(currCell));
 				break;
 			}
 			// reveal current word
-			case 4: {
+			case 5: {
 				if (direction == 0) {
 					// go backward horizontally until a black square is encountered to get to the beginning of the current word 
 					for (i = currCell; (i % cwdWidth) != 0 && cwdGrid.charAt(i - 1) != '.'; i--);
@@ -773,6 +834,41 @@ var tmp = function() {
 		// target.saveSettings(); // will be saved on exit
 
 		// target.WIN_DIALOG.open();
+	}
+	
+	var closeAllMenus = function() {
+	return true;
+	}
+	
+	//temporary functions since menu doesn't work
+	target.doCheckPuzzle = function(sender) {
+		for ( var i = 0; i < cwdGrid.length; i++)
+			if (target['cell' + pad(i, 3)].getValue() != ""	&& target['cell' + pad(i, 3)].getValue() != cwdSolution.charAt(i))
+				target['sq' + pad(i, 3)].u = 3;
+		return;
+	}
+	
+	target.doRevealLetter = function(sender) {
+		target['cell' + pad(currCell, 3)].setValue(cwdSolution.charAt(currCell));	
+		return;
+	}
+	
+	target.doRevealWord = function(sender) {
+		if (direction == 0) {
+			// go backward horizontally until a black square is encountered to get to the beginning of the current word 
+			for (i = currCell; (i % cwdWidth) != 0 && cwdGrid.charAt(i - 1) != '.'; i--);
+			// go forward checking each letter
+			for (j = i; cwdGrid.charAt(j) != '.' && j < (Math.floor(i/cwdWidth) * cwdWidth + cwdWidth); j++)
+				target['cell' + pad(j, 3)].setValue(cwdSolution.charAt(j));
+		} else {
+			// go upward until a black square is encountered to get to the beginning of the word
+			for (i = currCell; i >= 0 && cwdGrid.charAt(i - cwdWidth) != '.'; i = i - cwdWidth);
+			if (i < 0) i = i + cwdWidth;
+			// go forward checking each letter
+			for (j = i; cwdGrid.charAt(j) != '.' && j < (cwdWidth*cwdHeight); j = j + cwdWidth)
+				target['cell' + pad(j, 3)].setValue(cwdSolution.charAt(j));
+		}
+		return;
 	}
 }; // end of tmp
 
