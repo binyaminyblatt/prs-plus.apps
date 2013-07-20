@@ -4,7 +4,7 @@
 //
 // History: 
 //	06/09/2012	Dan Genin - alpha release
-//	15/07/2013	Ben Chenoweth - added keyboard switch button; various fixes; errors output to clue box; remembers previous puzzle
+//	20/07/2013	Ben Chenoweth - added keyboard switch button for non-950 readers; various fixes; loading errors output to clue box; remembers current puzzle; check for win; non-menu version
 
 var tmp = function() {
 	//
@@ -244,6 +244,8 @@ var tmp = function() {
 			return;
 		}
 		
+		target.clueText.setValue("");
+		
 		maxCells = (cwdWidth) * (cwdHeight) - 1; // Number of cells in the current puzzle
 		
 		// resize the grid frame
@@ -454,10 +456,15 @@ var tmp = function() {
 	target.exitQuit = function() {
 		var stream;
 		
-		target.bubble('tracelog', 'in exitQuit');
+		//target.bubble('tracelog', 'in exitQuit');
 		
 		this.saveCrossword();
+		this.saveSettings();
 		
+		kbook.autoRunRoot.exitIf(kbook.model);
+	};
+	
+	target.saveSettings = function() {
 		// output settings file (filename of current puzzle)
 		try {
 			if (FileSystem.getFileInfo(settingsPath)) FileSystem.deleteFile(settingsPath);
@@ -465,10 +472,8 @@ var tmp = function() {
 			stream.writeLine(puzzleNames[currPuzzleIndex]);		
 			stream.close();
 		} catch (e) {}
-		
-		kbook.autoRunRoot.exitIf(kbook.model);
-	};
-
+		return;
+	}
 	// ??? [dig]
 	var updateScreen = function() {
 		FskUI.Window.update.call(kbook.model.container.getWindow());
@@ -495,6 +500,9 @@ var tmp = function() {
 			this['cell' + pad(currCell, 3)].setValue(letter);
 		else
 			this['cell' + pad(currCell, 3)].setValue("");
+		
+		this.checkForAWin();
+		
 		nextCell = currCell;
 		
 		
@@ -516,7 +524,24 @@ var tmp = function() {
 				activateCell(nextCell);
 			} else return;
 		}
+		
+		
 	};
+	
+	target.checkForAWin = function() {
+		//check for a win
+		//target.bubble('tracelog','checkForAWin');
+		var alldone = true;
+		for ( var i = 0; i < cwdGrid.length; i++) {
+			//target.bubble('tracelog', 'i='+i+",sol="+cwdSolution.charAt(i)+",ans="+target['cell' + pad(i, 3)].getValue());
+			if (cwdSolution.charAt(i) != "." && target['cell' + pad(i, 3)].getValue() != cwdSolution.charAt(i))
+				alldone = false;
+		}
+		if (alldone) {
+			target.WIN_DIALOG.open();
+		}
+		return;
+	}
 	
 	target.doSwitchKeyboard = function(sender) {
 		//target.bubble('tracelog','doSwitchKeyboard');
@@ -644,6 +669,13 @@ var tmp = function() {
 	target.helpTextPgUp = function() {
 		fnPageScroll.call(this.helpText, true, -1);
 	}
+	
+	target.doShowPuzzleDialog = function(sender) {
+		this.saveCrossword();
+		prevPuzzleIndex = currPuzzleIndex;
+		target.PUZZLE_DIALOG.show(true);
+		return;
+	}
 
 /************************************************** Menu actions ***************************************************************/
 	// menu exist in the scope of DOCUMENT !! [original mine sweeper comment. dig]
@@ -653,6 +685,8 @@ var tmp = function() {
 	// either by browsing the list of available puzzles or by simply loading the next one in a list
 	target.container.container.switchPuzzle = function(sender) {
 		var x = getSoValue(sender, "index");
+		// save progress of current puzzle
+		target.saveCrossword();
 		switch (x) {
 			case 0: {
 				prevPuzzleIndex = currPuzzleIndex;
@@ -691,7 +725,6 @@ var tmp = function() {
 	};
 	
 	target.PUZZLE_DIALOG.closeDlg = function() {
-		target.bubble('tracelog', 'currPuzzleIndex=' + currPuzzleIndex+", prevPuzzleIndex="+prevPuzzleIndex);
 		if (currPuzzleIndex != prevPuzzleIndex)
 			target.loadCrossword();
 	}	
@@ -779,7 +812,7 @@ var tmp = function() {
 			// check the whole puzzle
 			case 2: {
 				for ( var i = 0; i < cwdGrid.length; i++)
-					if (target['cell' + pad(i, 3)].getValue() != ""	&& target['cell' + pad(i, 3)].getValue() != cwdSolution.charAt(currCell))
+					if (target['cell' + pad(i, 3)].getValue() != ""	&& target['cell' + pad(i, 3)].getValue() != cwdSolution.charAt(i))
 						target['sq' + pad(i, 3)].u = 3;
 				break;
 			}
@@ -823,7 +856,6 @@ var tmp = function() {
 	// Uses cwdWidth-1+2 (not cwdWidth) to include borderRight images.
 	var imageIndexOf = function(x, y) {
 		return pad(x + y * (cwdWidth), 3);
-		
 	}
 
 	// Complete the Win process. Save the cookies, and call the winning window.
@@ -837,19 +869,21 @@ var tmp = function() {
 	}
 	
 	var closeAllMenus = function() {
-	return true;
+		return true;
 	}
-	
+
 	//temporary functions since menu doesn't work
 	target.doCheckPuzzle = function(sender) {
-		for ( var i = 0; i < cwdGrid.length; i++)
+		for ( var i = 0; i < cwdGrid.length; i++) {
 			if (target['cell' + pad(i, 3)].getValue() != ""	&& target['cell' + pad(i, 3)].getValue() != cwdSolution.charAt(i))
 				target['sq' + pad(i, 3)].u = 3;
+		}
 		return;
 	}
 	
 	target.doRevealLetter = function(sender) {
-		target['cell' + pad(currCell, 3)].setValue(cwdSolution.charAt(currCell));	
+		target['cell' + pad(currCell, 3)].setValue(cwdSolution.charAt(currCell));
+		this.checkForAWin();
 		return;
 	}
 	
@@ -868,6 +902,7 @@ var tmp = function() {
 			for (j = i; cwdGrid.charAt(j) != '.' && j < (cwdWidth*cwdHeight); j = j + cwdWidth)
 				target['cell' + pad(j, 3)].setValue(cwdSolution.charAt(j));
 		}
+		this.checkForAWin();
 		return;
 	}
 }; // end of tmp
