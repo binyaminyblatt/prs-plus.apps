@@ -267,6 +267,7 @@ var tmp = function() {
 			target.selection.changeLayout(0, 0, uD, 0, 0, uD);
 			target.cwdTitle.setValue("");
 			target.cwdAuthor.setValue("");
+			target.filenameLabel.setValue("");
 			return;
 		}
 		
@@ -279,6 +280,9 @@ var tmp = function() {
 		// display the title and author of the puzzle
 		target.cwdTitle.setValue(cwdTitle);
 		target.cwdAuthor.setValue(cwdAuthor);
+		
+		// update filename label
+		target.filenameLabel.setValue(puzzleNames[currPuzzleIndex]);
 
 		//initialize the clue mapping arrays
 		for(i = 0; i < cwdWidth*cwdHeight; i++) {
