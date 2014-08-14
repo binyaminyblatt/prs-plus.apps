@@ -15,6 +15,7 @@
 //	10/08/2013	Ben Chenoweth - added 'Change Mode' using Prev/Next buttons; minor fixes
 //	11/08/2013	Ben Chenoweth - fix for non-square puzzles; and allow for CROSSWORD icon
 //	14/08/2013	Ben Chenoweth - autoload current puzzle on startup; handle no puz files
+//	14/08/2014	Ben Chenoweth - change 'space' to 'backspace'; clicking on current cell toggles direction
 
 var tmp = function() {
 	//
@@ -26,11 +27,14 @@ var tmp = function() {
 	gridLeft,
 	getSoValue = kbook.autoRunRoot.getSoValue,
 	setSoValue = kbook.autoRunRoot.setSoValue,
+	setFileContent = kbook.autoRunRoot.setFileContent,
 	listFiles = kbook.autoRunRoot.listFiles,
 	//datPath = kbook.autoRunRoot.gamesSavePath + 'CrossWord/puzzles/',
 	datPath = target.crosswordRoot + 'puzzles/',
-	settingsPath  = target.crosswordRoot + 'settings.dat',
 	//settingsPath = kbook.autoRunRoot.gamesSavePath + 'CrossWord/settings.dat',
+	settingsPath  = target.crosswordRoot + 'settings.dat',
+	//DEBUGOUT = "/Data/CrossWord.txt",
+	DEBUGOUT = target.crosswordRoot + "/CrossWord.txt",
 
 	direction = 0,
 	currCell = 0, // linear position (left to right and top to bottom) of the currently focused cell
@@ -54,6 +58,7 @@ var tmp = function() {
 	
 	strShift = "\u2191", //up arrow
 	strUnShift = "\u2193", //down arrow
+	strBack = "\u2190", //left arrow
 	keyboardLow = true,
 	puzzleNames,
 	ableToSavePuzzle = false,
@@ -137,13 +142,15 @@ var tmp = function() {
 	var loadCrosswordFile = function() {
 		var stream, nextField, chunk, size,
 		fileName = puzzleNames[currPuzzleIndex],
-		num = 1, clue = 0, numAssigned, pIndex = 0, i, j;
+		num = 1, clue = 0, numAssigned, pIndex = 0, i, j,
+		outputfile = "";
 		
 		ableToSavePuzzle = false;
 		
 		try {
 			if (FileSystem.getFileInfo(datPath+fileName)) {
 				stream = new Stream.File(datPath+fileName);
+				outputfile = datPath+fileName+"\n";
 			}
 			else {
 				target.clueText.setValue("ERROR: Puzzle file is missing.");
@@ -165,8 +172,10 @@ var tmp = function() {
 			
 			cwdWidth = chunk.peek(44);
 			//target.bubble("tracelog","cwdWidth = "+cwdWidth);
+			outputfile = outputfile + "Width: "+cwdWidth+"\n";
 			cwdHeight = chunk.peek(45);
 			//target.bubble("tracelog","cwdHeight = "+cwdHeight);
+			outputfile = outputfile + "Height: "+cwdHeight+"\n";
 			
 			if (cwdWidth > 15 || cwdHeight > 15) {
 				target.clueText.setValue("ERROR: Puzzles larger than 15x15 are not supported.");
@@ -180,16 +189,20 @@ var tmp = function() {
 				cwdSolution = getString(chunk,52,cwdWidth*cwdHeight); // if solution is unscrambled load it 
 			//}
 			//target.bubble("tracelog","cwdSolution = "+cwdSolution);
+			outputfile = outputfile + "Solution = "+cwdSolution+"\n";
 			
 			nextField = 52 + cwdWidth*cwdHeight;
 			cwdGrid = getString(chunk,nextField,cwdWidth*cwdHeight);
 			//target.bubble("tracelog","cwdGrid = "+cwdGrid);
+			outputfile = outputfile + "Grid = "+cwdGrid+"\n";
 			nextField = nextField + cwdWidth*cwdHeight; 
 			cwdTitle = getString(chunk,nextField,size);
 			//target.bubble("tracelog","cwdTitle = "+cwdTitle);
+			outputfile = outputfile + "Title = "+cwdTitle+"\n";
 			nextField = nextField + cwdTitle.length + 1;
 			cwdAuthor = getString(chunk,nextField,size);
 			//target.bubble("tracelog","cwdAuthor = "+cwdAuthor);
+			outputfile = outputfile + "Author = "+cwdAuthor+"\n";
 			nextField = nextField + cwdAuthor.length + 1;
 			cwdCopyright = getString(chunk,nextField,size);
 			//target.bubble("tracelog","cwdCopyright = "+cwdCopyright);
@@ -228,19 +241,29 @@ var tmp = function() {
 			}
 			
 			//target.bubble("tracelog","There are "+clue+" clues");
+			outputfile = outputfile + "There are "+clue+" clues\n";
 			
 			cwdClues.length = 0;
 			for(i = 0; i < clue; i++){
 				cwdClues.push(getString(chunk,nextField,size));
+				j = i + 1;
+				outputfile = outputfile + "Clue "+j+": "+cwdClues[i]+"\n";
 				nextField = nextField + cwdClues[i].length + 1;
 			}
 			
 			cwdNote = getString(chunk,nextField,size);
+			outputfile = outputfile + "Note = "+cwdNote+"\n";
 			chunk.free();
 			stream.close();
 		} catch (e) {
 			target.clueText.setValue("ERROR: Failed while loading puzzle.");
 		}
+		
+		try {
+			if (FileSystem.getFileInfo(DEBUGOUT)) FileSystem.deleteFile(DEBUGOUT);
+			setFileContent(DEBUGOUT, outputfile);
+			//target.bubble('tracelog',outputfile);
+		} catch (e) {}
 	};
 	
 	/*function realTypeOf(obj) {
@@ -462,6 +485,7 @@ var tmp = function() {
 		this.appTitle.setValue(kbook.autoRunRoot._title);
 		this.appIcon.u = kbook.autoRunRoot._icon;
 		this['BUTTON_1'].setText(strShift); // up arrow on keyboard switch button
+		this['BUTTON_ '].setText(strBack); // back arrow 
 		
 		if (kbook.autoRunRoot.model=="950") {
 			// don't need to be able to switch keyboard, since it fits underneath crossword area
@@ -563,9 +587,15 @@ var tmp = function() {
 			if (getSoValue(target['sq' + pad(currCell, 3)], "v") != 0) target['sq' + pad(currCell, 3)].v = 0;
 			if (!this.checkForAWin()) this.moveToNextCell();
 		} else {
-			target['sq' + pad(currCell, 3)].u = 0;
-			if (getSoValue(target['sq' + pad(currCell, 3)], "v") != 0) target['sq' + pad(currCell, 3)].v = 0;
-			this.moveToNextCell();
+			if (getSoValue(target['sq' + pad(currCell, 3)], "u") != 0) {
+				target['sq' + pad(currCell, 3)].u = 0;
+				if (getSoValue(target['sq' + pad(currCell, 3)], "v") != 0) target['sq' + pad(currCell, 3)].v = 0;
+			} else {
+				this.moveToPrevCell();
+				target['sq' + pad(currCell, 3)].u = 0;
+				if (getSoValue(target['sq' + pad(currCell, 3)], "v") != 0) target['sq' + pad(currCell, 3)].v = 0;
+			}
+			//this.moveToNextCell();
 		}
 	};
 	
@@ -614,6 +644,47 @@ var tmp = function() {
 				// focus on the next cell vertically
 				if (nextCell < cwdGrid.length) {
 					activateCell(nextCell);
+				} else {
+					return;
+				}
+			} else {
+				return;
+			}
+		}	
+	}
+	
+	target.moveToPrevCell = function() {
+		var i, j, prevCell = currCell;
+		
+		j = Math.floor(currCell/cwdWidth);
+		
+		if (direction == 0) {
+			prevCell--;
+			i = prevCell - j * cwdWidth;
+			if (i < cwdWidth) {
+				// skip over blacked out squares
+				while (cwdGrid.charAt(prevCell) == '.' && i >= 0) {
+					prevCell--;
+					i = prevCell - j * cwdWidth;
+				}
+				// focus on the next cell horizontally
+				if (i >= 0) {
+					activateCell(prevCell);
+				} else {
+					return;
+				}
+			} else {
+				return;
+			}
+		} else {
+			if ((prevCell = prevCell * 1 - cwdWidth * 1) >= 0) {
+				// skip over blacked out squares
+				while (cwdGrid.charAt(prevCell) == '.' && prevCell * 1 > 0) {
+					prevCell = prevCell * 1 - cwdWidth * 1;
+				}
+				// focus on the next cell vertically
+				if (prevCell >= 0) {
+					activateCell(prevCell);
 				} else {
 					return;
 				}
